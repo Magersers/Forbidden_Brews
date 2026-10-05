@@ -1,0 +1,156 @@
+[
+  {
+    "id": "inversion",
+    "name_ru": "Переворот",
+    "planned_effect": "Переворачивает экран",
+    "color": "#bc4eff",
+    "sigil": "arrows",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "wild_teleport",
+    "name_ru": "Дикий прыжок",
+    "planned_effect": "Телепортирует в случайную точку карты",
+    "color": "#32cedf",
+    "sigil": "portal",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "homeward",
+    "name_ru": "Домой",
+    "planned_effect": "Возвращает домой",
+    "color": "#ffad51",
+    "sigil": "home",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "swarm",
+    "name_ru": "Призыв орды",
+    "planned_effect": "Повышает спавн мобов, в том числе днём",
+    "color": "#ec4263",
+    "sigil": "skull",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "bat",
+    "name_ru": "Крылья ночи",
+    "planned_effect": "Превращает в летучую мышь",
+    "color": "#8462f3",
+    "sigil": "bat",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "juggernaut",
+    "name_ru": "Разрушитель",
+    "planned_effect": "Превращает в монстра, разрушающего блоки 4×4",
+    "color": "#fa643a",
+    "sigil": "monster",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "ore_double",
+    "name_ru": "Двойная руда",
+    "planned_effect": "Умножает руду ×2",
+    "color": "#33e2c2",
+    "sigil": "double",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "ore_sight",
+    "name_ru": "Рудный охотник",
+    "planned_effect": "Подсвечивает ближайшую руду",
+    "color": "#53b9ff",
+    "sigil": "eye",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "truce",
+    "name_ru": "Перемирие",
+    "planned_effect": "Враждебные мобы мирны, пока их не ударить",
+    "color": "#86eab3",
+    "sigil": "leaf",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "creeper",
+    "name_ru": "Сердце крипера",
+    "planned_effect": "Взрыв с небольшим уроном; взрывная версия — как TNT",
+    "color": "#a5ef38",
+    "sigil": "creeper",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "hot_pick",
+    "name_ru": "Горячая кирка",
+    "planned_effect": "Добываемые руды сразу переплавляются",
+    "color": "#ff9339",
+    "sigil": "pick",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "fortune",
+    "name_ru": "Удача",
+    "planned_effect": "Повышает удачу в зависимости от уровня",
+    "color": "#fbe56b",
+    "sigil": "clover",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "looting",
+    "name_ru": "Трофеи охотника",
+    "planned_effect": "Повышает добычу с мобов",
+    "color": "#f153ae",
+    "sigil": "sword",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  },
+  {
+    "id": "shapeshifter",
+    "name_ru": "Перевёртыш",
+    "planned_effect": "Превращает в случайного моба",
+    "color": "#b68aff",
+    "sigil": "mask",
+    "variants": [
+      "drink",
+      "splash"
+    ]
+  }
+]
