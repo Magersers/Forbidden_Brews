@@ -8,7 +8,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Песочные часы",
+    "substance_structure": "Два слоя и капли, движущиеся навстречу"
   },
   {
     "id": "wild_teleport",
@@ -19,7 +21,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Круглый дисковый флакон",
+    "substance_structure": "Вращающийся вихрь с тёмным центром"
   },
   {
     "id": "homeward",
@@ -30,7 +34,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Фонарь с плоскими стенками",
+    "substance_structure": "Вязкий мёд, тёплые сгустки и угольки"
   },
   {
     "id": "swarm",
@@ -41,7 +47,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Угловатая колба-саркофаг",
+    "substance_structure": "Багровый дым и вспыхивающие глаза"
   },
   {
     "id": "bat",
@@ -52,7 +60,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Удлинённая капля с крыльями",
+    "substance_structure": "Чернильный туман и движущиеся силуэты"
   },
   {
     "id": "juggernaut",
@@ -63,7 +73,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Широкая бронированная бутыль",
+    "substance_structure": "Каменные обломки и раскалённые трещины"
   },
   {
     "id": "ore_double",
@@ -74,7 +86,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Двухкамерный флакон",
+    "substance_structure": "Растущие парные кристаллы"
   },
   {
     "id": "ore_sight",
@@ -85,7 +99,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Ромбовидная колба",
+    "substance_structure": "Сканирующий луч и проявляющиеся крупицы руды"
   },
   {
     "id": "truce",
@@ -96,7 +112,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Изогнутый травяной сосуд",
+    "substance_structure": "Плавающие листья в спокойном зелёном геле"
   },
   {
     "id": "creeper",
@@ -107,7 +125,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Прямоугольный сосуд под давлением",
+    "substance_structure": "Кислотная пена и пульсирующие газовые пузыри"
   },
   {
     "id": "hot_pick",
@@ -118,7 +138,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Колба-печь с широким основанием",
+    "substance_structure": "Лава, чёрная корка и разрывы расплава"
   },
   {
     "id": "fortune",
@@ -129,7 +151,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Сердцевидный флакон",
+    "substance_structure": "Золотые хлопья и вспыхивающие звёзды"
   },
   {
     "id": "looting",
@@ -140,7 +164,9 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Амфора с боковыми рукоятями",
+    "substance_structure": "Рубиновые сгустки и белые осколки трофеев"
   },
   {
     "id": "shapeshifter",
@@ -151,6 +177,8 @@
     "variants": [
       "drink",
       "splash"
-    ]
+    ],
+    "bottle_shape": "Асимметричная колба",
+    "substance_structure": "Две несмешивающиеся массы, меняющие границу и облик"
   }
 ]
