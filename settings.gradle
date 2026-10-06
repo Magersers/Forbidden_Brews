@@ -1,0 +1,15 @@
+pluginManagement {
+    repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'Forbidden-Brews'
+def target = providers.gradleProperty('target').getOrElse('forge-1.20.1')
+if (!(target in ['forge-1.20.1', 'neoforge-1.21.1', 'fabric-1.21.1'])) {
+    throw new GradleException('Unsupported target: ' + target)
+}
+include(target)
+project(':' + target).projectDir = file('platforms/' + target)

@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="All Rights Reserved"
+[[mods]]
+modId="forbidden_brews"
+version="0.1.0"
+displayName="Forbidden Brews"
+authors="Magersers"
+description='''Chaos Brewing Stand and original animated potion art. Transformation effects are in development.'''
+[[dependencies.forbidden_brews]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.252,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.forbidden_brews]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"

@@ -1,0 +1,11 @@
+base { archivesName = "forbidden-brews-${project.name}" }
+def minecraftVersion = project.name.endsWith('1.20.1') ? '1.20.1' : '1.21.1'
+sourceSets.main.java.srcDir('../../common/src/main/java')
+sourceSets.main.java.srcDir('../../art/java')
+sourceSets.main.java.srcDir('../../versions/' + minecraftVersion + '/src/main/java')
+sourceSets.main.resources.srcDir('../../common/src/main/resources')
+sourceSets.main.resources.srcDir('../../versions/' + minecraftVersion + '/src/main/resources')
+// Textures and models are shared directly with the editable art source.
+sourceSets.main.resources.srcDir('../../art/minecraft')
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+jar { from('../../LICENSE') }

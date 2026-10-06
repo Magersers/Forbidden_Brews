@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "forbidden_brews:block/chaos_brewing_stand"
+    }
+  }
+}

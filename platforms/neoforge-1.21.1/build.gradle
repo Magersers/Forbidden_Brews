@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+java { toolchain.languageVersion = JavaLanguageVersion.of(21) }
+neoForge {
+    version = '21.1.252'
+    runs {
+        client { client() }
+        server { server(); programArgument '--nogui' }
+    }
+    mods { forbidden_brews { sourceSet(sourceSets.main) } }
+}
+apply from: '../../platform-common.gradle'

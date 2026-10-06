@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "forbidden_brews",
+  "version": "0.1.0",
+  "name": "Forbidden Brews",
+  "description": "Chaos Brewing Stand and original animated potion art. Transformation effects are in development.",
+  "authors": [
+    "Magersers"
+  ],
+  "license": "All Rights Reserved",
+  "environment": "*",
+  "accessWidener": "forbidden_brews.accesswidener",
+  "entrypoints": {
+    "main": [
+      "io.github.magersers.forbiddenbrews.ForbiddenBrews"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "fabric-api": ">=0.116.17",
+    "minecraft": "1.21.1",
+    "java": ">=21"
+  }
+}

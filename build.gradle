@@ -1,0 +1,4 @@
+allprojects {
+    group = 'io.github.magersers.forbiddenbrews'
+    version = '0.1.0'
+}
