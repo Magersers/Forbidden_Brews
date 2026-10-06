@@ -1,140 +1,86 @@
 # Forbidden Brews
 
-Мод для Minecraft с собственным зельеварением, незеритовым наростом, стойкой хаоса, моделью громилы и анимированными иконками зелий. В **0.7.1** работают «Удача» I–III, «Добыча» I–III, «Домой», «Случайная телепортация», «Двойная руда», «Горячая кирка», «Переворот» I–III, «Сердце крипера», «Перемирие», «Призыв орды», «Рудный охотник», «Охотник», «Крылья ночи», «Разрушитель», «Перевёртыш» и «Гравитация», включая взрывные версии: **16 составов, 44 предмета и 44 рецепта варки**. **16 зелий × 2 версии = 32 иконки.** У каждого зелья своя форма флакона, заметные украшения и отдельная структура содержимого.
+<img src="art/branding/forbidden-brews-logo-ai.png" alt="Forbidden Brews potion logo" width="160">
 
-## Стойка хаоса и громила
+Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Netherite-powered Chaos Brewing Stand. Each bottle has its own pixel silhouette, decorations and animated liquid: portals, crystals, foam, molten rock and more.
 
-![Стойка хаоса](previews/chaos_brewing_stand.gif)
+**[Download 0.7.2](releases/0.7.2/)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)**
 
-![Громила — форма Стива](previews/steve_brute.gif)
-
-Стойка — игровой блок с незеритовым основанием, тремя держателями для зелий, золотым кольцом и аметистовым сердечником. Её можно скрафтить, поставить и открыть. Открывается собственный интерфейс: основа, незеритовый нарост, четыре места для компонентов, топливо и готовое зелье. Нажмите на пустую ячейку результата, чтобы выбрать зелье; улучшения и взрывные варианты появляются после установки подходящего зелья в центральную ячейку; при варке движутся пузырьки и заполняется шкала. Инвентарь и прогресс сохраняются; доступны воронки. Светящиеся участки текстуры анимированы. Вращение геометрии в GIF показано как художественное превью; в игре пока движется текстура.
-
-![Рецепт стойки](previews/chaos_stand_recipe.png)
-
-Рецепт: **1 слиток незерита**, обычная варочная стойка, 2 осколка аметиста, 2 обсидиана и стержень ифрита. Для добычи стойки нужна алмазная или незеритовая кирка. В творческом режиме она находится среди функциональных блоков.
-
-Громила — кубическая форма мутировавшего Стива высотой около 2,9 блока: рваная бирюзовая рубаха, фиолетовые штаны, большие кулаки, каменные наросты и оранжевые трещины. В Blockbench подготовлены `idle`, `walk` и `smash`, а в Blender — редактируемые действия и анимация удара. Модель подключена к превращению: меняются внешний вид, размеры столкновений, высота глаз и руки от первого лица. Разрушитель добывает область 4×4 перед игроком обычным инструментом, с расходом прочности и проверкой защиты блоков.
-
-- [Скачать сборки 0.7.1](releases/0.7.1/): Forge **1.20.1**, NeoForge и Fabric **1.21.1**. Для Fabric дополнительно нужен Fabric API 0.116.17+1.21.1.
-- [Модели Blockbench](art/blockbench/), [исходники Blender](art/blender/) и [GLB](art/models/).
-- [Описание моделей, сборки и проверок](docs/models.md).
-
-Сборки для трёх загрузчиков успешно компилируются. Проверки нового зельеварения и запись интерфейса описаны в [руководстве по игре](docs/brewing.md).
-
-## Зельеварение 0.7.1
-
-![Интерфейс стойки в игре](previews/chaos_stand_ui.gif)
-
-Незеритовый нарост: **обычный нарост + лом незерита → 1 незеритовый нарост**. Его можно посадить на песок душ; зрелое растение даёт 2–4 нароста. Светящиеся прожилки анимированы на всех четырёх стадиях роста.
-
-![Незеритовый нарост](previews/netherite_wart.gif)
-
-«Удача» работает как зачарование **Fortune** и складывается с удачей инструмента. Длительность уровней I/II/III: **2/5/8 минут**.
-
-Новое в 0.7.1: **«Рудный охотник»** показывает **все руды в радиусе 32 блоков** сквозь стены с их настоящими текстурами: алмаз, золото, железо, древние обломки и остальные виды, включая глубинные варианты. Ограничения на количество нет; добытая руда сразу исчезает из подсветки, остальные остаются видны. Совмещение с Охотником не уменьшает радиус.
-
-![Настоящие текстуры руды сквозь стену](previews/ore_xray_0.7.1_in_game.gif)
-
-**«Крылья ночи»** превращают в летучую мышь и дают полёт: дважды нажмите прыжок, затем удерживайте прыжок для подъёма и приседание для снижения. **«Разрушитель»** превращает в громилу и добывает 4×4 при разрушении блока инструментом, удваивает максимальное здоровье и добавляет **+3 к урону атаки**. Бедрок и блоки твёрже обсидиана недоступны даже при прямой добыче; сам обсидиан доступен. **«Перевёртыш»** выбирает одну из 15 форм мобов; форма сохраняется до конца эффекта. **«Гравитация»** меняет направление при каждом отдельном нажатии прыжка: первый раз вверх, второй — вниз. Все четыре действуют **2 минуты**, имеют взрывные версии и отдельные рецепты.
-
-![Превращения, разрушение 4×4 и гравитация в настоящем клиенте](previews/remaining_potions_0.7.1_in_game.gif)
-
-**«Охотник»** показывает враждебных мобов в **32 блоках**, кнопки, нажимные плиты, нити и крюки растяжек в **24 блоках**. Подсветку видит только игрок с эффектом; молоко снимает её.
-
-Добавлено ранее в 0.5.0: **«Перемирие»** останавливает нападения на выпившего, пока он не ударит моба; **«Призыв орды»** создаёт дополнительных враждебных мобов вокруг носителя эффекта даже днём. Оба действуют **2 минуты**, имеют питьевую и взрывную версии и собственные рецепты с незеритовым наростом.
-
-![Перемирие и Призыв орды в игре](previews/potions_0.5.0_in_game.gif)
-
-«Переворот» — отрицательный эффект трёх уровней: **I — 11 секунд, II — 22 секунды, III — 45 секунд**. Мир и предмет в руке разворачиваются на 180°; молоко снимает эффект. Питьевой флакон I/II в центральной ячейке открывает следующий уровень и свою взрывную версию. Время в стойке отображается точно: 0:11, 0:22, 0:45. «Сердце крипера» создаёт взрыв при питье; его взрывной флакон детонирует как TNT в точке попадания. Меню выбора показывает 16 базовых зелий в двух колонках.
-
-![Переворот III и снятие молоком в игре](previews/inversion_0.4.1_in_game.gif)
-
-«Случайная телепортация» ищет безопасное место в текущем измерении в пределах 2048 блоков по каждой горизонтальной оси; «Двойная руда» удваивает ресурсы после расчёта удачи; «Горячая кирка» сразу переплавляет добытую руду. Два горных эффекта действуют по 2 минуты и работают вместе. Шёлковое касание сохраняет цельные блоки.
-
-![Выбор 16 зелий](previews/chaos_recipe_picker.png)
-
-Каждая варка требует **1 незеритовый нарост**. Огненный порошок даёт 20 зарядов. Для первого уровня нужна бутылочка воды; последующие уровни варятся из предыдущего зелья. Редкость компонентов растёт с силой эффекта. [Все рецепты и инструкция](docs/brewing.md).
-
-## Быстрый просмотр
-
-Случайная телепортация, охотник и гравитация — питьевые и взрывные версии:
-
-![Телепорт, охотник и гравитация](previews/new_potions.gif)
-
-![Образцы обычных и взрывных флаконов](previews/style_sample.gif)
-
-Питьевые версии:
-
-![16 питьевых зелий](previews/potions_drink.gif)
-
-Взрывные версии:
-
-![16 взрывных зелий](previews/potions_splash.gif)
-
-## Файлы
-
-- `art/icons/drink/` и `art/icons/splash/` — отдельные PNG 32×32 с прозрачным фоном.
-- `art/minecraft/assets/forbidden_brews/textures/item/` — анимированные PNG 32×768: 24 кадра 32×32 вертикально, рядом `.png.mcmeta`.
-- `previews/individual/` — отдельная GIF для каждого зелья и каждой версии.
-- `art/catalog.json` — названия, цвета, формы флаконов, структуры содержимого и задуманные эффекты.
-- `tools/build_pixel_potions.py` — воспроизводимая сборка иконок и GIF.
-- `tools/potion_designs.py` — авторская пиксельная графика и отдельные анимации всех 16 составов.
-
-## Формы и содержимое
-
-| Зелье | Флакон и заметные детали | Анимированное содержимое |
+| Minecraft | Loader | Requirements |
 |---|---|---|
-| Переворот | Песочные часы, встречные стрелки | Два слоя и капли, движущиеся навстречу |
-| Случайный телепорт | Круглый диск, кольцо портала | Вихрь с тёмным центром и вращающимися огнями |
-| Домой | Фонарь, крыша и светящееся окно | Вязкий мёд, тёплые сгустки и угольки |
-| Призыв орды | Угловатая колба, кости и череп | Багровый дым и вспыхивающие глаза |
-| Крылья ночи | Удлинённая капля, большие крылья | Чернильный туман и движущиеся силуэты |
-| Разрушитель | Широкая бронированная бутыль, рога | Каменные обломки и раскалённые трещины |
-| Двойная руда | Две камеры, боковые кристаллы | Парные кристаллы растут в разных фазах |
-| Рудный охотник | Ромб, крупный глаз-самоцвет | Сканирующий луч и проявляющиеся крупицы руды |
-| Перемирие | Изогнутый сосуд, лоза и листья | Плавающие листья в спокойном зелёном геле |
-| Сердце крипера | Прямоугольный сосуд, усиления и лицо крипера | Кислотная пена и пульсирующие газовые пузыри |
-| Горячая кирка | Колба-печь, крупная кирка | Лава, чёрная корка и разрывы расплава |
-| Удача | Сердцевидный сосуд, корона и клевер | Золотые хлопья и вспыхивающие звёзды |
-| Трофеи охотника | Амфора, боковые рукояти и клинок | Рубиновые сгустки и белые осколки трофеев |
-| Перевёртыш | Асимметричный сосуд, усики и маска | Две массы меняют границу, а глаза — облик |
-| Охотник | Колба-щит с прицелом и подвеской ловушки | Сканирующая сетка проявляет силуэты мобов и ловушек |
-| Гравитация | Парящая капсула с магнитными кольцами и стрелками | Серебристая масса и капли перемещаются между дном и верхом |
+| 1.20.1 | Forge 47.4.0+ | Java 17 |
+| 1.21.1 | NeoForge 21.1.252+ | Java 21 |
+| 1.21.1 | Fabric Loader 0.16.14+ | Java 21, Fabric API 0.116.17+1.21.1 or compatible newer 1.21.1 release |
 
-Взрывные версии сохраняют индивидуальную форму и состав; у них наклонённое горлышко, закрытая пробка и искрящийся фитиль.
+Install **one** matching JAR on both client and server. These targets have the broadest mod ecosystems among the versions compared; this measures available mods, not player population.
 
-| Зелье | Эффект |
+## Chaos brewing
+
+![Actual English-language brewing interface](previews/chaos_stand_ui.gif)
+
+Click the empty result slot to choose a potion directly. Insert a drinkable potion in the centre to reveal its upgrade and splash recipes. The interface provides a base bottle, Netherite Wart, four ingredient slots, Blaze Powder fuel and animated progress. Inventory, progress and hopper automation persist across saves.
+
+Craft **Nether Wart + Netherite Scrap → Netherite Wart**, then plant it on Soul Sand. A mature crop yields 2–4 Wart before Fortune. Every brew, including upgrades and splash conversion, consumes one Netherite Wart. One Blaze Powder fuels 20 brews.
+
+![Sixteen drinkable bottles](previews/potions_drink.gif)
+
+![Sixteen splash bottles](previews/potions_splash.gif)
+
+## Potions
+
+| Family | Effect |
 |---|---|
-| Переворот | Переворачивает экран |
-| Случайный телепорт | Телепортирует в случайную точку карты; ранее назывался «Дикий прыжок» |
-| Домой | Возвращает домой |
-| Призыв орды | Повышает спавн мобов даже днём |
-| Крылья ночи | Превращает в летучую мышь |
-| Разрушитель | Превращает в монстра, ломающего блоки 4×4 |
-| Двойная руда | Умножает руду ×2 |
-| Рудный охотник | Показывает все руды в 32 блоках с настоящими текстурами сквозь стены |
-| Перемирие | Мобы мирны, пока их не ударить |
-| Сердце крипера | Взрыв с небольшим уроном; взрывная версия — как TNT |
-| Горячая кирка | Мгновенная переплавка добываемой руды |
-| Удача | Добавляет уровни Fortune к удаче инструмента |
-| Трофеи охотника | Повышает добычу с мобов |
-| Перевёртыш | Превращает в случайного моба |
-| Охотник | Подсвечивает через стены всех враждебных мобов, кнопки, нажимные плиты и нити растяжек |
-| Гравитация | Первое нажатие прыжка меняет гравитацию и тянет к небу; второе возвращает гравитацию к земле |
+| Fortune I–III | Adds 1/2/3 Fortune levels to block drops, stacking with the tool; lasts 2/5/8 minutes. |
+| Looting I–III | Adds 1/2/3 Looting levels to mob drops, stacking with the weapon; lasts 2/5/8 minutes. |
+| Homeward | Returns players to a safe spawn destination. |
+| Random Teleport | Finds a safe location in the current dimension, up to ±2048 blocks on each horizontal axis. |
+| Double Ore | Doubles ore resource drops after Fortune; respects Silk Touch. |
+| Hot Pick | Immediately smelts ore drops using the world's furnace recipes. |
+| Inversion I–III | Harmful: rotates the world and held item 180° for 11/22/45 seconds; menus remain readable. |
+| Creeper Heart | Drinking: power-3 explosion with reduced self-damage. Throwing: power-4 TNT-like explosion. |
+| Truce | Stops hostile attacks until you strike that particular mob. |
+| Swarm | Harmful: attempts additional hostile spawns even in daylight, with safe placement and local caps. |
+| Ore Seeker | Reveals **all loaded ores within 32 blocks** through walls, using their actual textures. |
+| Hunter | Reveals hostile mobs within 32 blocks and buttons, pressure plates and tripwires within 24 blocks. |
+| Night Wings | Bat form; double-tap Jump to fly, hold Jump to rise, Sneak to descend. |
+| Juggernaut | Brute form: **double maximum health, +3 attack damage, 4×4 mining**. Blocks harder than Obsidian and unbreakable blocks cannot be mined. |
+| Shapeshifter | A persistent random form from 15 mobs; the Bat also grants flight. |
+| Gravity | Each separate Jump press toggles rising skyward or descending to the ground. |
 
-«Рудный охотник» предназначен для руды, «Охотник» — для мобов и ловушек. Нажатие прыжка переключает гравитацию и в воздухе. Питьевые и взрывные версии всех 16 составов реализованы. Правила превращений, управление и рецепты описаны в [руководстве](docs/brewing.md).
+Timed families without levels last two minutes. Homeward, Random Teleport and Creeper Heart are instant. Every potion has a splash version; timed splash duration decreases with distance as in vanilla. Milk removes active effects.
 
-Флаконы зелий остаются двумерными предметными текстурами. Новые 3D-модели предназначены только для стойки и громилы.
+![Actual ore textures through a wall](previews/ore_seeker_en.gif)
 
-## Пересборка
+![Brute form, 40 HP and native 4×4 mining](previews/juggernaut_en.gif)
 
-Нужны Python и Pillow. Клиентский JAR Minecraft больше не нужен:
+![Bat flight](previews/night_wings_en.gif)
+
+![Jump-controlled gravity](previews/gravity_en.gif)
+
+## Languages
+
+English (US/UK), Russian, German, Spanish, French, Brazilian Portuguese, Simplified Chinese, Japanese, Korean and Ukrainian. All eleven packs contain all 80 item, effect, block, interface and message keys. Translations are AI-assisted; native-speaker corrections are welcome. Current release descriptions and GIF captions are English. Historical captures retain their original language.
+
+## Development
+
+Shared gameplay: `common/`; version adapters: `versions/`; loader registrations: `platforms/`. Potions use flat animated 32×32 sprites with 24 frames. Only the stand and Brute use 3D geometry. Editable Blender, Blockbench and GLB sources are in `art/`.
 
 ```sh
 python tools/build_pixel_potions.py
+python tools/build_runtime_art.py
+python tools/stage_runtime_resources.py
+./gradlew -Ptarget=forge-1.20.1 build
+./gradlew -Ptarget=neoforge-1.21.1 build
+./gradlew -Ptarget=fabric-1.21.1 build
+python tools/package_release.py
 ```
 
-GIF и `.mcmeta` воспроизводят 24 кадра по 100 мс: бесконечный цикл 2,4 секунды. Текстуры уже окрашены; дополнительное стандартное тонирование зелий не требуется. Мягкое освещение от предмета в мире не реализовано: сияние нарисовано внутри самой текстуры.
+Use Java 17 for Forge and Java 21 for the other targets. `-PgameTests runGameTestServer` enables the Forge server integration suite; `-PvisualTest` enables the separate local Forge recording fixture. Test fixtures are excluded from release JARs.
 
-Все текущие контуры, пробки, украшения и анимации нарисованы специально для Forbidden Brews. Пиксельная палитра стекла и простые ступенчатые края сохраняют стиль Minecraft. Изображения в превью увеличены без размытия. Для создания подписей скрипт использует системный шрифт Consolas на Windows.
+The gameplay passed **31 Forge GameTests**, including all 44 recipes, enchantment stacking, safe teleportation, explosions, protected mining, morph cleanup and gravity. Version 0.7.2 updates presentation and translations; production builds, dedicated-server startup and an English Forge recording are checked separately. NeoForge/Fabric have build and server checks; their client recordings and GameTests have not been run.
+
+## Credits
+
+Concept and direction: **Magersers**. Code, procedural pixel art, localization and documentation were substantially created with AI assistance. The repository logo was generated with OpenAI's image tool; see its [prompt and provenance](art/branding/README.md). Listing media uses actual gameplay and procedural sprite previews, not the generated logo.
+
+[All Rights Reserved](LICENSE). Not an official Minecraft product; not approved by or associated with Mojang or Microsoft.

@@ -93,6 +93,9 @@ public final class VisualScenario {
             if(Destruction.plane(SMASH,new net.minecraft.world.phys.Vec3(0,0,-1)).stream().anyMatch(p->!player.serverLevel().getBlockState(p).isAir()))throw new IllegalStateException("Real client did not mine the four-by-four wall");
             int drops=player.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,new net.minecraft.world.phys.AABB(SMASH).inflate(6)).stream()
                 .filter(e->e.getItem().is(Items.COBBLESTONE)).mapToInt(e->e.getItem().getCount()).sum();
+            // The moving client may collect some of the native drops before this check.
+            // Count both remaining item entities and the initially empty player inventory.
+            drops+=player.getInventory().items.stream().filter(s->s.is(Items.COBBLESTONE)).mapToInt(ItemStack::getCount).sum();
             if(drops!=16)throw new IllegalStateException("Expected native loot for 16 blocks: "+drops);
             System.out.println("REMAINING_SERVER_SMASH_AND_LOOT_OK "+drops);
         }

@@ -27,8 +27,14 @@ if fx:
     effect_frames=[]
     for path in fx:
         with Image.open(path) as shot:effect_frames.append(shot.convert('RGB').resize((640,360),Image.Resampling.NEAREST))
-    effect_frames[0].save(output/'remaining_potions_0.7.1_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=True)
-    effect_frames[0].save(output/'ore_xray_0.7.1_in_game.gif',save_all=True,append_images=effect_frames[1:90],duration=100,loop=0,optimize=True)
+    # Short actual-gameplay clips fit listing gallery limits; retain historical releases.
+    for name,start,end in [('ore_seeker_en',15,90),('night_wings_en',100,165),
+                           ('juggernaut_en',180,255),('shapeshifter_en',270,340),
+                           ('gravity_en',355,520)]:
+        sequence=effect_frames[start:end]
+        path=output/(name+'.gif')
+        sequence[0].save(path,save_all=True,append_images=sequence[1:],duration=100,loop=0,optimize=True)
+        assert path.stat().st_size<5*1024*1024, f'{path.name}: gallery limit exceeded'
     print(f'Wrote {len(effect_frames)} frames of actual textured ore X-ray, bat flight, brute mining, random morph and gravity')
 
 for shot,kind in [('xray-diamond','xray_diamond'),('xray-gold','xray_gold'),('morph-bat','bat'),('morph-brute','brute'),('morph-smash','brute_smash'),('morph-random','shapeshifter'),('gravity-up','gravity_up'),('gravity-down','gravity_down'),('remaining-milk','remaining_milk')]:

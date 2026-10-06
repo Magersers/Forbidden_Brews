@@ -10,7 +10,8 @@
       "splash"
     ],
     "bottle_shape": "Песочные часы",
-    "substance_structure": "Два слоя и капли, движущиеся навстречу"
+    "substance_structure": "Два слоя и капли, движущиеся навстречу",
+    "name_en": "Inversion"
   },
   {
     "id": "wild_teleport",
@@ -23,7 +24,8 @@
       "splash"
     ],
     "bottle_shape": "Круглый дисковый флакон",
-    "substance_structure": "Вращающийся вихрь с тёмным центром"
+    "substance_structure": "Вращающийся вихрь с тёмным центром",
+    "name_en": "Random Teleport"
   },
   {
     "id": "homeward",
@@ -36,7 +38,8 @@
       "splash"
     ],
     "bottle_shape": "Фонарь с плоскими стенками",
-    "substance_structure": "Вязкий мёд, тёплые сгустки и угольки"
+    "substance_structure": "Вязкий мёд, тёплые сгустки и угольки",
+    "name_en": "Homeward"
   },
   {
     "id": "swarm",
@@ -49,7 +52,8 @@
       "splash"
     ],
     "bottle_shape": "Угловатая колба-саркофаг",
-    "substance_structure": "Багровый дым и вспыхивающие глаза"
+    "substance_structure": "Багровый дым и вспыхивающие глаза",
+    "name_en": "Swarm"
   },
   {
     "id": "bat",
@@ -62,7 +66,8 @@
       "splash"
     ],
     "bottle_shape": "Удлинённая капля с крыльями",
-    "substance_structure": "Чернильный туман и движущиеся силуэты"
+    "substance_structure": "Чернильный туман и движущиеся силуэты",
+    "name_en": "Night Wings"
   },
   {
     "id": "juggernaut",
@@ -75,7 +80,8 @@
       "splash"
     ],
     "bottle_shape": "Широкая бронированная бутыль",
-    "substance_structure": "Каменные обломки и раскалённые трещины"
+    "substance_structure": "Каменные обломки и раскалённые трещины",
+    "name_en": "Juggernaut"
   },
   {
     "id": "ore_double",
@@ -88,7 +94,8 @@
       "splash"
     ],
     "bottle_shape": "Двухкамерный флакон",
-    "substance_structure": "Растущие парные кристаллы"
+    "substance_structure": "Растущие парные кристаллы",
+    "name_en": "Double Ore"
   },
   {
     "id": "ore_sight",
@@ -101,7 +108,8 @@
       "splash"
     ],
     "bottle_shape": "Ромбовидная колба",
-    "substance_structure": "Сканирующий луч и проявляющиеся крупицы руды"
+    "substance_structure": "Сканирующий луч и проявляющиеся крупицы руды",
+    "name_en": "Ore Seeker"
   },
   {
     "id": "truce",
@@ -114,7 +122,8 @@
       "splash"
     ],
     "bottle_shape": "Изогнутый травяной сосуд",
-    "substance_structure": "Плавающие листья в спокойном зелёном геле"
+    "substance_structure": "Плавающие листья в спокойном зелёном геле",
+    "name_en": "Truce"
   },
   {
     "id": "creeper",
@@ -127,7 +136,8 @@
       "splash"
     ],
     "bottle_shape": "Прямоугольный сосуд под давлением",
-    "substance_structure": "Кислотная пена и пульсирующие газовые пузыри"
+    "substance_structure": "Кислотная пена и пульсирующие газовые пузыри",
+    "name_en": "Creeper Heart"
   },
   {
     "id": "hot_pick",
@@ -140,7 +150,8 @@
       "splash"
     ],
     "bottle_shape": "Колба-печь с широким основанием",
-    "substance_structure": "Лава, чёрная корка и разрывы расплава"
+    "substance_structure": "Лава, чёрная корка и разрывы расплава",
+    "name_en": "Hot Pick"
   },
   {
     "id": "fortune",
@@ -153,7 +164,8 @@
       "splash"
     ],
     "bottle_shape": "Сердцевидный флакон",
-    "substance_structure": "Золотые хлопья и вспыхивающие звёзды"
+    "substance_structure": "Золотые хлопья и вспыхивающие звёзды",
+    "name_en": "Fortune"
   },
   {
     "id": "looting",
@@ -166,7 +178,8 @@
       "splash"
     ],
     "bottle_shape": "Амфора с боковыми рукоятями",
-    "substance_structure": "Рубиновые сгустки и белые осколки трофеев"
+    "substance_structure": "Рубиновые сгустки и белые осколки трофеев",
+    "name_en": "Looting"
   },
   {
     "id": "shapeshifter",
@@ -179,7 +192,8 @@
       "splash"
     ],
     "bottle_shape": "Асимметричная колба",
-    "substance_structure": "Две несмешивающиеся массы, меняющие границу и облик"
+    "substance_structure": "Две несмешивающиеся массы, меняющие границу и облик",
+    "name_en": "Shapeshifter"
   },
   {
     "id": "hunter",
@@ -198,7 +212,8 @@
       "tripwire"
     ],
     "bottle_shape": "Колба-щит с прицелом",
-    "substance_structure": "Сканирующая сетка проявляет силуэты мобов и ловушек"
+    "substance_structure": "Сканирующая сетка проявляет силуэты мобов и ловушек",
+    "name_en": "Hunter"
   },
   {
     "id": "gravity",
@@ -216,6 +231,7 @@
       "gravity_toward_ground"
     ],
     "bottle_shape": "Парящая капсула с магнитными кольцами",
-    "substance_structure": "Серебристая масса и капли перемещаются между дном и верхом"
+    "substance_structure": "Серебристая масса и капли перемещаются между дном и верхом",
+    "name_en": "Gravity"
   }
 ]

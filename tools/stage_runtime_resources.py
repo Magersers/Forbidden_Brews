@@ -103,6 +103,9 @@ for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing 
                 lang['item.forbidden_brews.'+key]=label+base+(' '+['I','II','III'][level-1] if family in ['fortune','looting','inversion'] else '')
     write(ROOT/'common/src/main/resources/assets/forbidden_brews/lang'/(locale+'.json'),lang)
 
+from localizations import stage_languages
+stage_languages(ROOT)
+
 for target,modloader,loadermin,loadername,mc,minimum in [
     ('forge-1.20.1','javafml','47','forge','1.20.1','47.4.0'),
     ('neoforge-1.21.1','javafml','4','neoforge','1.21.1','21.1.252')]:
@@ -111,7 +114,7 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.7.1"
+version="0.7.2"
 displayName="Forbidden Brews"
 authors="Magersers"
 description='''Chaos brewing, sixteen potion families and renewable Netherite Wart.'''
@@ -132,7 +135,7 @@ side="BOTH"
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.1','name':'Forbidden Brews',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.2','name':'Forbidden Brews',
     'description':'Chaos brewing, sixteen potion families and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',

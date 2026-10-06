@@ -3,7 +3,7 @@ loaderVersion="[47,)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.7.1"
+version="0.7.2"
 displayName="Forbidden Brews"
 authors="Magersers"
 description='''Chaos brewing, sixteen potion families and renewable Netherite Wart.'''
