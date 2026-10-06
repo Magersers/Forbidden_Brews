@@ -25,10 +25,12 @@ def card_icon(im,size=160):
  return im.resize((size,size),Image.Resampling.NEAREST)
 
 def gallery(frames,variant,f):
- W,H=1040,970
+ rows=(len(CATALOG)+6)//7
+ footer=134+rows*257
+ W,H=1040,footer+322
  im=Image.new('RGB',(W,H),(12,16,25));d=ImageDraw.Draw(im)
  d.text((30,22),'FORBIDDEN BREWS',font=font(30,True),fill=(231,223,197))
- d.text((31,63),'14 РАЗНЫХ ФОРМ / '+('ПИТЬЕВЫЕ' if variant=='drink' else 'ВЗРЫВНЫЕ'),font=font(16),fill=(136,170,187))
+ d.text((31,63),str(len(CATALOG))+' РАЗНЫХ ФОРМ / '+('ПИТЬЕВЫЕ' if variant=='drink' else 'ВЗРЫВНЫЕ'),font=font(16),fill=(136,170,187))
  for i,entry in enumerate(CATALOG):
   x=24+(i%7)*144;y=106+(i//7)*257
   d.rectangle((x,y,x+134,y+237),fill=(23,30,42),outline=(54,64,79),width=2)
@@ -41,11 +43,11 @@ def gallery(frames,variant,f):
    else:lines[-1]+=word+' '
   for j,line in enumerate(lines):d.text((x+8,y+176+j*18),line.strip(),font=font(13,True),fill=(219,223,226))
   d.rectangle((x+8,y+221,x+124,y+223),fill=rgb(entry['color']))
- d.text((30,648),'ЖИВАЯ ЖИДКОСТЬ',font=font(25,True),fill=(219,231,231))
- d.text((31,688),'Вихрь / туман / кристаллы / лава / пена / листья / золото',font=font(17),fill=(148,170,185))
+ d.text((30,footer),'ЖИВАЯ ЖИДКОСТЬ',font=font(25,True),fill=(219,231,231))
+ d.text((31,footer+40),'Вихрь / туман / кристаллы / лава / пена / листья / золото',font=font(17),fill=(148,170,185))
  # Big examples make the actual liquid animation easy to judge.
  for j,id_ in enumerate(['wild_teleport','ore_double','creeper','hot_pick']):
-  icon=card_icon(frames[id_][f],192);im.paste(icon,(40+j*250,737),icon)
+  icon=card_icon(frames[id_][f],192);im.paste(icon,(40+j*250,footer+89),icon)
  return im
 
 def save_gif(frames,path,duration=100):
@@ -91,9 +93,20 @@ def build(jar=None):
    entry=next(e for e in CATALOG if e['id']==id_)
    for k,variant in enumerate(['drink','splash']):
     icon=card_icon(frame(entry,variant,f,bases),160);im.paste(icon,(j*200+20,45+k*170),icon)
-   d.text((j*200+18,383),entry['name_ru'],font=font(15,True),fill=(181,201,205))
+   d.text((j*200+18,383),entry['name_ru'],font=font(13,True),fill=(181,201,205))
   sample.append(im)
  save_gif(sample,previews/'style_sample.gif');sample[0].save(previews/'style_sample.png')
+ additions=[]
+ for f in range(N):
+  im=Image.new('RGB',(900,530),(12,16,25));d=ImageDraw.Draw(im)
+  d.text((24,16),'ТЕЛЕПОРТ / ОХОТНИК / ГРАВИТАЦИЯ',font=font(24,True),fill=(231,223,197))
+  for j,id_ in enumerate(['wild_teleport','hunter','gravity']):
+   entry=next(e for e in CATALOG if e['id']==id_)
+   d.text((28+j*295,55),entry['name_ru'],font=font(19,True),fill=rgb(entry['color']))
+   for k,variant in enumerate(['drink','splash']):
+    icon=card_icon(frame(entry,variant,f),192);im.paste(icon,(51+j*295,85+k*206),icon)
+  additions.append(im)
+ save_gif(additions,previews/'new_potions.gif');additions[0].save(previews/'new_potions.png')
  for entry in CATALOG:
   entry['bottle_shape'],entry['substance_structure'],_=DESIGNS[entry['id']]
  (ROOT/'art'/'catalog.json').write_text(json.dumps(CATALOG,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

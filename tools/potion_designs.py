@@ -1,4 +1,4 @@
-"""Original flat pixel artwork: fourteen silhouettes and fourteen moving substances."""
+"""Original flat pixel artwork: individual flask silhouettes and moving substances."""
 from PIL import Image, ImageDraw, ImageFilter
 import math
 
@@ -19,6 +19,8 @@ DESIGNS={
  'fortune': ('Сердцевидный флакон','Золотые хлопья и вспыхивающие звёзды',[(13,11),(19,11),(19,14),(22,13),(25,15),(26,19),(24,23),(20,27),(17,29),(15,29),(12,27),(8,23),(6,19),(7,15),(10,13),(13,14)]),
  'looting': ('Амфора с боковыми рукоятями','Рубиновые сгустки и белые осколки трофеев',[(12,11),(20,11),(20,14),(24,17),(24,23),(21,27),(20,29),(12,29),(11,27),(8,23),(8,17),(12,14)]),
  'shapeshifter': ('Асимметричная колба','Две несмешивающиеся массы, меняющие границу и облик',[(12,11),(20,11),(20,14),(24,15),(26,18),(25,23),(22,26),(21,29),(11,29),(10,26),(7,23),(8,19),(11,17),(12,14)]),
+ 'hunter': ('Колба-щит с прицелом','Сканирующая сетка проявляет силуэты мобов и ловушек',[(12,11),(20,11),(20,13),(25,15),(25,22),(23,26),(19,29),(13,29),(9,26),(7,22),(7,15),(12,13)]),
+ 'gravity': ('Парящая капсула с магнитными кольцами','Серебристая масса и капли перемещаются между дном и верхом',[(13,11),(19,11),(21,13),(22,17),(22,25),(20,28),(18,29),(14,29),(12,28),(10,25),(10,17),(11,13)]),
 }
 
 def rgb(h):return tuple(int(h[i:i+2],16) for i in (1,3,5))
@@ -35,7 +37,7 @@ def draw_substance(id_,c,t,inner):
    dx=x-16;dy=y-21;radius=math.hypot(dx,dy);ang=math.atan2(dy,dx)
    depth=.5+.35*(1-min(1,abs(dx)/12))
    base=mix((8,12,23),c,depth)
-   # Different spatial fields, never a common ripple recolored fourteen times.
+   # Every substance has its own spatial field and animation.
    if id_=='inversion':
     seam=20+round(math.sin(t)*2)
     base=mix((24,11,56),c,.85 if y>seam else .28)
@@ -86,6 +88,17 @@ def draw_substance(id_,c,t,inner):
     c2=(35,218,181);c3=(190,73,236)
     base=mix((11,25,36),c2 if x<boundary else c3,depth*.85)
     if abs(x-boundary)<.7:base=(240,192,224)
+   elif id_=='hunter':
+    scan=21+round(6*math.sin(t))
+    base=mix((35,16,30),(143,64,52),depth*.55)
+    if (x-10)%4==0 or (y-14)%4==0:base=(100,50,48)
+    if abs(y-scan)<1.5:base=mix((239,106,69),(255,235,165),1-abs(y-scan)/2)
+   elif id_=='gravity':
+    center=21+6*math.cos(t)
+    weight=math.exp(-((y-center)/2.1)**2)
+    base=mix((15,21,55),(181,209,248),weight*.94)
+    if weight>.18 and (x+y)%3==0:base=mix(base,(108,155,225),.55)
+    if abs(y-center)<.8:base=(224,243,255)
    px[x,y]=opaque(base)
  d=ImageDraw.Draw(im)
  if id_=='inversion':
@@ -145,10 +158,30 @@ def draw_substance(id_,c,t,inner):
  elif id_=='shapeshifter':
   yy=20+round(math.sin(t));d.rectangle((11,yy,13,yy+1),fill=(226,254,211,255));d.rectangle((20,yy,22,yy+1),fill=(255,203,233,255))
   d.point((12 if math.sin(t)>0 else 11,yy),fill=(16,44,39,255));d.point((21 if math.cos(t)>0 else 20,yy),fill=(41,18,65,255))
+ elif id_=='hunter':
+  scan=21+round(6*math.sin(t))
+  # Hostile eyes, a pressure plate, a button and a tripwire silhouette.
+  for x,y,kind in [(11,17,'mob'),(19,22,'mob'),(11,25,'plate'),(20,16,'button'),(18,26,'wire')]:
+   active=abs(y-scan)<3
+   col=(255,238,170,255) if active else (157,71,58,255)
+   if kind=='mob':
+    d.rectangle((x,y,x+3,y+3),outline=col)
+    d.point([(x+1,y+1),(x+3,y+1)],fill=(255,88,76,255) if active else col)
+   elif kind=='plate':d.line([(x,y),(x+3,y)],fill=col);d.point((x+1,y-1),fill=col)
+   elif kind=='button':d.rectangle((x,y,x+1,y+2),fill=col)
+   else:d.line([(x-1,y),(x,y-1),(x+1,y),(x+2,y-1)],fill=col)
+ elif id_=='gravity':
+  for k,x in enumerate([13,17,19]):
+   y=21+round(5*math.cos(t+k*.8))
+   d.ellipse((x-1,y-1,x+1,y+1),fill=(133,183,244,255),outline=(229,245,255,255))
+  d.line([(16,17),(16,24)],fill=(77,107,186,255))
+  if math.cos(t)>0:d.polygon([(14,24),(16,27),(18,24)],fill=(191,223,255,255))
+  else:d.polygon([(14,18),(16,15),(18,18)],fill=(191,223,255,255))
  # Surface and air pocket follow the local silhouette, without painting outside.
  for y in range(11,30):
   for x in range(5,27):
    if not inner.getpixel((x,y)):px[x,y]=(0,0,0,0);continue
+   if id_=='gravity':continue
    surface=14+(round(math.sin(t+x*.4)) if id_ in ['inversion','swarm','hot_pick','creeper'] else 0)
    if y<surface:px[x,y]=(0,0,0,0)
    elif y==surface:px[x,y]=opaque(mix(c,(227,249,220),.35))
@@ -190,6 +223,17 @@ def ornaments(id_,t,c,front=False):
    d.rectangle((1,23,3,25),fill=(86,164,56,255));d.rectangle((4,20,6,22),fill=(86,164,56,255));d.rectangle((4,24,6,26),fill=(86,164,56,255));d.point((4,23),fill=(227,228,139,255))
   elif id_=='shapeshifter':
    d.line([(7,20),(3,18),(3,14)],fill=(140,89,171,255),width=2);d.line([(24,23),(28,25),(29,21)],fill=(74,173,157,255),width=2)
+  elif id_=='hunter':
+   d.rectangle((2,17,7,23),outline=GOLD,width=1)
+   d.line([(1,20),(8,20)],fill=lit);d.line([(5,15),(5,25)],fill=lit)
+   d.line([(23,14),(28,16),(29,22),(27,26)],fill=(154,112,71,255))
+   d.line([(25,25),(29,25)],fill=IVORY);d.line([(25,27),(29,27)],fill=GOLD)
+  elif id_=='gravity':
+   for y in [16,27]:
+    d.ellipse((6,y-2,26,y+2),outline=GOLD,width=1)
+    d.rectangle((5,y-1,7,y+1),fill=lit);d.rectangle((25,y-1,27,y+1),fill=lit)
+   d.polygon([(2,13),(4,10),(6,13)],fill=lit);d.line([(4,13),(4,19)],fill=GOLD)
+   d.polygon([(26,25),(28,28),(30,25)],fill=lit);d.line([(28,19),(28,25)],fill=GOLD)
  else:
   if id_=='inversion':d.rectangle((12,19,20,21),outline=GOLD,width=1)
   elif id_=='homeward':
@@ -217,6 +261,14 @@ def ornaments(id_,t,c,front=False):
    d.line([(25,27),(29,17)],fill=(196,207,212,255),width=2);d.line([(25,23),(30,25)],fill=GOLD,width=1)
   elif id_=='shapeshifter':
    d.rectangle((23,12,29,17),fill=(69,46,89,255),outline=GOLD);d.point([(24,14),(28,14)],fill=lit);d.line([(26,13),(26,16)],fill=GOLD)
+  elif id_=='hunter':
+   d.line([(8,14),(12,12),(20,12),(24,14)],fill=GOLD,width=1)
+   d.rectangle((11,27,21,29),fill=(57,37,37,255),outline=GOLD)
+   d.point([(14,28),(18,28)],fill=lit)
+  elif id_=='gravity':
+   for y in [16,27]:
+    d.line([(7,y),(11,y+2),(21,y+2),(25,y)],fill=GOLD,width=1)
+    d.point([(10,y+1),(22,y+1)],fill=lit)
  return im
 
 def render_frame(entry,variant,f,n=24):

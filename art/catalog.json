@@ -14,7 +14,7 @@
   },
   {
     "id": "wild_teleport",
-    "name_ru": "Дикий прыжок",
+    "name_ru": "Случайный телепорт",
     "planned_effect": "Телепортирует в случайную точку карты",
     "color": "#32cedf",
     "sigil": "portal",
@@ -180,5 +180,42 @@
     ],
     "bottle_shape": "Асимметричная колба",
     "substance_structure": "Две несмешивающиеся массы, меняющие границу и облик"
+  },
+  {
+    "id": "hunter",
+    "name_ru": "Охотник",
+    "planned_effect": "Подсвечивает через стены всех враждебных мобов, кнопки, нажимные плиты и нити растяжек",
+    "color": "#f27d62",
+    "sigil": "crosshair",
+    "variants": [
+      "drink",
+      "splash"
+    ],
+    "highlight_targets": [
+      "hostile_mobs",
+      "buttons",
+      "pressure_plates",
+      "tripwire"
+    ],
+    "bottle_shape": "Колба-щит с прицелом",
+    "substance_structure": "Сканирующая сетка проявляет силуэты мобов и ловушек"
+  },
+  {
+    "id": "gravity",
+    "name_ru": "Гравитация",
+    "planned_effect": "Первое нажатие прыжка меняет гравитацию и тянет игрока к небу; второе возвращает гравитацию к земле",
+    "color": "#7cabff",
+    "sigil": "gravity",
+    "variants": [
+      "drink",
+      "splash"
+    ],
+    "activation": "jump",
+    "jump_sequence": [
+      "gravity_toward_sky",
+      "gravity_toward_ground"
+    ],
+    "bottle_shape": "Парящая капсула с магнитными кольцами",
+    "substance_structure": "Серебристая масса и капли перемещаются между дном и верхом"
   }
 ]
