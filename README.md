@@ -4,7 +4,7 @@
 
 Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Netherite-powered Chaos Brewing Stand. Each bottle has its own pixel silhouette, decorations and animated liquid: portals, crystals, foam, molten rock and more.
 
-**[Download 0.7.2](https://github.com/Magersers/Forbidden_Brews/releases/tag/v0.7.2)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
+**[Download hotfix 0.7.3](releases/0.7.3/)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
 
 | Minecraft | Loader | Requirements |
 |---|---|---|
@@ -13,6 +13,8 @@ Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Nethe
 | 1.21.1 | Fabric Loader 0.16.14+ | Java 21, Fabric API 0.116.17+1.21.1 or compatible newer 1.21.1 release |
 
 Install **one** matching JAR on both client and server. These targets have the broadest mod ecosystems among the versions compared; this measures available mods, not player population.
+
+Version **0.7.3** fixes Brute/Ore Seeker compatibility in cramped mines, adds charged area attacks with knockback, expands Shapeshifter to registered mobs including bosses, rotates the player and camera under reversed gravity, and fades missing recipe ingredients. [Release details](releases/0.7.3/).
 
 ## Chaos brewing
 
@@ -59,9 +61,9 @@ Craft **Nether Wart + Netherite Scrap → Netherite Wart**, then plant it on Sou
 | Ore Seeker | Reveals **all loaded ores within 32 blocks** through walls, using their actual textures. |
 | Hunter | Reveals hostile mobs within 32 blocks and buttons, pressure plates and tripwires within 24 blocks. |
 | Night Wings | Bat form; double-tap Jump to fly, hold Jump to rise, Sneak to descend. |
-| Juggernaut | Brute form: **double maximum health, +3 attack damage, 4×4 mining**. Blocks harder than Obsidian and unbreakable blocks cannot be mined. |
-| Shapeshifter | A persistent random form from 15 mobs; the Bat also grants flight. |
-| Gravity | Each separate Jump press toggles rising skyward or descending to the ground. |
+| Juggernaut | Brute form: **double maximum health, +3 attack damage, 4×4 mining**, charged area attacks and strong knockback. Blocks harder than Obsidian and unbreakable blocks cannot be mined. |
+| Shapeshifter | A persistent random form from registered mobs, including modded mobs and the Ender Dragon. Reapplying the effect changes form; the Bat also grants flight. |
+| Gravity | Each separate Jump press toggles ascent/descent. Reversed gravity turns the player model and camera upside down. |
 
 Timed families without levels last two minutes. Homeward, Random Teleport and Creeper Heart are instant. Every potion has a splash version; timed splash duration decreases with distance as in vanilla. Milk removes active effects.
 
@@ -93,7 +95,7 @@ python tools/package_release.py
 
 Use Java 17 for Forge and Java 21 for the other targets. `-PgameTests runGameTestServer` enables the Forge server integration suite; `-PvisualTest` enables the separate local Forge recording fixture. Test fixtures are excluded from release JARs.
 
-The gameplay passed **31 Forge GameTests**, including all 44 recipes, enchantment stacking, safe teleportation, explosions, protected mining, morph cleanup and gravity. Version 0.7.2 updates presentation and translations; production builds, dedicated-server startup and an English Forge recording are checked separately. NeoForge/Fabric have build and server checks; their client recordings and GameTests have not been run.
+Version 0.7.3 passed **36 Forge GameTests**, including cramped-mine morph compatibility, area combat, registry mob forms, effect refresh and save migration. Native English Forge client/server checks cover ore/model coexistence, area knockback, the dragon renderer, gravity orientation and ingredient hints. All three production loader builds are checked. NeoForge/Fabric have earlier server startup checks; their client recordings and GameTests have not been run.
 
 ## Credits
 

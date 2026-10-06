@@ -23,12 +23,29 @@ public abstract class VisualClientMixin {
     @Unique private boolean brews$ore,brews$gold,brews$bat,brews$flight,brews$brute,brews$smash,brews$random,brews$up,brews$down,brews$landed,brews$cleared,brews$mining;
     @Unique private int brews$standFrames;
     @Unique private boolean brews$craftingShot;
+    @Unique private int brews$stackShots;
+    @Unique private int brews$073Shots;
+    @Unique private net.minecraft.world.entity.Entity brews$073Observer;
     @Inject(method="tick",at=@At("TAIL"))
     private void brews$connectAndControl(CallbackInfo ci) {
         Minecraft mc=(Minecraft)(Object)this;
         if(!brews$connected && mc.screen instanceof TitleScreen) {
             mc.options.setCameraType(CameraType.FIRST_PERSON);mc.options.keyJump.setDown(false);
             brews$connected=true;ConnectScreen.startConnecting(mc.screen,mc,ServerAddress.parseString("127.0.0.1:25584"),new ServerData("Forbidden Brews visual test","127.0.0.1:25584",false),false);
+        }
+        if(java.nio.file.Files.exists(Path.of(mc.gameDirectory.getAbsolutePath(),"073-capture.flag"))) {
+            if(mc.player!=null) {
+                mc.getToasts().clear();((MouseCoordinates)mc.mouseHandler).brews$setX(5);((MouseCoordinates)mc.mouseHandler).brews$setY(5);
+                if(mc.player.tickCount>=300 && mc.player.tickCount<325) {
+                    if(brews$073Observer==null)brews$073Observer=net.minecraft.world.entity.EntityType.COW.create(mc.level);
+                    var observer=brews$073Observer;observer.setPos(mc.player.position().add(0,0,-6));observer.xo=observer.getX();observer.yo=observer.getY();observer.zo=observer.getZ();observer.setYRot(0);observer.yRotO=0;observer.setXRot(0);observer.xRotO=0;
+                    mc.setCameraEntity(observer);mc.options.setCameraType(CameraType.FIRST_PERSON);
+                } else {
+                    mc.setCameraEntity(mc.player);
+                    mc.options.setCameraType(mc.player.tickCount>=210 && mc.player.tickCount<285 || mc.player.tickCount>=325 && mc.player.tickCount<340?CameraType.FIRST_PERSON:CameraType.THIRD_PERSON_FRONT);
+                }
+            }
+            return;
         }
         if(mc.screen instanceof ChaosScreen screen) {
             brews$screenTicks++;int x=(screen.width-256)/2,y=(screen.height-256)/2;
@@ -39,6 +56,9 @@ public abstract class VisualClientMixin {
             if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("juggernaut",1,true)))throw new IllegalStateException("Brute splash choice not synchronized");
         }
         if(mc.player==null || mc.level==null || mc.screen!=null)return;
+        if(java.nio.file.Files.exists(Path.of(mc.gameDirectory.getAbsolutePath(),"sight-morph.flag"))) {
+            mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);return;
+        }
         int form=Morphs.form(mc.player);
         if(form==Morphs.BAT) {
             if(++brews$batTicks==1) {mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);mc.options.keyJump.setDown(true);}
@@ -68,6 +88,28 @@ public abstract class VisualClientMixin {
         Minecraft mc=(Minecraft)(Object)this;if(!render)return;
         if(mc.player==null || mc.level==null) {
             if(++brews$diagnostic%120==0) {System.out.println("VISUAL_SCREEN "+mc.screen);brews$shot(mc,"visual-loading.png");}return;
+        }
+        if(java.nio.file.Files.exists(Path.of(mc.gameDirectory.getAbsolutePath(),"073-capture.flag"))) {
+            int[] shots={45,95,155,180,245,310,335,360,410};
+            if(brews$073Shots<shots.length && mc.player.tickCount>=shots[brews$073Shots]) {
+                if((brews$073Shots==5 || brews$073Shots==6) && !Gravity.inverted(mc.player) || brews$073Shots>=7 && Gravity.inverted(mc.player))
+                    throw new IllegalStateException("Gravity visual orientation is not synchronized");
+                brews$shot(mc,"073-native-"+brews$073Shots+".png");System.out.println("073_CLIENT_CAPTURE "+brews$073Shots+" gravity="+Gravity.inverted(mc.player));brews$073Shots++;
+            }
+            if(mc.player.tickCount>=425) {mc.options.setCameraType(CameraType.FIRST_PERSON);mc.stop();}
+            return;
+        }
+        if(java.nio.file.Files.exists(Path.of(mc.gameDirectory.getAbsolutePath(),"sight-morph.flag"))) {
+            int[] shots={65,145,245,365,485,545};
+            if(brews$stackShots<shots.length && mc.player.tickCount>=shots[brews$stackShots]) {
+                int form=Morphs.form(mc.player);var ores=SightCache.ores();
+                if(brews$stackShots>=1 && brews$stackShots<=4 && (ores.size()!=11 || (brews$stackShots<=2?form!=Morphs.BRUTE:form<3)))
+                    throw new IllegalStateException("Sight/morph client mismatch: shot="+brews$stackShots+" form="+form+" ores="+ores.size());
+                brews$shot(mc,"sight-morph-"+brews$stackShots+".png");
+                System.out.println("SIGHT_MORPH_CLIENT_STACK "+brews$stackShots+" form="+form+" ores="+ores.size());brews$stackShots++;
+            }
+            if(mc.player.tickCount>=550) {mc.options.setCameraType(CameraType.FIRST_PERSON);mc.stop();}
+            return;
         }
         if(java.nio.file.Files.exists(Path.of(mc.gameDirectory.getAbsolutePath(),"stand-capture.flag"))) {
             mc.getToasts().clear();((MouseCoordinates)mc.mouseHandler).brews$setX(5);((MouseCoordinates)mc.mouseHandler).brews$setY(5);

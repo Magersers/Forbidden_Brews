@@ -1,6 +1,6 @@
-# Brewing guide — Forbidden Brews 0.7.2
+# Brewing guide — Forbidden Brews 0.7.3
 
-Install the matching [release](../releases/0.7.2/) on client and server. See [compatibility](compatibility.md) for loader and Java requirements. Fabric also requires Fabric API.
+Install the matching [release](../releases/0.7.3/) on client and server. See [compatibility](compatibility.md) for loader and Java requirements. Fabric also requires Fabric API.
 
 ## Stand and crop
 
@@ -20,7 +20,7 @@ Collect it with a Diamond or Netherite Pickaxe. **One Nether Wart + one Netherit
 
 ## Interface
 
-1. Click the empty result slot marked **Choose**. With an empty base or water, all sixteen basic potions appear without scrolling. Hover ingredient ghosts for required counts.
+1. Click the empty result slot marked **Choose**. With an empty base or water, all sixteen basic potions appear without scrolling. Missing ingredients appear as pale, translucent ghosts; inserted items appear at full brightness. A copper outline marks an inserted ingredient whose total count is still insufficient. Hover ingredient ghosts for required counts.
 2. Insert a previous **drinkable** potion in the central base slot to reveal its upgrades and splash recipe. Fortune, Looting and Inversion have three levels. Splash bottles cannot be upgraded.
 3. Add the base, one Netherite Wart and ingredients in the four side slots in any order. Unrelated ingredient types prevent brewing.
 4. Add Blaze Powder: one powder supplies twenty brews. Brewing starts when the selected recipe matches and the output is free. Missing ingredients reset progress; saves preserve active brewing. Automatic ingredient matching also works for hoppers.
@@ -82,16 +82,18 @@ Hoppers insert Wart/ingredients from above, base/fuel from the sides and extract
 
 **Night Wings:** two-minute Bat form, 0.5×0.9 blocks. Double-tap Jump to toggle flight, hold Jump to rise, Sneak to descend. Landing ends flight; it can be restarted. Milk restores original permissions and protects the first landing.
 
-**Juggernaut:** two-minute Brute form, 1.4×2.9 blocks, eye height 2.5. Requires headroom. Doubles maximum health and adds +3 attack damage while preserving other modifiers and current health percentage: 15/20 → 30/40; later 24/40 → 12/20. Reapplication/reloading cannot stack the bonus.
+**Juggernaut:** two-minute Brute form, 1.4×2.9 blocks, eye height 2.5. Requires headroom when starting the transformation. Once active, cramped ceilings cannot cancel it; Ore Seeker stacks in either drinking order. Doubles maximum health and adds +3 attack damage while preserving other modifiers and current health percentage: 15/20 → 30/40; later 24/40 → 12/20. Reapplication/reloading cannot stack the bonus.
+
+A successful melee attack at 90% or greater charge creates an impact within three blocks of the target. Nearby mobs take 60% of the primary attack damage and receive strong knockback; the primary mob is also pushed. Walls, allied mobs and owned tameable pets are excluded. Native damage rules still apply. Uncharged swings and rejected primary hits cannot trigger the impact; no empty-hand air slam is added.
 
 Breaking a block with a tool mines a 4×4 plane perpendicular to the main look direction through native harvesting with durability, loot, enchantments and protection events. Bedrock, unbreakable blocks and blocks harder than Obsidian are blocked even as the original target in Creative. Obsidian (hardness 50) is allowed; Reinforced Deepslate (55) is not. Eight-tick interval; no chain reaction.
 
-**Shapeshifter:** two minutes; Pig, Cow, Sheep, Wolf, Fox, Rabbit, Chicken, Bee, Spider, Zombie, Skeleton, Creeper, Enderman, Slime or Bat. Chooses a form that fits, persists across saves, rerolls on a fresh drink. Bat grants flight; other mob powers are not granted. Form priority: Juggernaut → Night Wings → Shapeshifter. Identity, equipment and inventory remain intact.
+**Shapeshifter:** two minutes; the pool is discovered from all registered mob entity types, including compatible modded mobs, the Ender Dragon, Wither and Warden. Chooses a form that fits the current space; large boss forms require an open area. Registry keys preserve forms across saves and existing 0.7.2 forms migrate automatically. Reapplying the effect rerolls to a different fitting form, even with an equal or shorter duration; the native longer remaining duration is preserved. Bat grants flight; other mob powers are not granted. Form priority: Juggernaut → Night Wings → Shapeshifter. Identity, equipment and inventory remain intact.
 
-**Gravity:** two minutes. Each separate Jump press toggles ascent/descent, including mid-air; holding Jump does not repeat. Vertical speed is capped at 0.65 blocks/tick; ascent stops at build height. Safe fall handling covers the first landing after removal. Bat flight, passengers and spectators keep their controls. Works with `allow-flight=false`; mobs do not receive jump-controlled movement.
+**Gravity:** two minutes. Each separate Jump press toggles ascent/descent, including mid-air; holding Jump does not repeat. During ascent the player model and world/hand view rotate 180 degrees. HUD and menus stay readable. A second jump, effect removal, death or milk restores gravity orientation; an independently active Inversion potion retains its own view rotation. Vertical speed is capped at 0.65 blocks/tick; ascent stops at build height. Safe fall handling covers the first landing after removal. Bat flight, passengers and spectators keep their controls. Works with `allow-flight=false`; mobs do not receive jump-controlled movement.
 
 All families have splash versions. Timed splash duration follows vanilla distance scaling. Player controls apply to players; affected mobs retain ordinary AI. Milk removes effects and restores health modifiers, dimensions and flight permissions.
 
 ## Verification
 
-31 Forge GameTests cover all 44 recipes and native gameplay. Production packaging rejects test fixtures and validates all language keys/placeholders. The English client recording asserts ten simultaneous ores, exclusion beyond 32 blocks, removal after mining, Brute 40 HP/restoration to 20, sixteen native harvested blocks, bat flight, a random form and both gravity directions. NeoForge/Fabric have production build and server startup checks; their client recordings and GameTests have not been run.
+36 Forge GameTests cover all 44 recipes, native gameplay, area attacks, pet/wall/range protection, boss pool membership, shorter/equal effect refresh, save migration and the cramped-mine regression. Production packaging rejects test fixtures and validates all language keys/placeholders. The English client recording asserts ten simultaneous ores, exclusion beyond 32 blocks, removal after mining, Brute 40 HP/restoration to 20, sixteen native harvested blocks, bat flight, a random form and both gravity directions. Additional 0.7.3 native captures show ore sight alongside Brute in a cramped mine, a dragon proxy, area knockback, reversed gravity model/camera and faded ingredient hints. NeoForge/Fabric have production build and earlier server startup checks; their client recordings and GameTests have not been run.

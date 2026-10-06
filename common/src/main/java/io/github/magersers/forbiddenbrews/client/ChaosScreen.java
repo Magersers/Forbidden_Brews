@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.*;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 /** Pixel copper/obsidian UI. Recipe hints are client-only; server validates inputs. */
 public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
@@ -112,9 +113,25 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         for(int i=0;i<8;i++)if(menu.getSlot(i).getItem().isEmpty()) {
             var stack=ghost(recipe,i);int sx=x+ChaosMenu.POS[i][0],sy=y+ChaosMenu.POS[i][1];
             if(!stack.isEmpty()) {
-                g.renderItem(stack,sx,sy);g.renderItemDecorations(font,stack,sx,sy);
-                g.fill(sx,sy,sx+16,sy+16,0x70202B3B);
+                g.renderItem(stack,sx,sy);g.flush();
+                // Blend the exact slot background back over the icon. This also
+                // fades 3D block items and glint consistently across loaders.
+                g.pose().pushPose();g.pose().translate(0,0,200);
+                RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();RenderSystem.setShaderColor(1,1,1,.72F);
+                try {g.blit(VersionApi.id("textures/gui/chaos_stand.png"),sx,sy,ChaosMenu.POS[i][0],ChaosMenu.POS[i][1],16,16,256,256);}
+                finally {RenderSystem.setShaderColor(1,1,1,1);RenderSystem.disableBlend();}
+                if(stack.getCount()>1) {
+                    String count=Integer.toString(stack.getCount());
+                    g.drawString(font,count,sx+17-font.width(count),sy+9,0xA09CB2BF,false);
+                }
+                g.pose().popPose();
             }
+        }
+        if(recipe!=null)for(var component:recipe.components()) {
+            int present=0;
+            for(int i=2;i<6;i++)if(menu.getSlot(i).getItem().is(component.item()))present+=menu.getSlot(i).getItem().getCount();
+            if(present>0 && present<component.count())for(int i=2;i<6;i++)if(menu.getSlot(i).getItem().is(component.item()))
+                g.renderOutline(x+ChaosMenu.POS[i][0]-1,y+ChaosMenu.POS[i][1]-1,18,18,0xFFC98A73);
         }
         boolean brewing=menu.progress()>0;
         float fraction=menu.total()==0?0:(float)menu.progress()/menu.total();

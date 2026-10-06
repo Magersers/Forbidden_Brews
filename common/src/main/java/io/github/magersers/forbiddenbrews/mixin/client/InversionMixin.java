@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InversionMixin {
     @Inject(method="bobHurt",at=@At("HEAD"))
     private void brews$invert(PoseStack pose,float partial,CallbackInfo ci) {
-        if(Minecraft.getInstance().getCameraEntity() instanceof LivingEntity camera && VersionApi.hasEffect(camera,ChaosContent.inversionEffect.get()))
+        if(Minecraft.getInstance().getCameraEntity() instanceof LivingEntity camera
+            && (Gravity.inverted(camera) || VersionApi.hasEffect(camera,ChaosContent.inversionEffect.get())))
             pose.mulPose(Axis.ZP.rotationDegrees(180));
     }
 }

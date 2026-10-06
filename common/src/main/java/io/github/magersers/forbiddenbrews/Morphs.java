@@ -1,22 +1,44 @@
 package io.github.magersers.forbiddenbrews;
 
-import java.util.List;
+import java.util.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
 
 /** Original entities keep their inventory, health, AI, UUID and ownership. */
 public final class Morphs {
     public static final int BAT=1,BRUTE=2;
-    public static final List<EntityType<? extends LivingEntity>> RANDOM=List.of(EntityType.PIG,EntityType.COW,
+    private static final List<EntityType<? extends LivingEntity>> LEGACY=List.of(EntityType.PIG,EntityType.COW,
         EntityType.SHEEP,EntityType.WOLF,EntityType.FOX,EntityType.RABBIT,EntityType.CHICKEN,EntityType.BEE,
         EntityType.SPIDER,EntityType.ZOMBIE,EntityType.SKELETON,EntityType.CREEPER,EntityType.ENDERMAN,EntityType.SLIME,EntityType.BAT);
+    private static final Map<Level,List<EntityType<? extends LivingEntity>>> POOLS=new WeakHashMap<>();
+    public static List<EntityType<? extends LivingEntity>> pool(Level world) {
+        return POOLS.computeIfAbsent(world,level-> {
+            var types=new ArrayList<EntityType<? extends LivingEntity>>();
+            for(var type:BuiltInRegistries.ENTITY_TYPE) {
+                if(type==EntityType.PLAYER)continue;
+                try {
+                    if(type.create(level) instanceof Mob) {
+                        @SuppressWarnings("unchecked") var mobType=(EntityType<? extends LivingEntity>)type;
+                        types.add(mobType);
+                    }
+                } catch(RuntimeException error) {
+                    com.mojang.logging.LogUtils.getLogger().warn("Cannot create morph proxy for {}",BuiltInRegistries.ENTITY_TYPE.getKey(type),error);
+                }
+            }
+            types.sort(Comparator.comparing(t->BuiltInRegistries.ENTITY_TYPE.getKey(t).toString()));
+            return List.copyOf(types);
+        });
+    }
+    public static int formOf(EntityType<?> type) {return type==null?0:3+BuiltInRegistries.ENTITY_TYPE.getId(type);}
+    public static int legacyForm(int form) {return form>=3 && form<3+LEGACY.size()?formOf(LEGACY.get(form-3)):0;}
     public static int form(LivingEntity entity) {
         var state=(MorphState)entity;
         return state.brews$data()==null || !entity.isAlive()?0:state.brews$form();
     }
-    public static EntityType<? extends LivingEntity> type(int form) {
-        return form==BAT?EntityType.BAT:form>=3 && form<3+RANDOM.size()?RANDOM.get(form-3):null;
+    @SuppressWarnings("unchecked") public static EntityType<? extends LivingEntity> type(int form) {
+        return form==BAT?EntityType.BAT:form>=3?(EntityType<? extends LivingEntity>)BuiltInRegistries.ENTITY_TYPE.byId(form-3):null;
     }
     public static boolean bat(int form) {return form==BAT || type(form)==EntityType.BAT;}
     public static EntityDimensions dimensions(int form) {
@@ -27,12 +49,13 @@ public final class Morphs {
         return entity.level().noCollision(entity,dims.makeBoundingBox(entity.position()).deflate(.001));
     }
     private static int choose(LivingEntity entity,int previous) {
-        int start=entity.getRandom().nextInt(RANDOM.size());
-        for(int i=0;i<RANDOM.size();i++) {
-            int candidate=3+(start+i)%RANDOM.size();
+        var choices=pool(entity.level());if(choices.isEmpty())return 0;
+        int start=entity.getRandom().nextInt(choices.size());
+        for(int i=0;i<choices.size();i++) {
+            int candidate=formOf(choices.get((start+i)%choices.size()));
             if(candidate!=previous && fits(entity,candidate))return candidate;
         }
-        return fits(entity,previous)?previous:3+RANDOM.indexOf(EntityType.RABBIT);
+        return fits(entity,previous)?previous:formOf(EntityType.RABBIT);
     }
     public static void tick(LivingEntity entity) {
         var state=(MorphState)entity;var data=state.brews$data();if(data==null)return;
@@ -40,13 +63,17 @@ public final class Morphs {
             var random=VersionApi.effectInstance(entity,"shapeshifter");
             if(random==null || !entity.isAlive()) {data.randomForm=0;data.previousDuration=-1;}
             else {
-                if(data.randomForm<3 || data.randomForm>=3+RANDOM.size() || random.getDuration()>data.previousDuration && data.previousDuration>=0)
+                if(data.randomForm<3 || !pool(entity.level()).contains(type(data.randomForm)) || data.reroll
+                    || random.getDuration()>data.previousDuration && data.previousDuration>=0)
                     data.randomForm=choose(entity,data.randomForm);
                 data.previousDuration=random.getDuration();
             }
+            data.reroll=false;
             int desired=0;
             if(entity.isAlive()) {
-                if(VersionApi.effectInstance(entity,"juggernaut")!=null)desired=fits(entity,BRUTE)?BRUTE:0;
+                // Headroom gates entry, not an already active transformation. Rechecking
+                // every tick used to cancel Brute in cramped mines or under falling blocks.
+                if(VersionApi.effectInstance(entity,"juggernaut")!=null)desired=state.brews$form()==BRUTE || fits(entity,BRUTE)?BRUTE:0;
                 else if(VersionApi.effectInstance(entity,"bat")!=null)desired=BAT;
                 else if(random!=null)desired=data.randomForm;
             }

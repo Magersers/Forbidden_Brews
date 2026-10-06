@@ -4,6 +4,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public final class Gravity {
+    public static boolean inverted(LivingEntity entity) {
+        return entity instanceof Player player && controls(player) && ((MorphState)player).brews$gravityUp();
+    }
     public static boolean controls(Player player) {
         return player.isAlive() && !player.isSpectator() && !player.isPassenger()
             && VersionApi.effectInstance(player,"gravity")!=null && !Morphs.bat(Morphs.form(player));

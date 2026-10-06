@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class VisualScenario {
     private static ServerPlayer player;
     private static int ticks;
+    private static Mob combatTarget,combatNear,dragonActor;
     private static final BlockPos STAND=new BlockPos(1,65,1);
     private static final BlockPos NEAR=new BlockPos(0,66,-3), FAR=new BlockPos(4,66,-3), SMASH=new BlockPos(1,66,-20);
     @SubscribeEvent public static void setup(ServerStartedEvent event) {
@@ -66,6 +67,67 @@ public final class VisualScenario {
     @SubscribeEvent public static void tick(TickEvent.ServerTickEvent event) {
         if(event.phase!=TickEvent.Phase.END || player==null)return;
         ticks++;
+        if(java.nio.file.Files.exists(java.nio.file.Path.of("073-capture.flag"))) {
+            if(ticks==20) {
+                var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
+                be.clearContent();be.progress=0;be.recipeIndex=-1;be.selectedRecipe=-1;be.fuel=0;
+                be.selectRecipe(ChaosRecipes.ALL.indexOf(ChaosRecipes.ALL.stream().filter(r->r.result().equals(new BrewSpec("juggernaut",1,false))).findFirst().orElseThrow()));
+                player.openMenu(be);
+            }
+            if(ticks==70) {
+                var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
+                be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get()));be.setItem(2,new ItemStack(Items.NETHERITE_INGOT));be.setItem(3,new ItemStack(Items.IRON_BLOCK));
+            }
+            if(ticks==120) {
+                player.closeContainer();player.teleportTo(player.serverLevel(),1.5,65,-16.5,0,2);drink("juggernaut");player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,new ItemStack(Items.NETHERITE_AXE));
+                combatTarget=EntityType.COW.create(player.serverLevel());combatNear=EntityType.COW.create(player.serverLevel());
+                combatTarget.setPos(1.5,65,-14.5);combatNear.setPos(2.5,65,-14.5);
+                for(var cow:new Mob[]{combatTarget,combatNear}) {cow.setNoAi(true);player.serverLevel().addFreshEntity(cow);}
+            }
+            if(ticks==170) {
+                player.attack(combatTarget);
+                if(combatNear.getHealth()>=combatNear.getMaxHealth() || combatNear.getDeltaMovement().horizontalDistance()<.5)
+                    throw new IllegalStateException("Native Brute area impact failed");
+                System.out.println("073_NATIVE_AREA_ATTACK_OK");
+            }
+            if(ticks==210) {
+                combatTarget.discard();combatNear.discard();player.removeAllEffects();Morphs.tick(player);
+                player.teleportTo(player.serverLevel(),8,70,-16.5,90,-8);
+                dragonActor=EntityType.COW.create(player.serverLevel());dragonActor.setNoAi(true);dragonActor.setNoGravity(true);dragonActor.setPos(-12,72,-16.5);player.serverLevel().addFreshEntity(dragonActor);
+                ChaosContent.brew(new BrewSpec("shapeshifter",1,false)).finishUsingItem(player.serverLevel(),dragonActor);
+                var data=((MorphState)dragonActor).brews$data();data.randomForm=Morphs.formOf(EntityType.ENDER_DRAGON);data.reroll=false;data.previousDuration=2400;Morphs.tick(dragonActor);
+                System.out.println("073_NATIVE_DRAGON_FORM_OK "+Morphs.pool(player.level()).size());
+            }
+            if(ticks==290) {dragonActor.discard();player.teleportTo(player.serverLevel(),1.5,65,-16.5,0,0);drink("gravity");Gravity.toggle(player);}
+            if(ticks==340) {Gravity.toggle(player);player.teleportTo(player.serverLevel(),1.5,69,-16.5,0,0);}
+            if(ticks==380) {Gravity.toggle(player);new ItemStack(Items.MILK_BUCKET).finishUsingItem(player.serverLevel(),player);Morphs.tick(player);player.teleportTo(player.serverLevel(),1.5,65,-16.5,0,0);}
+            if(ticks==450)player.getServer().halt(false);
+            return;
+        }
+        if(java.nio.file.Files.exists(java.nio.file.Path.of("sight-morph.flag"))) {
+            if(ticks==20 || ticks==160 || ticks==280 || ticks==400) {
+                player.serverLevel().setBlockAndUpdate(new BlockPos(1,67,-11),Blocks.AIR.defaultBlockState());
+                player.removeAllEffects();Morphs.tick(player);player.teleportTo(player.serverLevel(),1.5,65,-10.5,0,4);
+                player.getRandom().setSeed(12);
+                drink(ticks==160?"juggernaut":ticks==400?"shapeshifter":"ore_sight");
+            }
+            if(ticks==80)drink("juggernaut");
+            // A cramped shaft/falling ceiling must not cancel an existing Brute.
+            if(ticks==100 || ticks==175)player.serverLevel().setBlockAndUpdate(new BlockPos(1,67,-11),Blocks.STONE.defaultBlockState());
+            if(ticks==180 || ticks==420)drink("ore_sight");
+            if(ticks==300)drink("shapeshifter");
+            if(ticks==140 || ticks==240 || ticks==360 || ticks==480) {
+                int form=Morphs.form(player);boolean brute=ticks<280;
+                if(!VersionApi.hasEffect(player,ChaosContent.effect("ore_sight")) || (brute?form!=Morphs.BRUTE:form<3))
+                    throw new IllegalStateException("Sight/morph effects failed to stack: "+ticks+" form="+form);
+                if(brute && player.getMaxHealth()!=40)throw new IllegalStateException("Combined Brute lost health bonus");
+                if(brute && Morphs.fits(player,Morphs.BRUTE))throw new IllegalStateException("Mine ceiling did not obstruct the Brute fixture");
+                System.out.println("SIGHT_MORPH_SERVER_STACK_OK "+ticks+" form="+form+" maxHealth="+player.getMaxHealth());
+            }
+            if(ticks==520) {player.removeAllEffects();Morphs.tick(player);}
+            if(ticks==580)player.getServer().halt(false);
+            return;
+        }
         if(java.nio.file.Files.exists(java.nio.file.Path.of("stand-capture.flag"))) {
             if(ticks==20) {
                 var pos=new BlockPos(0,65,1);player.serverLevel().setBlockAndUpdate(pos,Blocks.CRAFTING_TABLE.defaultBlockState());

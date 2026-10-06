@@ -55,7 +55,7 @@ for version,modern in [('1.20.1',False),('1.21.1',True)]:
     write(res/'pack.mcmeta',{'pack':{'pack_format':34 if modern else 15,'description':'Forbidden Brews models and recipes'}})
     write(res/'forbidden_brews.mixins.json',{'required':True,'minVersion':'0.8',
         'package':'io.github.magersers.forbiddenbrews.mixin','compatibilityLevel':'JAVA_21' if modern else 'JAVA_17',
-        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin','FortuneMixin','OreDropsMixin','CreeperPotionMixin','TruceMobMixin','TruceLivingMixin','TruceDragonMixin','MorphSyncMixin','MorphLogicMixin','MorphDimensionsMixin','MorphPlayerMixin','GravityEntityMixin','GravityConnectionMixin','DestructionMixin']+([] if modern else ['MorphPlayerDimensionsMixin']),'client':['client.InversionMixin','client.SightClientMixin','client.SightWorldMixin','client.MorphRenderMixin','client.MorphHandMixin','client.GravityInputMixin'],'injectors':{'defaultRequire':1}})
+        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin','FortuneMixin','OreDropsMixin','CreeperPotionMixin','TruceMobMixin','TruceLivingMixin','TruceDragonMixin','MorphSyncMixin','MorphLogicMixin','MorphDimensionsMixin','MorphPlayerMixin','GravityEntityMixin','GravityConnectionMixin','DestructionMixin','BruteCombatMixin','ShapeshifterRefreshMixin']+([] if modern else ['MorphPlayerDimensionsMixin']),'client':['client.InversionMixin','client.SightClientMixin','client.SightWorldMixin','client.MorphRenderMixin','client.MorphHandMixin','client.GravityInputMixin'],'injectors':{'defaultRequire':1}})
 
 for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing Stand')]:
     ru=locale=='ru_ru'
@@ -114,7 +114,7 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.7.2"
+version="0.7.3"
 displayName="Forbidden Brews"
 authors="Magersers"
 description='''Chaos brewing, sixteen potion families and renewable Netherite Wart.'''
@@ -135,7 +135,7 @@ side="BOTH"
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.2','name':'Forbidden Brews',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.3','name':'Forbidden Brews',
     'description':'Chaos brewing, sixteen potion families and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',

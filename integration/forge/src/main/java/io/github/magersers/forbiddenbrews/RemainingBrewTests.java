@@ -69,15 +69,102 @@ public final class RemainingBrewTests {
     public static void gravityToggleDebouncePhysicsAndCleanup(GameTestHelper h) {
         var p=player(h);drink(h,p,"gravity");var state=(MorphState)p;
         Gravity.toggle(p);h.assertTrue(state.brews$gravityUp(),"First jump reverses gravity");
+        h.assertTrue(Gravity.inverted(p),"Upward gravity rotates the camera and player model");
         Gravity.toggle(p);h.assertTrue(state.brews$gravityUp(),"Duplicate packets in same tick ignored");
         Morphs.tick(p);h.assertTrue(p.getDeltaMovement().y>0 && p.isNoGravity(),"Upward acceleration replaces ordinary falling");
         h.runAfterDelay(2,()-> {
             Gravity.toggle(p);Morphs.tick(p);h.assertFalse(state.brews$gravityUp() || p.isNoGravity(),"Second distinct jump restores downward gravity");
+            h.assertFalse(Gravity.inverted(p),"Second jump restores visual orientation");
             h.assertTrue(p.getDeltaMovement().y<0,"Immediate descent on second jump");
             p.removeAllEffects();Morphs.tick(p);Gravity.toggle(p);h.assertFalse(state.brews$gravityUp(),"Requests without effect are rejected");
             h.assertFalse(p.causeFallDamage(40,1,p.damageSources().fall()),"Safe landing after effect ends in air");
             p.setNoGravity(true);drink(h,p,"gravity");p.removeAllEffects();Morphs.tick(p);h.assertTrue(p.isNoGravity(),"Original no-gravity flag is untouched");h.succeed();
         });
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void registryMorphPoolBossesRefreshAndLegacySave(GameTestHelper h) {
+        var p=player(h);var pool=Morphs.pool(h.getLevel());
+        h.assertTrue(pool.size()>60 && pool.contains(EntityType.ENDER_DRAGON) && pool.contains(EntityType.WITHER) && pool.contains(EntityType.WARDEN),"All native mob families and bosses enter the registry pool");
+        for(var type:net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE) {
+            if(type!=EntityType.PLAYER && type.create(h.getLevel()) instanceof Mob)
+                h.assertTrue(pool.contains(type),"Registered mob in pool: "+type);
+        }
+        p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ForbiddenBrews.SHAPESHIFTER.get(),6000));Morphs.tick(p);
+        int first=Morphs.form(p);drink(h,p,"shapeshifter");
+        h.assertTrue(Morphs.form(p)!=first && VersionApi.effectInstance(p,"shapeshifter").getDuration()==6000,"Shorter fresh drink still changes form and preserves longer native duration");
+        int second=Morphs.form(p);
+        p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ForbiddenBrews.SHAPESHIFTER.get(),6000));Morphs.tick(p);
+        h.assertTrue(Morphs.form(p)!=second,"Equal-duration effect refresh changes form");
+        var data=((MorphState)p).brews$data();data.randomForm=Morphs.formOf(EntityType.ENDER_DRAGON);Morphs.tick(p);
+        h.assertTrue(Morphs.type(Morphs.form(p))==EntityType.ENDER_DRAGON && p.getBbWidth()>10,"Dragon form uses the native model and dimensions");
+        var tag=p.saveWithoutId(new net.minecraft.nbt.CompoundTag());var loaded=player(h);loaded.load(tag);Morphs.tick(loaded);
+        h.assertTrue(Morphs.type(Morphs.form(loaded))==EntityType.ENDER_DRAGON,"Registry key preserves dragon across save/load");
+        var legacy=new net.minecraft.nbt.CompoundTag();var old=new net.minecraft.nbt.CompoundTag();old.putInt("RandomForm",6);legacy.put("ForbiddenBrewsMorph",old);
+        data.load(legacy);h.assertTrue(Morphs.type(data.randomForm)==EntityType.WOLF,"Existing 0.7.2 random forms migrate to registry identifiers");h.succeed();
+    }
+    private static Mob combatMob(GameTestHelper h,Player player,EntityType<? extends Mob> type,double x,double z) {
+        var mob=type.create(h.getLevel());mob.setNoAi(true);mob.setNoGravity(true);mob.setPos(player.getX()+x,player.getY(),player.getZ()+z);mob.setOnGround(true);h.getLevel().addFreshEntity(mob);return mob;
+    }
+    private static void charge(Player p) {for(int i=0;i<30;i++)p.tick();}
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void bruteChargedAttackHitsAreaAndProtectsWallsPetsAndRange(GameTestHelper h) {
+        var p=player(h);drink(h,p,"juggernaut");charge(p);
+        var primary=combatMob(h,p,EntityType.COW,0,2);var near=combatMob(h,p,EntityType.COW,-1,2);
+        var far=combatMob(h,p,EntityType.COW,0,6);var blocked=combatMob(h,p,EntityType.COW,2,2);
+        var pet=(net.minecraft.world.entity.animal.Wolf)combatMob(h,p,EntityType.WOLF,-1,1);pet.tame(p);
+        var invulnerable=combatMob(h,p,EntityType.COW,-2,2);invulnerable.setInvulnerable(true);
+        for(int y=0;y<4;y++)h.getLevel().setBlockAndUpdate(p.blockPosition().offset(1,y,1),Blocks.STONE.defaultBlockState());
+        h.assertFalse(p.hasLineOfSight(blocked),"Wall actually blocks the secondary target");
+        p.attack(primary);
+        h.assertTrue(primary.getHealth()<primary.getMaxHealth() && near.getHealth()<near.getMaxHealth(),"Native charged attack damages primary and adjacent mob");
+        h.assertTrue(primary.getDeltaMovement().z>.5 && near.getDeltaMovement().horizontalDistance()>.5,"Primary and nearby mob are thrown away from the player");
+        h.assertTrue(far.getHealth()==far.getMaxHealth() && blocked.getHealth()==blocked.getMaxHealth() && pet.getHealth()==pet.getMaxHealth() && invulnerable.getHealth()==invulnerable.getMaxHealth(),"Range, walls, own pets and invulnerability protect bystanders: far="+far.getHealth()+" wall="+blocked.getHealth()+" pet="+pet.getHealth()+" protected="+invulnerable.getHealth());
+        h.assertTrue(invulnerable.getDeltaMovement().lengthSqr()==0,"Rejected damage cannot push protected mobs");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void bruteAreaRequiresChargeSuccessfulHitAndActiveForm(GameTestHelper h) {
+        var p=player(h);drink(h,p,"juggernaut");
+        var primary=combatMob(h,p,EntityType.COW,0,2);var near=combatMob(h,p,EntityType.COW,1,2);
+        p.resetAttackStrengthTicker();p.attack(primary);
+        h.assertTrue(near.getHealth()==near.getMaxHealth() && near.getDeltaMovement().lengthSqr()==0,"Uncharged attack cannot spam shockwaves");
+        charge(p);primary.setInvulnerable(true);p.attack(primary);
+        h.assertTrue(near.getHealth()==near.getMaxHealth(),"Rejected primary hit cannot trigger area damage");
+        new ItemStack(Items.MILK_BUCKET).finishUsingItem(h.getLevel(),p);Morphs.tick(p);primary.setInvulnerable(false);primary.invulnerableTime=0;charge(p);p.attack(primary);
+        h.assertTrue(near.getHealth()==near.getMaxHealth(),"Milk removes area combat along with Brute");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void oreSightKeepsActiveBruteInCrampedMine(GameTestHelper h) {
+        var p=player(h);drink(h,p,"juggernaut");
+        var ceiling=p.blockPosition().above(2);
+        h.getLevel().setBlockAndUpdate(ceiling,Blocks.STONE.defaultBlockState());
+        h.assertFalse(Morphs.fits(p,Morphs.BRUTE),"Mine ceiling obstructs the existing Brute box");
+        drink(h,p,"ore_sight");
+        for(int i=0;i<10;i++)Morphs.tick(p);
+        h.assertTrue(Morphs.form(p)==Morphs.BRUTE && p.getMaxHealth()==40,"Drinking Ore Seeker in a cramped mine retains Brute and double health");
+        h.assertTrue(VersionApi.hasEffect(p,ChaosContent.effect("ore_sight")),"Ore search stays active beside Brute");
+        p.removeEffect(ForbiddenBrews.JUGGERNAUT.get());Morphs.tick(p);
+        h.assertTrue(Morphs.form(p)==0 && p.getMaxHealth()==20 && VersionApi.hasEffect(p,ChaosContent.effect("ore_sight")),"Removing only Brute preserves Ore Seeker");
+        drink(h,p,"juggernaut");
+        h.assertTrue(Morphs.form(p)==0 && p.getMaxHealth()==20,"Initial transformation still requires headroom");
+        h.getLevel().setBlockAndUpdate(ceiling,Blocks.AIR.defaultBlockState());Morphs.tick(p);
+        h.assertTrue(Morphs.form(p)==Morphs.BRUTE && p.getMaxHealth()==40,"Ore-first transformation starts once headroom is available");
+        new ItemStack(Items.MILK_BUCKET).finishUsingItem(h.getLevel(),p);Morphs.tick(p);
+        h.assertTrue(Morphs.form(p)==0 && p.getMaxHealth()==20 && !VersionApi.hasEffect(p,ChaosContent.effect("ore_sight")),"Milk removes both effects and restores health");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void oreSightAndShapeshifterStackInEitherOrder(GameTestHelper h) {
+        var p=player(h);
+        for(boolean oreFirst:new boolean[]{false,true}) {
+            p.removeAllEffects();Morphs.tick(p);
+            if(oreFirst)drink(h,p,"ore_sight");
+            drink(h,p,"shapeshifter");int chosen=Morphs.form(p);
+            if(!oreFirst)drink(h,p,"ore_sight");
+            for(int i=0;i<10;i++)Morphs.tick(p);
+            h.assertTrue(chosen>=3 && Morphs.form(p)==chosen && VersionApi.hasEffect(p,ChaosContent.effect("ore_sight")),"Ore search never replaces or rerolls the chosen mob: oreFirst="+oreFirst);
+            p.removeEffect(ForbiddenBrews.ORE_SIGHT.get());Morphs.tick(p);
+            h.assertTrue(Morphs.form(p)==chosen,"Ore removal leaves random form intact");
+        }
+        h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void bruteHealthDamageSaveAndMilkRespectOtherModifiers(GameTestHelper h) {

@@ -26,6 +26,11 @@ public final class MorphRenderer {
             cached=new Proxy(form,model);MODELS.put(actor,cached);
         }
         var model=cached.model();
+        if(model instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon dragon) {
+            dragon.oFlapTime=(actor.tickCount-1)*.12F;dragon.flapTime=actor.tickCount*.12F;
+            dragon.posPointer=0;
+            for(var sample:dragon.positions) {sample[0]=actor.getYRot();sample[1]=actor.getY();}
+        }
         if(model.tickCount!=actor.tickCount)model.walkAnimation.update(actor.walkAnimation.speed(),1);
         model.tickCount=actor.tickCount;model.setPos(actor.position());model.xo=actor.xo;model.yo=actor.yo;model.zo=actor.zo;
         model.setYRot(actor.getYRot());model.setXRot(actor.getXRot());model.yRotO=actor.yRotO;model.xRotO=actor.xRotO;

@@ -19,7 +19,9 @@
     "GravityEntityMixin",
     "GravityConnectionMixin",
     "DestructionMixin",
-    "MorphPlayerDimensionsMixin"
+    "MorphPlayerDimensionsMixin",
+    "BruteCombatMixin",
+    "ShapeshifterRefreshMixin"
   ],
   "client": [
     "client.InversionMixin",
