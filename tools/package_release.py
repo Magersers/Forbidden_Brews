@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.4.1'
+VERSION='0.4.2'
 out=ROOT/'releases'/VERSION;out.mkdir(parents=True,exist_ok=True)
 manifest=[]
 for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:

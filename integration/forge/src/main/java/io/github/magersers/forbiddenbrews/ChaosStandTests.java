@@ -59,7 +59,7 @@ public final class ChaosStandTests {
             for(int i=0;i<7;i++)h.assertTrue(be.getItem(i).isEmpty(),"Consumption "+r.id()+" slot "+i);
             h.assertTrue(be.fuel==19,"One charge used");
             h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getAmplifier()==r.result().level()-1,"Correct effect level");
-            int duration=r.result().family().equals("inversion")?switch(r.result().level()){case 1->900;case 2->440;default->220;}:r.result().instant()?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
+            int duration=r.result().family().equals("inversion")?switch(r.result().level()){case 1->220;case 2->440;default->900;}:r.result().instant()?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
             h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getDuration()==duration,"Correct balanced duration for "+r.id());
         }h.succeed();
     }
@@ -316,7 +316,7 @@ public final class ChaosStandTests {
         h.assertTrue(ForbiddenBrews.INVERSION.get().getCategory()==MobEffectCategory.HARMFUL,"Inversion is a negative effect");
         var player=h.makeMockPlayer();var pos=h.absolutePos(POS);
         for(int level=1;level<=3;level++) {
-            int duration=switch(level){case 1->900;case 2->440;default->220;};
+            int duration=switch(level){case 1->220;case 2->440;default->900;};
             var spec=new BrewSpec("inversion",level,false);
             var bottle=ChaosContent.brew(spec);var returned=bottle.finishUsingItem(h.getLevel(),player);
             h.assertTrue(player.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==duration && player.getEffect(ForbiddenBrews.INVERSION.get()).getAmplifier()==level-1,"Negative drink level and duration "+level);

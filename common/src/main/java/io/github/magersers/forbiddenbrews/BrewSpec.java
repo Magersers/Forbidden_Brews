@@ -18,7 +18,7 @@ public record BrewSpec(String family, int level, boolean splash) {
     public String id() { return family + "_" + level + (splash ? "_splash" : "_drink"); }
     public boolean instant() { return family.equals("homeward") || family.equals("wild_teleport") || family.equals("creeper"); }
     public int duration() {
-        if(family.equals("inversion"))return (switch(level) {case 1->45;case 2->22;default->11;})*20;
+        if(family.equals("inversion"))return (switch(level) {case 1->11;case 2->22;default->45;})*20;
         return instant() ? 1 : (switch(level) { case 1 -> 120; case 2 -> 300; default -> 480; })*20;
     }
     public String durationLabel() {
