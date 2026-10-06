@@ -63,6 +63,8 @@ public final class ChaosRecipes {
         add(list,"inversion",3,400,c(Items.FERMENTED_SPIDER_EYE,4),c(Items.GLOWSTONE_DUST,8),c(Items.GHAST_TEAR,1),c(Items.ECHO_SHARD,1));
         add(list,"truce",1,360,c(Items.GOLDEN_APPLE,1),c(Items.HONEY_BOTTLE,2),c(Items.EMERALD,4),c(Items.SPORE_BLOSSOM,1));
         add(list,"swarm",1,400,c(Items.ROTTEN_FLESH,8),c(Items.BONE,8),c(Items.SPIDER_EYE,4),c(Items.ECHO_SHARD,1));
+        add(list,"ore_sight",1,320,c(Items.SPYGLASS,1),c(Items.AMETHYST_SHARD,8),c(Items.GLOWSTONE_DUST,4),c(Items.DIAMOND,1));
+        add(list,"hunter",1,360,c(Items.SPECTRAL_ARROW,8),c(Items.SPIDER_EYE,2),c(Items.TRIPWIRE_HOOK,2),c(Items.ECHO_SHARD,1));
         for (BrewSpec spec:BrewSpec.ALL) if (!spec.splash()) {
             list.add(new Recipe(spec.id()+"_to_splash",spec,spec.asSplash(),160,List.of(c(Items.GUNPOWDER,2))));
         }

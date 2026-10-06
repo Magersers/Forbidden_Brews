@@ -52,7 +52,7 @@ public final class ChaosStandTests {
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void allRecipesConsumeWartAndExactIngredients(GameTestHelper h) {
-        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==32,"Thirty-two recipes");
+        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==36,"Thirty-six recipes");
         for(var r:ChaosRecipes.ALL) {
             fill(be,r);tick(h,be,r.ticks());
             h.assertTrue(be.getItem(7).is(r.output().getItem()),"Output "+r.id());
@@ -139,7 +139,7 @@ public final class ChaosStandTests {
     @GameTest(template="empty",timeoutTicks=40)
     public static void recipePickerFiltersBaseAndServerValidatesSelection(GameTestHelper h) {
         var initial=ChaosRecipes.available(ItemStack.EMPTY);
-        h.assertTrue(initial.size()==10 && initial.stream().allMatch(r->r.source()==null),"All ten base potions initially");
+        h.assertTrue(initial.size()==12 && initial.stream().allMatch(r->r.source()==null),"All twelve base potions initially");
         var options=ChaosRecipes.available(ChaosContent.brew(new BrewSpec("fortune",1,false)));
         h.assertTrue(options.size()==2 && options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",2,false))) &&
             options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",1,true))),"Fortune I unlocks II and its splash");
@@ -370,7 +370,7 @@ public final class ChaosStandTests {
     public static void creeperSplashEntityImpactExplodesOnceForMultipleTargets(GameTestHelper h) {
         var level=h.getLevel();var center=new BlockPos(h.absolutePos(POS).getX()+300,200,h.absolutePos(POS).getZ());
         level.getChunkAt(center);
-        var chunk=new net.minecraft.world.level.ChunkPos(center);level.getChunkSource().addRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,2,chunk);
+        var chunk=new net.minecraft.world.level.ChunkPos(center);level.getChunkSource().addRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,3,chunk);
         var a=net.minecraft.world.entity.EntityType.COW.create(level);var b=net.minecraft.world.entity.EntityType.COW.create(level);
         a.setNoGravity(true);b.setNoGravity(true);a.setNoAi(true);b.setNoAi(true);
         a.setPos(center.getX()+1,center.getY(),center.getZ());b.setPos(center.getX()-1,center.getY(),center.getZ());level.addFreshEntity(a);level.addFreshEntity(b);
@@ -393,7 +393,7 @@ public final class ChaosStandTests {
             projectile.hit(a);projectile.hit(b);
             h.assertTrue(blasts[0]==1 && projectile.isRemoved(),"One explosion even with multiple targets and repeated impact");
             h.assertTrue(a.getHealth()<a.getMaxHealth() && b.getHealth()<b.getMaxHealth(),"Both targets damaged: "+a.getHealth()+", "+b.getHealth()+", entities="+level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,new AABB(center).inflate(8)).size());
-        } finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(listener);level.getChunkSource().removeRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,2,chunk); }
+        } finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(listener);level.getChunkSource().removeRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,3,chunk); }
         }).thenSucceed();
     }
     @GameTest(template="empty",timeoutTicks=40)

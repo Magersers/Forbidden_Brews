@@ -1,6 +1,10 @@
 package io.github.magersers.forbiddenbrews.visual;
 
 import io.github.magersers.forbiddenbrews.client.ChaosScreen;
+import io.github.magersers.forbiddenbrews.client.SightCache;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.monster.Husk;
+import net.minecraft.world.entity.animal.Cow;
 import io.github.magersers.forbiddenbrews.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -23,7 +27,7 @@ public abstract class VisualClientMixin {
     @Unique private int brews$diagnostic;
     @Unique private int brews$screenTicks;
     @Unique private int brews$fxFrame;
-    @Unique private boolean brews$truceSeen,brews$swarmSeen,brews$cleared;
+    @Unique private boolean brews$oreSeen,brews$nextSeen,brews$hunterSeen,brews$cleared;
     @Inject(method="tick",at=@At("TAIL"))
     private void brews$connect(CallbackInfo ci) {
         Minecraft mc=(Minecraft)(Object)this;
@@ -35,10 +39,10 @@ public abstract class VisualClientMixin {
             brews$screenTicks++;
             int x=(screen.width-256)/2,y=(screen.height-256)/2;
             if(brews$screenTicks==5 || brews$screenTicks==50)screen.mouseClicked(x+128,y+136,0);
-            if(brews$screenTicks==25)screen.mouseClicked(x+74,y+216,0);
+            if(brews$screenTicks==25)screen.mouseClicked(x+182,y+216,0);
             if(brews$screenTicks==65)screen.mouseClicked(x+128,y+76,0);
-            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("truce",1,false)))throw new IllegalStateException("Truce picker choice was not synchronized");
-            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("truce",1,true)))throw new IllegalStateException("Truce splash picker choice was not synchronized");
+            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("hunter",1,false)))throw new IllegalStateException("Hunter picker choice was not synchronized");
+            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("hunter",1,true)))throw new IllegalStateException("Hunter splash picker choice was not synchronized");
         }
     }
     @Inject(method="runTick",at=@At("TAIL"))
@@ -70,18 +74,40 @@ public abstract class VisualClientMixin {
         }
         if(brews$frame>=200 && mc.screen==null && mc.level.getGameTime()>=brews$last+2) {
             brews$last=mc.level.getGameTime();name=String.format("chaos-fx-%03d.png",brews$fxFrame++);
-            boolean truce=VersionApi.hasEffect(mc.player,ChaosContent.truceEffect.get());
-            boolean swarm=VersionApi.hasEffect(mc.player,ChaosContent.swarmEffect.get());
-            if(truce && !brews$truceSeen) {brews$truceSeen=true;System.out.println("SOCIAL_CLIENT_TRUCE_OK");}
-            if(swarm && !brews$swarmSeen) {brews$swarmSeen=true;System.out.println("SOCIAL_CLIENT_SWARM_OK");}
-            if(!truce && !swarm && brews$swarmSeen && !brews$cleared) {brews$cleared=true;System.out.println("SOCIAL_CLIENT_MILK_OK");}
+            var nearest=SightCache.nearestOre();
+            if(new BlockPos(0,66,-3).equals(nearest) && !brews$oreSeen) {
+                brews$oreSeen=true;System.out.println("SIGHT_CLIENT_NEAREST_ORE_OK");
+                try(var shot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {shot.writeToFile(Path.of(mc.gameDirectory.getAbsolutePath(),"sight-ore.png"));}
+            }
+            if(new BlockPos(4,66,-3).equals(nearest) && brews$oreSeen && !brews$nextSeen) {
+                brews$nextSeen=true;System.out.println("SIGHT_CLIENT_MINED_ORE_SWITCH_OK");
+            }
+            if(SightCache.active("hunter") && !brews$hunterSeen && SightCache.traps().size()>=4) {
+                var hostiles=mc.level.getEntitiesOfClass(Husk.class,mc.player.getBoundingBox().inflate(48));
+                var cows=mc.level.getEntitiesOfClass(Cow.class,mc.player.getBoundingBox().inflate(32));
+                if(hostiles.size()>=2 && !cows.isEmpty()) {
+                    for(var enemy:hostiles) {
+                        boolean near=enemy.distanceToSqr(mc.player)<=32*32;
+                        if(mc.shouldEntityAppearGlowing(enemy)!=near || enemy.isCurrentlyGlowing())throw new IllegalStateException("Viewer-local hostile range filtering failed");
+                    }
+                    for(var cow:cows)if(mc.shouldEntityAppearGlowing(cow))throw new IllegalStateException("Passive mob highlighted");
+                    brews$hunterSeen=true;System.out.println("SIGHT_CLIENT_TRAPS_AND_LOCAL_HOSTILES_OK "+SightCache.traps().size());
+                    try(var shot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {shot.writeToFile(Path.of(mc.gameDirectory.getAbsolutePath(),"sight-hunter.png"));}
+                }
+            }
+            if(brews$hunterSeen && !SightCache.active("hunter") && !SightCache.active("ore_sight") && !brews$cleared) {
+                if(SightCache.nearestOre()!=null || !SightCache.traps().isEmpty())throw new IllegalStateException("Milk did not clear sight cache");
+                for(var enemy:mc.level.getEntitiesOfClass(Husk.class,mc.player.getBoundingBox().inflate(32)))if(mc.shouldEntityAppearGlowing(enemy))throw new IllegalStateException("Milk did not clear hostile outline");
+                brews$cleared=true;System.out.println("SIGHT_CLIENT_MILK_OK");
+                try(var shot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {shot.writeToFile(Path.of(mc.gameDirectory.getAbsolutePath(),"sight-milk.png"));}
+            }
         }
         if(name!=null) {
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) { screenshot.writeToFile(Path.of(mc.gameDirectory.getAbsolutePath(),name)); }
             System.out.println("FORBIDDEN_BREWS_CAPTURE "+name);
         }
         if(brews$fxFrame>=240) {
-            if(!brews$truceSeen || !brews$swarmSeen || !brews$cleared)throw new IllegalStateException("Truce, swarm and milk were not verified");
+            if(!brews$oreSeen || !brews$nextSeen || !brews$hunterSeen || !brews$cleared)throw new IllegalStateException("Ore, trap, mob sight and milk were not verified");
             mc.stop();
         }
     }

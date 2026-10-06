@@ -27,6 +27,9 @@ if fx:
     effect_frames=[]
     for path in fx:
         with Image.open(path) as shot:effect_frames.append(shot.convert('RGB').resize((640,360),Image.Resampling.NEAREST))
-    effect_frames[0].save(output/'potions_0.5.0_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=True)
-    effect_frames[60].save(output/'social_potions_in_game.png')
-    print(f'Wrote {len(effect_frames)} frames of real Truce, Swarm and milk clearing')
+    effect_frames[0].save(output/'potions_0.6.0_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=True)
+    effect_frames[60].save(output/'sight_potions_in_game.png')
+    print(f'Wrote {len(effect_frames)} frames of real nearest ore, trap and hostile highlights, and milk clearing')
+
+for kind in ["ore","hunter","milk"]:
+    shutil.copyfile(source/f"sight-{kind}.png",output/f"sight_{kind}_in_game.png")

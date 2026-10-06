@@ -14,7 +14,9 @@
     "TruceDragonMixin"
   ],
   "client": [
-    "client.InversionMixin"
+    "client.InversionMixin",
+    "client.SightClientMixin",
+    "client.SightWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

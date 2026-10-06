@@ -27,11 +27,14 @@ public final class ForbiddenBrews implements ModInitializer {
         var creeper=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("creeper"),new BrewEffects.Creeper());
         var truce=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("truce"),new BrewEffects.Truce());
         var swarm=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("swarm"),new BrewEffects.Swarm());
+        var oreSight=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("ore_sight"),new BrewEffects.OreSight());
+        var hunter=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("hunter"),new BrewEffects.Hunter());
         ChaosContent.standType=()->type;ChaosContent.menuType=()->menu;ChaosContent.wartItem=()->wart;
         ChaosContent.fortuneEffect=()->fortune;ChaosContent.lootingEffect=()->looting;ChaosContent.homewardEffect=()->home;
         ChaosContent.wildTeleportEffect=()->teleport;ChaosContent.oreDoubleEffect=()->doubleOre;ChaosContent.hotPickEffect=()->hot;
         ChaosContent.inversionEffect=()->inversion;ChaosContent.creeperEffect=()->creeper;
         ChaosContent.truceEffect=()->truce;ChaosContent.swarmEffect=()->swarm;
+        ChaosContent.oreSightEffect=()->oreSight;ChaosContent.hunterEffect=()->hunter;
         for(var spec:BrewSpec.ALL) {
             var brew=Registry.register(BuiltInRegistries.ITEM,VersionApi.id(spec.id()),new BrewItem(spec));
             ChaosContent.brewItems.put(spec.id(),()->brew);

@@ -37,6 +37,12 @@ public final class BrewEffects {
     public static final class Truce extends MobEffect {
         public Truce() {super(MobEffectCategory.BENEFICIAL,0x86EAB3);}
     }
+    public static final class OreSight extends MobEffect {
+        public OreSight() {super(MobEffectCategory.BENEFICIAL,0x53B9FF);}
+    }
+    public static final class Hunter extends MobEffect {
+        public Hunter() {super(MobEffectCategory.BENEFICIAL,0xFFBC64);}
+    }
     public static final class Swarm extends TickingBrewEffect {
         public Swarm() {super(MobEffectCategory.HARMFUL,0xEC4263);}
     }

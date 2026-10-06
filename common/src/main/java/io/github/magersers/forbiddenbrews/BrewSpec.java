@@ -7,7 +7,7 @@ public record BrewSpec(String family, int level, boolean splash) {
     public static final List<BrewSpec> ALL;
     static {
         var specs = new ArrayList<BrewSpec>();
-        for (String family : List.of("fortune", "looting", "homeward", "wild_teleport", "ore_double", "hot_pick", "inversion", "creeper", "truce", "swarm")) {
+        for (String family : List.of("fortune", "looting", "homeward", "wild_teleport", "ore_double", "hot_pick", "inversion", "creeper", "truce", "swarm", "ore_sight", "hunter")) {
             for (int level=1; level <= (family.equals("fortune") || family.equals("looting") || family.equals("inversion") ? 3 : 1); level++) {
                 specs.add(new BrewSpec(family,level,false));
                 specs.add(new BrewSpec(family,level,true));

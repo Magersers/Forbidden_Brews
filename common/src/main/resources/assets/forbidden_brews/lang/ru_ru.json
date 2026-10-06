@@ -8,6 +8,8 @@
   "effect.forbidden_brews.wild_teleport": "Случайная телепортация",
   "effect.forbidden_brews.ore_double": "Двойная руда",
   "effect.forbidden_brews.inversion": "Переворот",
+  "effect.forbidden_brews.ore_sight": "Рудный охотник",
+  "effect.forbidden_brews.hunter": "Охотник",
   "effect.forbidden_brews.truce": "Перемирие",
   "effect.forbidden_brews.swarm": "Призыв орды",
   "effect.forbidden_brews.creeper": "Сердце крипера",
@@ -55,5 +57,9 @@
   "item.forbidden_brews.truce_1_drink": "Зелье Перемирие",
   "item.forbidden_brews.truce_1_splash": "Взрывное зелье Перемирие",
   "item.forbidden_brews.swarm_1_drink": "Зелье Призыв орды",
-  "item.forbidden_brews.swarm_1_splash": "Взрывное зелье Призыв орды"
+  "item.forbidden_brews.swarm_1_splash": "Взрывное зелье Призыв орды",
+  "item.forbidden_brews.ore_sight_1_drink": "Зелье Рудный охотник",
+  "item.forbidden_brews.ore_sight_1_splash": "Взрывное зелье Рудный охотник",
+  "item.forbidden_brews.hunter_1_drink": "Зелье Охотник",
+  "item.forbidden_brews.hunter_1_splash": "Взрывное зелье Охотник"
 }
