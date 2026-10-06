@@ -1,6 +1,6 @@
 # Logo provenance
 
-`forbidden-brews-logo-ai.png` is the original transparent 1280×1280 PNG generated with OpenAI's built-in image tool, without external API credentials. The original is preserved without raster edits. It is for GitHub branding only, outside the runtime assets and excluded from mod JARs. It is not used on listings that prohibit AI-generated promotional images.
+`forbidden-brews-logo-ai.png` is the original transparent 1280×1280 PNG generated with OpenAI's built-in image tool, without external API credentials. The original is preserved without raster edits. It is used for GitHub and CurseForge branding, outside the runtime assets and excluded from mod JARs. CurseForge's native upload crop covers the full bottle, and its English description explicitly discloses the AI-generated logo. It is not used on Modrinth or Planet Minecraft listings.
 
 Prompt:
 

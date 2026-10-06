@@ -81,6 +81,6 @@ The gameplay passed **31 Forge GameTests**, including all 44 recipes, enchantmen
 
 ## Credits
 
-Concept and direction: **Magersers**. Code, procedural pixel art, localization and documentation were substantially created with AI assistance. The repository logo was generated with OpenAI's image tool; see its [prompt and provenance](art/branding/README.md). Listing media uses actual gameplay and procedural sprite previews, not the generated logo.
+Concept and direction: **Magersers**. Code, procedural pixel art, localization and documentation were substantially created with AI assistance. The repository logo was generated with OpenAI's image tool; see its [prompt and provenance](art/branding/README.md). Gameplay media uses actual Minecraft recordings and procedural sprite previews. The generated logo is used for GitHub and CurseForge branding with disclosure; Modrinth and Planet Minecraft use actual in-game images.
 
 [All Rights Reserved](LICENSE). Not an official Minecraft product; not approved by or associated with Mojang or Microsoft.
