@@ -20,7 +20,7 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
             if(button==0) {
                 var options=ChaosRecipes.available(menu.getSlot(0).getItem());
                 int columns=options.size()>3?2:1,height=pickerHeight(options.size()),width=columns==2?104:212;
-                for(int i=0;i<options.size();i++)if(isHovering(22+(i%columns)*108,64+(i/columns)*(height+2),width,height,mouseX,mouseY)) {
+                for(int i=0;i<options.size();i++)if(isHovering(22+(i%columns)*108,pickerTop(options.size())+(i/columns)*(height+2),width,height,mouseX,mouseY)) {
                     selected=ChaosRecipes.ALL.indexOf(options.get(i));
                     minecraft.gameMode.handleInventoryButtonClick(menu.containerId,selected);
                     choosing=false;return true;
@@ -62,22 +62,24 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         if(selected<0 || !available.contains(ChaosRecipes.ALL.get(selected)))selected=available.isEmpty()?-1:ChaosRecipes.ALL.indexOf(available.get(0));
         return selected<0?null:ChaosRecipes.ALL.get(selected);
     }
-    private static int pickerHeight(int count) {return count>8?Math.min(32,170/((count+1)/2)-2):count>3?40:25;}
+    private static int pickerHeight(int count) {return count>12?23:count>8?Math.min(32,170/((count+1)/2)-2):count>3?40:25;}
+    private int pickerTop(int count) {return Math.min(64,height-topPos-((count+1)/2)*(pickerHeight(count)+2)-16);}
     private void renderPicker(GuiGraphics g,int mouseX,int mouseY) {
         g.pose().pushPose();g.pose().translate(0,0,300);
         int x=leftPos,y=topPos;
         var options=ChaosRecipes.available(menu.getSlot(0).getItem());
         int columns=options.size()>3?2:1,height=pickerHeight(options.size()),width=columns==2?104:212;
         int rows=(options.size()+columns-1)/columns;
-        int bottom=options.isEmpty()?y+103:y+66+rows*(height+2);
-        g.fill(x+8,y+30,x+248,Math.max(y+155,bottom+8),0xC00B1320);
-        g.fill(x+16,y+44,x+240,bottom,0xFF0B1523);
-        g.renderOutline(x+16,y+44,224,bottom-y-44,0xFFD7B373);
-        g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.picker"),x+128,y+51,0xFFE9CF90);
+        int top=pickerTop(options.size());
+        int bottom=options.isEmpty()?y+103:y+top+2+rows*(height+2);
+        g.fill(x+8,y+top-34,x+248,Math.max(y+155,bottom+8),0xC00B1320);
+        g.fill(x+16,y+top-20,x+240,bottom,0xFF0B1523);
+        g.renderOutline(x+16,y+top-20,224,bottom-y-top+20,0xFFD7B373);
+        g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.picker"),x+128,y+top-13,0xFFE9CF90);
         if(options.isEmpty())g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.no_recipes"),x+128,y+77,0xFFB6C8D4);
         ItemStack hovered=ItemStack.EMPTY;
         for(int i=0;i<options.size();i++) {
-            var option=options.get(i);int xx=x+22+(i%columns)*108,yy=y+64+(i/columns)*(height+2);
+            var option=options.get(i);int xx=x+22+(i%columns)*108,yy=y+pickerTop(options.size())+(i/columns)*(height+2);
             boolean hover=isHovering(xx-x,yy-y,width,height,mouseX,mouseY);
             g.fill(xx,yy,xx+width,yy+height,hover?0xFF344A57:0xFF172739);
             g.renderOutline(xx,yy,width,height,hover?0xFF83E4CE:menu.selectedRecipe()==ChaosRecipes.ALL.indexOf(option)?0xFFE9CF90:0xFF405369);

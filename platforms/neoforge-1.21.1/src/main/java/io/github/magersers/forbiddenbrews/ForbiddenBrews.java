@@ -36,6 +36,10 @@ public final class ForbiddenBrews {
     public static final DeferredHolder<MobEffect, MobEffect> SWARM=EFFECTS.register("swarm",BrewEffects.Swarm::new);
     public static final DeferredHolder<MobEffect, MobEffect> ORE_SIGHT=EFFECTS.register("ore_sight",BrewEffects.OreSight::new);
     public static final DeferredHolder<MobEffect, MobEffect> HUNTER=EFFECTS.register("hunter",BrewEffects.Hunter::new);
+    public static final DeferredHolder<MobEffect, MobEffect> BAT=EFFECTS.register("bat",BrewEffects.Bat::new);
+    public static final DeferredHolder<MobEffect, MobEffect> JUGGERNAUT=EFFECTS.register("juggernaut",BrewEffects.Juggernaut::new);
+    public static final DeferredHolder<MobEffect, MobEffect> SHAPESHIFTER=EFFECTS.register("shapeshifter",BrewEffects.Shapeshifter::new);
+    public static final DeferredHolder<MobEffect, MobEffect> GRAVITY=EFFECTS.register("gravity",BrewEffects.Gravity::new);
     public ForbiddenBrews(IEventBus bus) {
 
         ChaosContent.standType=STAND_TYPE;ChaosContent.menuType=MENU;ChaosContent.wartItem=WART_ITEM;
@@ -44,7 +48,9 @@ public final class ForbiddenBrews {
         ChaosContent.inversionEffect=INVERSION;ChaosContent.creeperEffect=CREEPER;
         ChaosContent.truceEffect=TRUCE;ChaosContent.swarmEffect=SWARM;
         ChaosContent.oreSightEffect=ORE_SIGHT;ChaosContent.hunterEffect=HUNTER;
+        ChaosContent.batEffect=BAT;ChaosContent.juggernautEffect=JUGGERNAUT;ChaosContent.shapeshifterEffect=SHAPESHIFTER;ChaosContent.gravityEffect=GRAVITY;
         for(var spec:BrewSpec.ALL)ChaosContent.brewItems.put(spec.id(),ITEMS.register(spec.id(),()->new BrewItem(spec)));
+        bus.addListener(GravityNetwork::register);
         BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);MENUS.register(bus);EFFECTS.register(bus);
         bus.addListener((BuildCreativeModeTabContentsEvent event)-> {
             if(event.getTabKey()==CreativeModeTabs.FUNCTIONAL_BLOCKS)event.accept(STAND_ITEM.get());

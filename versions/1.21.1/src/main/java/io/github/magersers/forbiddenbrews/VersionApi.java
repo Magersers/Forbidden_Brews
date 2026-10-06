@@ -63,5 +63,6 @@ public final class VersionApi {
         // Keep each potion wave to exactly one mob, including potential jockeys.
         mob.getPassengers().forEach(net.minecraft.world.entity.Entity::discard);mob.ejectPassengers();mob.stopRiding();
     }
+    public static net.minecraft.world.entity.EntityDimensions bruteDimensions() {return net.minecraft.world.entity.EntityDimensions.scalable(1.4F,2.9F).withEyeHeight(2.5F);}
     private VersionApi() {}
 }

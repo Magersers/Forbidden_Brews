@@ -14,7 +14,7 @@ public final class ChaosContent {
     public static Supplier<BlockEntityType<ChaosBrewingBlockEntity>> standType;
     public static Supplier<MenuType<ChaosMenu>> menuType;
     public static Supplier<Item> wartItem;
-    public static Supplier<MobEffect> fortuneEffect, lootingEffect, homewardEffect, wildTeleportEffect, oreDoubleEffect, hotPickEffect, inversionEffect, creeperEffect, truceEffect, swarmEffect, oreSightEffect, hunterEffect;
+    public static Supplier<MobEffect> fortuneEffect, lootingEffect, homewardEffect, wildTeleportEffect, oreDoubleEffect, hotPickEffect, inversionEffect, creeperEffect, truceEffect, swarmEffect, oreSightEffect, hunterEffect, batEffect, juggernautEffect, shapeshifterEffect, gravityEffect;
     public static MobEffect effect(String family) {
         return switch(family) {
             case "fortune" -> fortuneEffect.get();
@@ -29,6 +29,10 @@ public final class ChaosContent {
             case "swarm" -> swarmEffect.get();
             case "ore_sight" -> oreSightEffect.get();
             case "hunter" -> hunterEffect.get();
+            case "bat" -> batEffect.get();
+            case "juggernaut" -> juggernautEffect.get();
+            case "shapeshifter" -> shapeshifterEffect.get();
+            case "gravity" -> gravityEffect.get();
             default -> throw new IllegalArgumentException("Unknown brew: "+family);
         };
     }

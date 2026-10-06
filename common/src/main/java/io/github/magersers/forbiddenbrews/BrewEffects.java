@@ -43,6 +43,18 @@ public final class BrewEffects {
     public static final class Hunter extends MobEffect {
         public Hunter() {super(MobEffectCategory.BENEFICIAL,0xFFBC64);}
     }
+    public static final class Bat extends MobEffect {
+        public Bat() {super(MobEffectCategory.BENEFICIAL,0x8462F3);}
+    }
+    public static final class Juggernaut extends MobEffect {
+        public Juggernaut() {super(MobEffectCategory.BENEFICIAL,0xFA643A);}
+    }
+    public static final class Shapeshifter extends MobEffect {
+        public Shapeshifter() {super(MobEffectCategory.BENEFICIAL,0xB68AFF);}
+    }
+    public static final class Gravity extends MobEffect {
+        public Gravity() {super(MobEffectCategory.BENEFICIAL,0x7CABFF);}
+    }
     public static final class Swarm extends TickingBrewEffect {
         public Swarm() {super(MobEffectCategory.HARMFUL,0xEC4263);}
     }

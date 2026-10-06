@@ -11,12 +11,22 @@
     "CreeperPotionMixin",
     "TruceMobMixin",
     "TruceLivingMixin",
-    "TruceDragonMixin"
+    "TruceDragonMixin",
+    "MorphSyncMixin",
+    "MorphLogicMixin",
+    "MorphDimensionsMixin",
+    "MorphPlayerMixin",
+    "GravityEntityMixin",
+    "GravityConnectionMixin",
+    "DestructionMixin"
   ],
   "client": [
     "client.InversionMixin",
     "client.SightClientMixin",
-    "client.SightWorldMixin"
+    "client.SightWorldMixin",
+    "client.MorphRenderMixin",
+    "client.MorphHandMixin",
+    "client.GravityInputMixin"
   ],
   "injectors": {
     "defaultRequire": 1

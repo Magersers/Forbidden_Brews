@@ -55,7 +55,7 @@ for version,modern in [('1.20.1',False),('1.21.1',True)]:
     write(res/'pack.mcmeta',{'pack':{'pack_format':34 if modern else 15,'description':'Forbidden Brews models and recipes'}})
     write(res/'forbidden_brews.mixins.json',{'required':True,'minVersion':'0.8',
         'package':'io.github.magersers.forbiddenbrews.mixin','compatibilityLevel':'JAVA_21' if modern else 'JAVA_17',
-        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin','FortuneMixin','OreDropsMixin','CreeperPotionMixin','TruceMobMixin','TruceLivingMixin','TruceDragonMixin'],'client':['client.InversionMixin','client.SightClientMixin','client.SightWorldMixin'],'injectors':{'defaultRequire':1}})
+        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin','FortuneMixin','OreDropsMixin','CreeperPotionMixin','TruceMobMixin','TruceLivingMixin','TruceDragonMixin','MorphSyncMixin','MorphLogicMixin','MorphDimensionsMixin','MorphPlayerMixin','GravityEntityMixin','GravityConnectionMixin','DestructionMixin']+([] if modern else ['MorphPlayerDimensionsMixin']),'client':['client.InversionMixin','client.SightClientMixin','client.SightWorldMixin','client.MorphRenderMixin','client.MorphHandMixin','client.GravityInputMixin'],'injectors':{'defaultRequire':1}})
 
 for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing Stand')]:
     ru=locale=='ru_ru'
@@ -69,6 +69,15 @@ for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing 
         'effect.forbidden_brews.ore_double':'Двойная руда' if ru else 'Double Ore',
         'effect.forbidden_brews.inversion':'Переворот' if ru else 'Inversion',
         'effect.forbidden_brews.ore_sight':'Рудный охотник' if ru else 'Ore Seeker',
+        'effect.forbidden_brews.bat':'Крылья ночи' if ru else 'Night Wings',
+        'effect.forbidden_brews.juggernaut':'Разрушитель' if ru else 'Juggernaut',
+        'effect.forbidden_brews.shapeshifter':'Перевёртыш' if ru else 'Shapeshifter',
+        'effect.forbidden_brews.gravity':'Гравитация' if ru else 'Gravity',
+        'entity.forbidden_brews.brute':'Громила' if ru else 'Brute',
+        'message.forbidden_brews.form':'Форма: %s' if ru else 'Form: %s',
+        'message.forbidden_brews.brute_space':'Для формы громилы нужно свободное место' if ru else 'The brute form needs more space',
+        'message.forbidden_brews.gravity_up':'Гравитация: к небу. Прыжок — вниз' if ru else 'Gravity: skyward. Jump to descend',
+        'message.forbidden_brews.gravity_down':'Гравитация: к земле. Прыжок — вверх' if ru else 'Gravity: groundward. Jump to rise',
         'effect.forbidden_brews.hunter':'Охотник' if ru else 'Hunter',
         'effect.forbidden_brews.truce':'Перемирие' if ru else 'Truce',
         'effect.forbidden_brews.swarm':'Призыв орды' if ru else 'Swarm',
@@ -86,7 +95,7 @@ for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing 
         'gui.forbidden_brews.picker':'Выберите зелье' if ru else 'Choose a potion',
         'gui.forbidden_brews.no_recipes':'Нужна вода или питьевое зелье' if ru else 'Insert water or a drinkable potion',
         'gui.forbidden_brews.ready':'Готово' if ru else 'Ready'}
-    for family,base in [('fortune','Удача' if ru else 'Fortune'),('looting','Добыча' if ru else 'Looting'),('homeward','Домой' if ru else 'Homeward'),('wild_teleport','Случайная телепортация' if ru else 'Random Teleport'),('ore_double','Двойная руда' if ru else 'Double Ore'),('hot_pick','Горячая кирка' if ru else 'Hot Pick'),('inversion','Переворот' if ru else 'Inversion'),('creeper','Сердце крипера' if ru else 'Creeper Heart'),('truce','Перемирие' if ru else 'Truce'),('swarm','Призыв орды' if ru else 'Swarm'),('ore_sight','Рудный охотник' if ru else 'Ore Seeker'),('hunter','Охотник' if ru else 'Hunter')]:
+    for family,base in [('fortune','Удача' if ru else 'Fortune'),('looting','Добыча' if ru else 'Looting'),('homeward','Домой' if ru else 'Homeward'),('wild_teleport','Случайная телепортация' if ru else 'Random Teleport'),('ore_double','Двойная руда' if ru else 'Double Ore'),('hot_pick','Горячая кирка' if ru else 'Hot Pick'),('inversion','Переворот' if ru else 'Inversion'),('creeper','Сердце крипера' if ru else 'Creeper Heart'),('truce','Перемирие' if ru else 'Truce'),('swarm','Призыв орды' if ru else 'Swarm'),('ore_sight','Рудный охотник' if ru else 'Ore Seeker'),('hunter','Охотник' if ru else 'Hunter'),('bat','Крылья ночи' if ru else 'Night Wings'),('juggernaut','Разрушитель' if ru else 'Juggernaut'),('shapeshifter','Перевёртыш' if ru else 'Shapeshifter'),('gravity','Гравитация' if ru else 'Gravity')]:
         for level in range(1,4 if family in ['fortune','looting','inversion'] else 2):
             for splash in [False,True]:
                 key=f'{family}_{level}_{"splash" if splash else "drink"}'
@@ -102,10 +111,10 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.6.0"
+version="0.7.0"
 displayName="Forbidden Brews"
 authors="Magersers"
-description='''Chaos brewing, twelve potion families and renewable Netherite Wart.'''
+description='''Chaos brewing, sixteen potion families and renewable Netherite Wart.'''
 [[dependencies.forbidden_brews]]
 modId="{loadername}"
 {'type="required"' if loadername=='neoforge' else 'mandatory=true'}
@@ -123,8 +132,8 @@ side="BOTH"
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.6.0','name':'Forbidden Brews',
-    'description':'Chaos brewing, twelve potion families and renewable Netherite Wart.',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.0','name':'Forbidden Brews',
+    'description':'Chaos brewing, sixteen potion families and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',
     'entrypoints':{'main':['io.github.magersers.forbiddenbrews.ForbiddenBrews'],

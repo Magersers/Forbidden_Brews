@@ -1,0 +1,20 @@
+[
+  {
+    "file": "forbidden-brews-forge-1.20.1-0.7.0.jar",
+    "bytes": 521346,
+    "sha256": "e647ee755fdba34dc8417eaf274634e1fcae93b3d71cc60309d79d60c8b6b783",
+    "target": "forge-1.20.1"
+  },
+  {
+    "file": "forbidden-brews-neoforge-1.21.1-0.7.0.jar",
+    "bytes": 514609,
+    "sha256": "f3c4556da9f801dd40ad04359a8209a3fbcacee6b88dacb9a685995a823f3b94",
+    "target": "neoforge-1.21.1"
+  },
+  {
+    "file": "forbidden-brews-fabric-1.21.1-0.7.0.jar",
+    "bytes": 517559,
+    "sha256": "183a2a0dedd5ae99811a43a55720de1230351101d211ebf5514afd9b03e74f9f",
+    "target": "fabric-1.21.1"
+  }
+]

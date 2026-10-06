@@ -29,12 +29,18 @@ public final class ForbiddenBrews implements ModInitializer {
         var swarm=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("swarm"),new BrewEffects.Swarm());
         var oreSight=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("ore_sight"),new BrewEffects.OreSight());
         var hunter=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("hunter"),new BrewEffects.Hunter());
+        var bat=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("bat"),new BrewEffects.Bat());
+        var juggernaut=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("juggernaut"),new BrewEffects.Juggernaut());
+        var shapeshifter=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("shapeshifter"),new BrewEffects.Shapeshifter());
+        var gravity=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("gravity"),new BrewEffects.Gravity());
         ChaosContent.standType=()->type;ChaosContent.menuType=()->menu;ChaosContent.wartItem=()->wart;
         ChaosContent.fortuneEffect=()->fortune;ChaosContent.lootingEffect=()->looting;ChaosContent.homewardEffect=()->home;
         ChaosContent.wildTeleportEffect=()->teleport;ChaosContent.oreDoubleEffect=()->doubleOre;ChaosContent.hotPickEffect=()->hot;
         ChaosContent.inversionEffect=()->inversion;ChaosContent.creeperEffect=()->creeper;
         ChaosContent.truceEffect=()->truce;ChaosContent.swarmEffect=()->swarm;
         ChaosContent.oreSightEffect=()->oreSight;ChaosContent.hunterEffect=()->hunter;
+        ChaosContent.batEffect=()->bat;ChaosContent.juggernautEffect=()->juggernaut;ChaosContent.shapeshifterEffect=()->shapeshifter;ChaosContent.gravityEffect=()->gravity;
+        GravityNetwork.register();
         for(var spec:BrewSpec.ALL) {
             var brew=Registry.register(BuiltInRegistries.ITEM,VersionApi.id(spec.id()),new BrewItem(spec));
             ChaosContent.brewItems.put(spec.id(),()->brew);

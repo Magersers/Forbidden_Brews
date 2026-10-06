@@ -52,7 +52,7 @@ public final class ChaosStandTests {
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void allRecipesConsumeWartAndExactIngredients(GameTestHelper h) {
-        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==36,"Thirty-six recipes");
+        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==44,"Forty-four recipes");
         for(var r:ChaosRecipes.ALL) {
             fill(be,r);tick(h,be,r.ticks());
             h.assertTrue(be.getItem(7).is(r.output().getItem()),"Output "+r.id());
@@ -139,7 +139,7 @@ public final class ChaosStandTests {
     @GameTest(template="empty",timeoutTicks=40)
     public static void recipePickerFiltersBaseAndServerValidatesSelection(GameTestHelper h) {
         var initial=ChaosRecipes.available(ItemStack.EMPTY);
-        h.assertTrue(initial.size()==12 && initial.stream().allMatch(r->r.source()==null),"All twelve base potions initially");
+        h.assertTrue(initial.size()==16 && initial.stream().allMatch(r->r.source()==null),"All sixteen base potions initially");
         var options=ChaosRecipes.available(ChaosContent.brew(new BrewSpec("fortune",1,false)));
         h.assertTrue(options.size()==2 && options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",2,false))) &&
             options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",1,true))),"Fortune I unlocks II and its splash");
@@ -368,12 +368,13 @@ public final class ChaosStandTests {
     }
     @GameTest(template="empty",timeoutTicks=100)
     public static void creeperSplashEntityImpactExplodesOnceForMultipleTargets(GameTestHelper h) {
-        var level=h.getLevel();var center=new BlockPos(h.absolutePos(POS).getX()+300,200,h.absolutePos(POS).getZ());
+        var level=h.getLevel();var anchor=h.absolutePos(POS);
+        var center=new BlockPos(((anchor.getX()+300)>>4)*16+8,200,(anchor.getZ()>>4)*16+8);
         level.getChunkAt(center);
         var chunk=new net.minecraft.world.level.ChunkPos(center);level.getChunkSource().addRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,3,chunk);
         var a=net.minecraft.world.entity.EntityType.COW.create(level);var b=net.minecraft.world.entity.EntityType.COW.create(level);
         a.setNoGravity(true);b.setNoGravity(true);a.setNoAi(true);b.setNoAi(true);
-        a.setPos(center.getX()+1,center.getY(),center.getZ());b.setPos(center.getX()-1,center.getY(),center.getZ());level.addFreshEntity(a);level.addFreshEntity(b);
+        a.setPos(center.getX()+1,center.getY(),center.getZ());b.setPos(center.getX()-1,center.getY(),center.getZ());
         var owner=h.makeMockPlayer();owner.setPos(center.getX()+20,center.getY(),center.getZ());
         var projectile=new net.minecraft.world.entity.projectile.ThrownPotion(level,center.getX(),center.getY(),center.getZ()) {
             public void hit(net.minecraft.world.entity.Entity entity) { super.onHit(new net.minecraft.world.phys.EntityHitResult(entity)); }
@@ -386,6 +387,8 @@ public final class ChaosStandTests {
         };
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(listener);
         h.startSequence().thenWaitUntil(()-> {
+            h.assertTrue(level.isPositionEntityTicking(center),"Blast test chunk must be entity ticking");
+        }).thenExecute(()-> {level.addFreshEntity(a);level.addFreshEntity(b);}).thenWaitUntil(()-> {
             var visible=level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,new AABB(center).inflate(8));
             h.assertTrue(visible.contains(a) && visible.contains(b),"Explosion victims must be visible in ticking chunks");
         }).thenExecute(()-> {

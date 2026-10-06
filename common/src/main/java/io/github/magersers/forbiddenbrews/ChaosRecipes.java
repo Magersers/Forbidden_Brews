@@ -65,6 +65,10 @@ public final class ChaosRecipes {
         add(list,"swarm",1,400,c(Items.ROTTEN_FLESH,8),c(Items.BONE,8),c(Items.SPIDER_EYE,4),c(Items.ECHO_SHARD,1));
         add(list,"ore_sight",1,320,c(Items.SPYGLASS,1),c(Items.AMETHYST_SHARD,8),c(Items.GLOWSTONE_DUST,4),c(Items.DIAMOND,1));
         add(list,"hunter",1,360,c(Items.SPECTRAL_ARROW,8),c(Items.SPIDER_EYE,2),c(Items.TRIPWIRE_HOOK,2),c(Items.ECHO_SHARD,1));
+        add(list,"bat",1,360,c(Items.PHANTOM_MEMBRANE,2),c(Items.FEATHER,8),c(Items.GHAST_TEAR,1),c(Items.ECHO_SHARD,1));
+        add(list,"juggernaut",1,480,c(Items.NETHERITE_INGOT,1),c(Items.IRON_BLOCK,2),c(Items.OBSIDIAN,8),c(Items.MAGMA_CREAM,4));
+        add(list,"shapeshifter",1,400,c(Items.CHORUS_FRUIT,8),c(Items.RABBIT_HIDE,4),c(Items.SLIME_BALL,4),c(Items.ECHO_SHARD,2));
+        add(list,"gravity",1,480,c(Items.SHULKER_SHELL,2),c(Items.PHANTOM_MEMBRANE,4),c(Items.AMETHYST_SHARD,8),c(Items.NETHER_STAR,1));
         for (BrewSpec spec:BrewSpec.ALL) if (!spec.splash()) {
             list.add(new Recipe(spec.id()+"_to_splash",spec,spec.asSplash(),160,List.of(c(Items.GUNPOWDER,2))));
         }
