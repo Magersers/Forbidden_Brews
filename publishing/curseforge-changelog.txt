@@ -1,0 +1,9 @@
+Initial CurseForge release: 0.7.2.
+
+Sixteen potion families, 44 drinkable/splash items and 44 brewing recipes. Includes Fortune/Looting stacking, teleportation, ore highlights, flight, transformations, gravity and Netherite Wart farming.
+
+Eleven complete language packs and an animated recipe-selection interface. Install the JAR matching your loader and Minecraft version on both client and server. Fabric also requires Fabric API.
+
+Verified: production builds and dedicated-server startup on all three targets; actual English Forge gameplay recording. Gameplay passed 31 Forge GameTests in 0.7.1. Version 0.7.2 updates presentation and translations.
+
+Concept and direction: Magersers. Substantial AI assistance in implementation, procedural art generation code, translations and documentation.
