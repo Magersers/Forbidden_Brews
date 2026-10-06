@@ -42,8 +42,12 @@
   "item.forbidden_brews.ore_double_1_splash": "Взрывное зелье Двойная руда",
   "item.forbidden_brews.hot_pick_1_drink": "Зелье Горячая кирка",
   "item.forbidden_brews.hot_pick_1_splash": "Взрывное зелье Горячая кирка",
-  "item.forbidden_brews.inversion_1_drink": "Зелье Переворот",
-  "item.forbidden_brews.inversion_1_splash": "Взрывное зелье Переворот",
+  "item.forbidden_brews.inversion_1_drink": "Зелье Переворот I",
+  "item.forbidden_brews.inversion_1_splash": "Взрывное зелье Переворот I",
+  "item.forbidden_brews.inversion_2_drink": "Зелье Переворот II",
+  "item.forbidden_brews.inversion_2_splash": "Взрывное зелье Переворот II",
+  "item.forbidden_brews.inversion_3_drink": "Зелье Переворот III",
+  "item.forbidden_brews.inversion_3_splash": "Взрывное зелье Переворот III",
   "item.forbidden_brews.creeper_1_drink": "Зелье Сердце крипера",
   "item.forbidden_brews.creeper_1_splash": "Взрывное зелье Сердце крипера"
 }

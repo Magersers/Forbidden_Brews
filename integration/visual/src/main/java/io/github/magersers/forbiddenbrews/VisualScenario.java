@@ -43,11 +43,11 @@ public final class VisualScenario {
         }
         if(ticks==120) {
             var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
-            be.setItem(0,ChaosContent.brew(new BrewSpec("creeper",1,false)));
+            be.setItem(0,ChaosContent.brew(new BrewSpec("inversion",1,false)));
         }
         if(ticks==160) {
             var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
-            var recipe=ChaosRecipes.ALL.stream().filter(r->r.result().equals(new BrewSpec("creeper",1,true))).findFirst().orElseThrow();
+            var recipe=ChaosRecipes.ALL.stream().filter(r->r.result().equals(new BrewSpec("inversion",2,false))).findFirst().orElseThrow();
             be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get(),4));
             for(int i=0;i<recipe.components().size();i++) {
                 var c=recipe.components().get(i);be.setItem(i+2,new ItemStack(c.item(),c.count()));
@@ -56,21 +56,10 @@ public final class VisualScenario {
         }
         if(ticks==520) {player.closeContainer();player.teleportTo(player.serverLevel(),1.5,65,-1.8,0,12);}
         if(ticks==550) {
-            var bottle=ChaosContent.brew(new BrewSpec("inversion",1,false));
+            var bottle=ChaosContent.brew(new BrewSpec("inversion",3,false));
             player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,bottle.finishUsingItem(player.serverLevel(),player));
         }
         if(ticks==630)new ItemStack(Items.MILK_BUCKET).finishUsingItem(player.serverLevel(),player);
-        if(ticks==660 || ticks==720)for(int x=-1;x<=3;x++)for(int y=65;y<=67;y++)
-            player.serverLevel().setBlockAndUpdate(new BlockPos(x,y,ticks==660?0:4),Blocks.LIME_STAINED_GLASS.defaultBlockState());
-        if(ticks==680) {
-            var bottle=ChaosContent.brew(new BrewSpec("creeper",1,false));
-            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,bottle.finishUsingItem(player.serverLevel(),player));
-        }
-        if(ticks==740) {
-            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,ChaosContent.brew(new BrewSpec("creeper",1,true)));
-            player.getMainHandItem().use(player.serverLevel(),player,net.minecraft.world.InteractionHand.MAIN_HAND);
-        }
-        if(ticks==741)player.teleportTo(player.serverLevel(),1.5,65,-13.8,0,12);
-        if(ticks==860)player.getServer().halt(false);
+        if(ticks==740)player.getServer().halt(false);
     }
 }

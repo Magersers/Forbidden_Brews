@@ -73,7 +73,7 @@ for frame in range(24):sheet.paste(wart(3,frame,True),(0,32*frame))
 sheet.save(item);save_json(Path(str(item)+'.mcmeta'),{'animation':{'frametime':2}})
 save_json(ASSETS/'models/item/netherite_wart.json',{'parent':'minecraft:item/generated','textures':{'layer0':'forbidden_brews:item/netherite_wart'}})
 for family in ['fortune','looting','homeward','wild_teleport','ore_double','hot_pick','inversion','creeper']:
-    for level in range(1,4 if family in ['fortune','looting'] else 2):
+    for level in range(1,4 if family in ['fortune','looting','inversion'] else 2):
         for variant in ['drink','splash']:
             save_json(ASSETS/f'models/item/{family}_{level}_{variant}.json',{'parent':'minecraft:item/generated',
                 'textures':{'layer0':f'forbidden_brews:item/{family}_{variant}'}})
@@ -104,4 +104,4 @@ for name,color in [('fortune','#efcc61'),('looting','#ee55ab'),('homeward','#f3b
     path=ASSETS/f'textures/mob_effect/{name}.png';path.parent.mkdir(parents=True,exist_ok=True);icon.save(path)
 preview=ROOT/'previews/netherite_wart.gif';frames=[wart(3,i,True).resize((256,256),Image.Resampling.NEAREST) for i in range(24)]
 frames[0].save(preview,save_all=True,append_images=frames[1:],duration=100,loop=0,disposal=2)
-print('GUI, 4 growth stages, 24 potion models and Netherite Wart ready')
+print('GUI, 4 growth stages, 28 potion models and Netherite Wart ready')

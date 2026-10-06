@@ -42,8 +42,12 @@
   "item.forbidden_brews.ore_double_1_splash": "Splash Potion of Double Ore",
   "item.forbidden_brews.hot_pick_1_drink": "Potion of Hot Pick",
   "item.forbidden_brews.hot_pick_1_splash": "Splash Potion of Hot Pick",
-  "item.forbidden_brews.inversion_1_drink": "Potion of Inversion",
-  "item.forbidden_brews.inversion_1_splash": "Splash Potion of Inversion",
+  "item.forbidden_brews.inversion_1_drink": "Potion of Inversion I",
+  "item.forbidden_brews.inversion_1_splash": "Splash Potion of Inversion I",
+  "item.forbidden_brews.inversion_2_drink": "Potion of Inversion II",
+  "item.forbidden_brews.inversion_2_splash": "Splash Potion of Inversion II",
+  "item.forbidden_brews.inversion_3_drink": "Potion of Inversion III",
+  "item.forbidden_brews.inversion_3_splash": "Splash Potion of Inversion III",
   "item.forbidden_brews.creeper_1_drink": "Potion of Creeper Heart",
   "item.forbidden_brews.creeper_1_splash": "Splash Potion of Creeper Heart"
 }

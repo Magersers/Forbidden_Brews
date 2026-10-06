@@ -148,8 +148,7 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
             String text=Component.translatable(recipe.result().translation()).getString();
             g.drawString(font,font.plainSubstrByWidth(text,78),17,130,0x8DDAD0,false);
             if(!recipe.result().instant()) {
-                int minutes=recipe.result().duration()/1200;
-                g.drawString(font,minutes+":00",27,143,0x7C91A5,false);
+                g.drawString(font,recipe.result().durationLabel(),27,143,0x7C91A5,false);
             }
         }
     }

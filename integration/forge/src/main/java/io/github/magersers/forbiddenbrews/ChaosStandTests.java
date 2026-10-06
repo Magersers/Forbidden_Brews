@@ -52,15 +52,15 @@ public final class ChaosStandTests {
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void allRecipesConsumeWartAndExactIngredients(GameTestHelper h) {
-        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==24,"Twenty-four recipes");
+        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==28,"Twenty-eight recipes");
         for(var r:ChaosRecipes.ALL) {
             fill(be,r);tick(h,be,r.ticks());
             h.assertTrue(be.getItem(7).is(r.output().getItem()),"Output "+r.id());
             for(int i=0;i<7;i++)h.assertTrue(be.getItem(i).isEmpty(),"Consumption "+r.id()+" slot "+i);
             h.assertTrue(be.fuel==19,"One charge used");
             h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getAmplifier()==r.result().level()-1,"Correct effect level");
-            int duration=r.result().instant()?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
-            h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getDuration()==duration,"Duration 2/5/8 minutes for "+r.id());
+            int duration=r.result().family().equals("inversion")?switch(r.result().level()){case 1->900;case 2->440;default->220;}:r.result().instant()?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
+            h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getDuration()==duration,"Correct balanced duration for "+r.id());
         }h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=40)
@@ -313,19 +313,31 @@ public final class ChaosStandTests {
 
     @GameTest(template="empty",timeoutTicks=40)
     public static void inversionDrinkSplashAndMilk(GameTestHelper h) {
-        var player=h.makeMockPlayer();var bottle=ChaosContent.brew(new BrewSpec("inversion",1,false));
-        var returned=bottle.finishUsingItem(h.getLevel(),player);
-        h.assertTrue(player.hasEffect(ForbiddenBrews.INVERSION.get()) && player.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==2400,"Drink applies two-minute inversion");
-        h.assertTrue(returned.is(Items.GLASS_BOTTLE),"Drink returns glass bottle");
-        var pos=h.absolutePos(POS);var target=h.spawn(net.minecraft.world.entity.EntityType.PIG,POS);
-        var splash=new net.minecraft.world.entity.projectile.ThrownPotion(h.getLevel(),pos.getX(),pos.getY(),pos.getZ()) {
-            public void hit(net.minecraft.world.entity.Entity entity) { super.onHit(new net.minecraft.world.phys.EntityHitResult(entity)); }
-        };
-        splash.setItem(ChaosContent.brew(new BrewSpec("inversion",1,true)));splash.hit(target);
-        h.assertTrue(target.hasEffect(ForbiddenBrews.INVERSION.get()) && target.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==2400,"Direct splash applies inversion");
-        new ItemStack(Items.MILK_BUCKET).finishUsingItem(h.getLevel(),player);
-        h.assertFalse(player.hasEffect(ForbiddenBrews.INVERSION.get()),"Milk removes inversion");h.succeed();
+        h.assertTrue(ForbiddenBrews.INVERSION.get().getCategory()==MobEffectCategory.HARMFUL,"Inversion is a negative effect");
+        var player=h.makeMockPlayer();var pos=h.absolutePos(POS);
+        for(int level=1;level<=3;level++) {
+            int duration=switch(level){case 1->900;case 2->440;default->220;};
+            var spec=new BrewSpec("inversion",level,false);
+            var bottle=ChaosContent.brew(spec);var returned=bottle.finishUsingItem(h.getLevel(),player);
+            h.assertTrue(player.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==duration && player.getEffect(ForbiddenBrews.INVERSION.get()).getAmplifier()==level-1,"Negative drink level and duration "+level);
+            h.assertTrue(spec.durationLabel().equals("0:"+(duration/20)),"GUI shows seconds, not 0:00");
+            h.assertTrue(returned.is(Items.GLASS_BOTTLE),"Drink returns glass bottle");
+            var target=h.spawn(net.minecraft.world.entity.EntityType.PIG,POS);
+            var splash=new net.minecraft.world.entity.projectile.ThrownPotion(h.getLevel(),pos.getX(),pos.getY(),pos.getZ()) {
+                public void hit(net.minecraft.world.entity.Entity entity) { super.onHit(new net.minecraft.world.phys.EntityHitResult(entity)); }
+            };
+            splash.setItem(ChaosContent.brew(spec.asSplash()));splash.hit(target);
+            h.assertTrue(target.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==duration && target.getEffect(ForbiddenBrews.INVERSION.get()).getAmplifier()==level-1,"Direct splash level and duration "+level);
+            var choices=ChaosRecipes.available(ChaosContent.brew(spec));
+            h.assertTrue(choices.size()==(level==3?1:2),"Inversion unlocks next level and own splash only");
+            if(level<3)h.assertTrue(choices.stream().anyMatch(r->r.result().level()==spec.level()+1 && !r.result().splash()),"Next level available from central bottle");
+            h.assertTrue(choices.stream().anyMatch(r->r.result().equals(spec.asSplash())),"Own splash available");
+            new ItemStack(Items.MILK_BUCKET).finishUsingItem(h.getLevel(),player);
+            h.assertFalse(player.hasEffect(ForbiddenBrews.INVERSION.get()),"Milk removes every inversion level");
+        }
+        h.succeed();
     }
+
     @GameTest(template="empty",timeoutTicks=40)
     public static void creeperDrinkHasSmallSelfDamageAndOneBlast(GameTestHelper h) {
         var player=h.makeMockPlayer();var center=new BlockPos(h.absolutePos(POS).getX()+200,200,h.absolutePos(POS).getZ());

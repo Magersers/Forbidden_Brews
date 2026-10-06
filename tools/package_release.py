@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.4.0'
+VERSION='0.4.1'
 out=ROOT/'releases'/VERSION;out.mkdir(parents=True,exist_ok=True)
 manifest=[]
 for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
@@ -25,6 +25,8 @@ for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
                 assert f'assets/forbidden_brews/models/item/{family}_1_{variant}.json' in paths
                 assert f'assets/forbidden_brews/textures/item/{family}_{variant}.png.mcmeta' in paths
             assert f'assets/forbidden_brews/textures/mob_effect/{family}.png' in paths
+        for level in [2,3]:
+            for variant in ['drink','splash']:assert f'assets/forbidden_brews/models/item/inversion_{level}_{variant}.json' in paths
         assert 'data/forbidden_brews/tags/'+('blocks' if target=='forge-1.20.1' else 'block')+'/ores.json' in paths
         assert any(p.endswith('/RandomTeleport.class') for p in paths)
         assert 'assets/forbidden_brews/models/block/chaos_brewing_stand.json' in paths

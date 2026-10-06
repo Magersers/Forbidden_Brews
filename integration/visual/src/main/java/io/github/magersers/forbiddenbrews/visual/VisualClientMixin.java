@@ -35,10 +35,10 @@ public abstract class VisualClientMixin {
             brews$screenTicks++;
             int x=(screen.width-256)/2,y=(screen.height-256)/2;
             if(brews$screenTicks==5 || brews$screenTicks==50)screen.mouseClicked(x+128,y+136,0);
-            if(brews$screenTicks==25)screen.mouseClicked(x+182,y+210,0);
+            if(brews$screenTicks==25)screen.mouseClicked(x+74,y+210,0);
             if(brews$screenTicks==65)screen.mouseClicked(x+128,y+76,0);
-            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("creeper",1,false)))throw new IllegalStateException("Creeper picker choice was not synchronized");
-            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("creeper",1,true)))throw new IllegalStateException("Splash picker choice was not synchronized");
+            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("inversion",1,false)))throw new IllegalStateException("Inversion picker choice was not synchronized");
+            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("inversion",2,false)))throw new IllegalStateException("Inversion II picker choice was not synchronized");
         }
     }
     @Inject(method="runTick",at=@At("TAIL"))
@@ -85,7 +85,7 @@ public abstract class VisualClientMixin {
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) { screenshot.writeToFile(Path.of(mc.gameDirectory.getAbsolutePath(),name)); }
             System.out.println("FORBIDDEN_BREWS_CAPTURE "+name);
         }
-        if(brews$fxFrame>=150) {
+        if(brews$fxFrame>=90) {
             if(!brews$inverted || !brews$restored)throw new IllegalStateException("Inversion and restoration were not verified");
             mc.stop();
         }

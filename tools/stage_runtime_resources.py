@@ -83,11 +83,11 @@ for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing 
         'gui.forbidden_brews.no_recipes':'Нужна вода или питьевое зелье' if ru else 'Insert water or a drinkable potion',
         'gui.forbidden_brews.ready':'Готово' if ru else 'Ready'}
     for family,base in [('fortune','Удача' if ru else 'Fortune'),('looting','Добыча' if ru else 'Looting'),('homeward','Домой' if ru else 'Homeward'),('wild_teleport','Случайная телепортация' if ru else 'Random Teleport'),('ore_double','Двойная руда' if ru else 'Double Ore'),('hot_pick','Горячая кирка' if ru else 'Hot Pick'),('inversion','Переворот' if ru else 'Inversion'),('creeper','Сердце крипера' if ru else 'Creeper Heart')]:
-        for level in range(1,4 if family in ['fortune','looting'] else 2):
+        for level in range(1,4 if family in ['fortune','looting','inversion'] else 2):
             for splash in [False,True]:
                 key=f'{family}_{level}_{"splash" if splash else "drink"}'
                 label=('Взрывное зелье ' if splash else 'Зелье ') if ru else ('Splash Potion of ' if splash else 'Potion of ')
-                lang['item.forbidden_brews.'+key]=label+base+(' '+['I','II','III'][level-1] if family in ['fortune','looting'] else '')
+                lang['item.forbidden_brews.'+key]=label+base+(' '+['I','II','III'][level-1] if family in ['fortune','looting','inversion'] else '')
     write(ROOT/'common/src/main/resources/assets/forbidden_brews/lang'/(locale+'.json'),lang)
 
 for target,modloader,loadermin,loadername,mc,minimum in [
@@ -98,7 +98,7 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.4.0"
+version="0.4.1"
 displayName="Forbidden Brews"
 authors="Magersers"
 description='''Chaos brewing, eight potion families and renewable Netherite Wart.'''
@@ -119,7 +119,7 @@ side="BOTH"
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.4.0','name':'Forbidden Brews',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.4.1','name':'Forbidden Brews',
     'description':'Chaos brewing, eight potion families and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',
