@@ -43,7 +43,9 @@ Install only the file matching your loader and Minecraft version, on both client
 
 English, Russian, German, Spanish, French, Brazilian Portuguese, Simplified Chinese, Japanese, Korean and Ukrainian translations are included (English has US/UK packs).
 
-[Every recipe and detailed controls](https://github.com/Magersers/Forbidden_Brews/blob/main/docs/brewing.md) · [Source code and downloads](https://github.com/Magersers/Forbidden_Brews) · [Report bugs](https://github.com/Magersers/Forbidden_Brews/issues)
+[Every recipe and detailed controls](https://github.com/Magersers/Forbidden_Brews/blob/main/docs/brewing.md) · [Source code and downloads](https://github.com/Magersers/Forbidden_Brews/tree/main)
+
+Please report bugs through the source repository's Issues tab.
 
 ## Credits and AI disclosure
 

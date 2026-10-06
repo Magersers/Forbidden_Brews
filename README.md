@@ -4,7 +4,7 @@
 
 Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Netherite-powered Chaos Brewing Stand. Each bottle has its own pixel silhouette, decorations and animated liquid: portals, crystals, foam, molten rock and more.
 
-**[Download 0.7.2](releases/0.7.2/)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)**
+**[Download 0.7.2](https://github.com/Magersers/Forbidden_Brews/releases/tag/v0.7.2)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
 
 | Minecraft | Loader | Requirements |
 |---|---|---|
