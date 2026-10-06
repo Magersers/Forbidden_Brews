@@ -22,13 +22,13 @@ Uploaded versions:
 - [NeoForge 1.21.1](https://modrinth.com/mod/forbidden-brews/version/Vle59yn0)
 - [Fabric 1.21.1](https://modrinth.com/mod/forbidden-brews/version/Fu9DgcBN), with Fabric API as a required dependency
 
-The gallery contains five actual English Minecraft GIFs: Chaos Brewing, Juggernaut, Night Wings, Gravity and Ore Seeker. The icon is an actual in-game screenshot. The generated logo is not used on this listing.
+The gallery contains five actual English Minecraft GIFs: Chaos Brewing, Juggernaut, Night Wings, Gravity and Ore Seeker. The description additionally includes the actual Minecraft crafting-table recipe, a stand-in-world GIF and the brewing-interface GIF. The icon is an actual in-game screenshot. The generated logo is not used on this listing.
 
 ## Planet Minecraft: private draft
 
 [Prepared draft](https://www.planetminecraft.com/mod/forbidden-brews-16-magical-potion-families/) — visible only to the owner and site moderators until published.
 
-The saved draft has an English description, three actual English Minecraft screenshots, five gameplay GIFs embedded in the description, the NeoForge 1.21.1 JAR, an all-loader download link and AI credits. Planet Minecraft rejected GIF files in the image gallery, so screenshots are used there instead.
+The saved draft is titled **Forbidden Brews | Forge 1.20.1 / NeoForge & Fabric 1.21.1**. Its English description includes the actual crafting-table recipe, six gameplay GIFs (including the stand in the world and its brewing interface), and a CurseForge project link. The gallery has three actual English Minecraft screenshots. The NeoForge 1.21.1 JAR, an all-loader download link and AI credits are included. Planet Minecraft rejected GIF files in the image gallery, so screenshots are used there instead.
 
 The draft has **not** been published live. Planet Minecraft's [official AI-content announcement](https://www.planetminecraft.com/forums/pmc/news/ai-generated-content-shouldn-t-replace-your-work-or-images-706091/) and [submission rules](https://www.planetminecraft.com/rules/) prohibit AI output replacing the creator's own work. The current implementation and assets were substantially generated with AI assistance; this is a concrete publication restriction. No claim of a live Planet Minecraft release is made.
 
@@ -46,6 +46,8 @@ Project **1730111** was created under Magersers on 6 October 2026. All three rel
 
 All files are marked for client and server. The Fabric file declares official **Fabric API** (project 306612 by modmuss50) as a **Required Dependency**. License: All Rights Reserved. Main category: Magic; additional categories: Adventure and RPG, Ores and Resources, Farming. Comments are enabled, GitHub source is linked and third-party launcher distribution is allowed.
 
-The English [description](curseforge.md) and [release changelog](curseforge-changelog.txt) are saved here. Five actual English Minecraft GIFs load correctly in the description. The gallery has one English interface screenshot and four GIFs with English titles and descriptions: Chaos Brewing, Juggernaut, Night Wings and Ore Seeker. The Gravity GIF exceeds the gallery's 2 MB limit and is embedded in the description instead.
+The English [description](curseforge.md) and [release changelog](curseforge-changelog.txt) are saved here. The actual crafting-table recipe and six actual English Minecraft GIFs load correctly in the description, including separate stand-in-world and brewing-interface recordings. The gallery has one English interface screenshot and four GIFs with English titles and descriptions: Chaos Brewing, Juggernaut, Night Wings and Ore Seeker. The Gravity GIF exceeds the gallery's 2 MB limit and is embedded in the description instead.
+
+On 6 October 2026 the recipe screenshot and both stand GIFs were verified as loaded in all three platform descriptions and the GitHub release. The recipe image is cropped from Minecraft's own Crafting screen; its result is checked by the actual server crafting menu. The full untouched capture is [retained in the repository](../previews/chaos_stand_crafting_full.png). No CAPTCHA appeared during these description updates.
 
 The generated branding logo is explicitly disclosed, together with AI-assisted implementation and translations. External binary download links are omitted in accordance with the [CurseForge moderation policies](https://support.curseforge.com/support/solutions/articles/9000197279-moderation-policies). No moderator approval or public availability is claimed until the platform confirms it.
