@@ -35,7 +35,11 @@ for version,modern in [('1.20.1',False),('1.21.1',True)]:
     for tag in ['mineable/pickaxe','needs_diamond_tool']:
         write(data/'minecraft/tags'/('block' if modern else 'blocks')/(tag+'.json'),{
             'replace':False,'values':['forbidden_brews:chaos_brewing_stand']})
-    advancement={'parent':'minecraft:recipes/root','criteria':{
+    write(data/'forbidden_brews/tags'/('block' if modern else 'blocks')/'ores.json',{
+        'replace':False,'values':['#minecraft:'+name+'_ores' for name in ['coal','iron','copper','gold','redstone','lapis','diamond','emerald']]+[
+            'minecraft:nether_quartz_ore','minecraft:ancient_debris',
+            {'id':'#forge:ores','required':False},{'id':'#c:ores','required':False}]})
+    advancement={'parent' :'minecraft:recipes/root','criteria':{
         'has_netherite':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{
             'items':(['minecraft:netherite_ingot'] if modern else ['minecraft:netherite_ingot'])}]}},
         'has_the_recipe':{'trigger':'minecraft:recipe_unlocked','conditions':{'recipe':'forbidden_brews:chaos_brewing_stand'}}},
@@ -51,7 +55,7 @@ for version,modern in [('1.20.1',False),('1.21.1',True)]:
     write(res/'pack.mcmeta',{'pack':{'pack_format':34 if modern else 15,'description':'Forbidden Brews models and recipes'}})
     write(res/'forbidden_brews.mixins.json',{'required':True,'minVersion':'0.8',
         'package':'io.github.magersers.forbiddenbrews.mixin','compatibilityLevel':'JAVA_21' if modern else 'JAVA_17',
-        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin','FortuneMixin'],'injectors':{'defaultRequire':1}})
+        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin','FortuneMixin','OreDropsMixin'],'injectors':{'defaultRequire':1}})
 
 for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing Stand')]:
     ru=locale=='ru_ru'
@@ -61,6 +65,11 @@ for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing 
         'effect.forbidden_brews.looting':'Добыча' if ru else 'Looting',
         'effect.forbidden_brews.homeward':'Возвращение домой' if ru else 'Homeward',
         'message.forbidden_brews.home_unsafe':'Рядом с точкой возрождения нет безопасного места' if ru else 'No safe landing near your spawn',
+        'effect.forbidden_brews.wild_teleport':'Случайная телепортация' if ru else 'Random Teleport',
+        'effect.forbidden_brews.ore_double':'Двойная руда' if ru else 'Double Ore',
+        'effect.forbidden_brews.hot_pick':'Горячая кирка' if ru else 'Hot Pick',
+        'message.forbidden_brews.teleport_search':'Ищем безопасную точку телепортации...' if ru else 'Searching for a safe teleport destination...',
+        'message.forbidden_brews.teleport_unsafe':'Не удалось найти безопасную точку. Телепортация отменена' if ru else 'No safe destination found. Teleport cancelled',
         'gui.forbidden_brews.wart':'Нарост' if ru else 'Wart',
         'gui.forbidden_brews.components':'Компоненты' if ru else 'Ingredients',
         'gui.forbidden_brews.base':'Основа' if ru else 'Base',
@@ -71,12 +80,12 @@ for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing 
         'gui.forbidden_brews.picker':'Выберите зелье' if ru else 'Choose a potion',
         'gui.forbidden_brews.no_recipes':'Нужна вода или питьевое зелье' if ru else 'Insert water or a drinkable potion',
         'gui.forbidden_brews.ready':'Готово' if ru else 'Ready'}
-    for family,base in [('fortune','Удача' if ru else 'Fortune'),('looting','Добыча' if ru else 'Looting'),('homeward','Домой' if ru else 'Homeward')]:
-        for level in range(1,2 if family=='homeward' else 4):
+    for family,base in [('fortune','Удача' if ru else 'Fortune'),('looting','Добыча' if ru else 'Looting'),('homeward','Домой' if ru else 'Homeward'),('wild_teleport','Случайная телепортация' if ru else 'Random Teleport'),('ore_double','Двойная руда' if ru else 'Double Ore'),('hot_pick','Горячая кирка' if ru else 'Hot Pick')]:
+        for level in range(1,4 if family in ['fortune','looting'] else 2):
             for splash in [False,True]:
                 key=f'{family}_{level}_{"splash" if splash else "drink"}'
                 label=('Взрывное зелье ' if splash else 'Зелье ') if ru else ('Splash Potion of ' if splash else 'Potion of ')
-                lang['item.forbidden_brews.'+key]=label+base+(' '+['I','II','III'][level-1] if family!='homeward' else '')
+                lang['item.forbidden_brews.'+key]=label+base+(' '+['I','II','III'][level-1] if family in ['fortune','looting'] else '')
     write(ROOT/'common/src/main/resources/assets/forbidden_brews/lang'/(locale+'.json'),lang)
 
 for target,modloader,loadermin,loadername,mc,minimum in [
@@ -87,10 +96,10 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.2.1"
+version="0.3.0"
 displayName="Forbidden Brews"
 authors="Magersers"
-description='''Chaos brewing, Fortune, Looting, Homeward potions and renewable Netherite Wart.'''
+description='''Chaos brewing, six potion families and renewable Netherite Wart.'''
 [[dependencies.forbidden_brews]]
 modId="{loadername}"
 {'type="required"' if loadername=='neoforge' else 'mandatory=true'}
@@ -108,8 +117,8 @@ side="BOTH"
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.2.1','name':'Forbidden Brews',
-    'description':'Chaos brewing, Fortune, Looting, Homeward potions and renewable Netherite Wart.',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.3.0','name':'Forbidden Brews',
+    'description':'Chaos brewing, six potion families and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',
     'entrypoints':{'main':['io.github.magersers.forbiddenbrews.ForbiddenBrews'],

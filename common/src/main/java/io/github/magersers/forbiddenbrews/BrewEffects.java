@@ -18,6 +18,19 @@ public final class BrewEffects {
             if (victim instanceof ServerPlayer player) VersionApi.home(player);
         }
     }
+    public static final class WildTeleport extends MobEffect {
+        public WildTeleport() { super(MobEffectCategory.BENEFICIAL,0x9D6FFF); }
+        @Override public boolean isInstantenous() { return true; }
+        @Override public void applyInstantenousEffect(Entity source, Entity owner, LivingEntity victim, int amplifier, double strength) {
+            if(victim instanceof ServerPlayer player) RandomTeleport.teleport(player);
+        }
+    }
+    public static final class OreDouble extends MobEffect {
+        public OreDouble() { super(MobEffectCategory.BENEFICIAL,0x68DFDB); }
+    }
+    public static final class HotPick extends MobEffect {
+        public HotPick() { super(MobEffectCategory.BENEFICIAL,0xFF8A38); }
+    }
     public static int lootingBonus(LivingEntity killer) {
         if (killer == null) return 0;
         var effect = VersionApi.looting(killer);

@@ -6,7 +6,8 @@
   "refmap": "forbidden_brews.refmap.json",
   "mixins": [
     "LootingMixin",
-    "FortuneMixin"
+    "FortuneMixin",
+    "OreDropsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

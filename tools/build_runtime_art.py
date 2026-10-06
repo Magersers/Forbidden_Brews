@@ -72,12 +72,12 @@ item=ASSETS/'textures/item/netherite_wart.png';sheet=Image.new('RGBA',(32,32*24)
 for frame in range(24):sheet.paste(wart(3,frame,True),(0,32*frame))
 sheet.save(item);save_json(Path(str(item)+'.mcmeta'),{'animation':{'frametime':2}})
 save_json(ASSETS/'models/item/netherite_wart.json',{'parent':'minecraft:item/generated','textures':{'layer0':'forbidden_brews:item/netherite_wart'}})
-for family in ['fortune','looting','homeward']:
-    for level in range(1,2 if family=='homeward' else 4):
+for family in ['fortune','looting','homeward','wild_teleport','ore_double','hot_pick']:
+    for level in range(1,4 if family in ['fortune','looting'] else 2):
         for variant in ['drink','splash']:
             save_json(ASSETS/f'models/item/{family}_{level}_{variant}.json',{'parent':'minecraft:item/generated',
                 'textures':{'layer0':f'forbidden_brews:item/{family}_{variant}'}})
-for name,color in [('fortune','#efcc61'),('looting','#ee55ab'),('homeward','#f3b653')]:
+for name,color in [('fortune','#efcc61'),('looting','#ee55ab'),('homeward','#f3b653'),('wild_teleport','#ae79ff'),('ore_double','#68dfdb'),('hot_pick','#ff8a38')]:
     icon=Image.new('RGBA',(18,18));p=ImageDraw.Draw(icon)
     if name=='fortune':
         p.line([(4,14),(12,6)],fill='#b28243',width=2)
@@ -85,9 +85,17 @@ for name,color in [('fortune','#efcc61'),('looting','#ee55ab'),('homeward','#f3b
         p.point((3,9),fill='#fff1b4');p.point((10,14),fill='#fff1b4')
     elif name=='looting':
         p.line([(4,13),(13,4)],fill=color,width=3);p.line([(3,10),(7,14)],fill='#f1e7d1',width=2)
+    elif name=='wild_teleport':
+        p.ellipse((3,2,14,15),outline=color,width=2);p.line([(8,5),(11,8),(8,11),(6,9)],fill='#e9caff',width=2)
+    elif name=='ore_double':
+        for x in [2,9]:p.polygon([(x,8),(x+3,3),(x+6,8),(x+3,14)],fill=color,outline='#286f95')
+        p.line((4,5,5,7),fill='#d4fff6');p.line((11,5,12,7),fill='#d4fff6')
+    elif name=='hot_pick':
+        p.line([(4,14),(12,6)],fill='#c77a36',width=2);p.line([(4,4),(11,4),(14,7),(14,9)],fill=color,width=3)
+        p.polygon([(2,8),(1,14),(4,16),(6,13),(5,9),(4,12)],fill='#ffc76c')
     else:
         p.line([(3,8),(9,3),(15,8)],fill=color,width=2);p.rectangle((5,8,13,14),outline=color,width=2)
     path=ASSETS/f'textures/mob_effect/{name}.png';path.parent.mkdir(parents=True,exist_ok=True);icon.save(path)
 preview=ROOT/'previews/netherite_wart.gif';frames=[wart(3,i,True).resize((256,256),Image.Resampling.NEAREST) for i in range(24)]
 frames[0].save(preview,save_all=True,append_images=frames[1:],duration=100,loop=0,disposal=2)
-print('GUI, 4 growth stages, 14 potion models and Netherite Wart ready')
+print('GUI, 4 growth stages, 20 potion models and Netherite Wart ready')

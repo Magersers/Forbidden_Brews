@@ -1,6 +1,7 @@
 package io.github.magersers.forbiddenbrews.visual;
 
 import io.github.magersers.forbiddenbrews.client.ChaosScreen;
+import io.github.magersers.forbiddenbrews.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -32,9 +33,10 @@ public abstract class VisualClientMixin {
             brews$screenTicks++;
             int x=(screen.width-256)/2,y=(screen.height-256)/2;
             if(brews$screenTicks==5 || brews$screenTicks==50)screen.mouseClicked(x+128,y+136,0);
-            if(brews$screenTicks==25 || brews$screenTicks==65)screen.mouseClicked(x+128,y+76,0);
-            if(brews$screenTicks==35 && screen.getMenu().selectedRecipe()!=0)throw new IllegalStateException("Base picker choice was not synchronized");
-            if(brews$screenTicks==95 && screen.getMenu().selectedRecipe()!=1)throw new IllegalStateException("Upgrade picker choice was not synchronized");
+            if(brews$screenTicks==25)screen.mouseClicked(x+182,y+168,0);
+            if(brews$screenTicks==65)screen.mouseClicked(x+128,y+76,0);
+            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("hot_pick",1,false)))throw new IllegalStateException("Hot Pick picker choice was not synchronized");
+            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("hot_pick",1,true)))throw new IllegalStateException("Splash picker choice was not synchronized");
         }
     }
     @Inject(method="runTick",at=@At("TAIL"))

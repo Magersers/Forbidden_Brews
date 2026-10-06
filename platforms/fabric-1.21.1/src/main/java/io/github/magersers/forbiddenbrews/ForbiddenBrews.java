@@ -20,8 +20,12 @@ public final class ForbiddenBrews implements ModInitializer {
         var fortune=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("fortune"),new BrewEffects.Fortune());
         var looting=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("looting"),new BrewEffects.Looting());
         var home=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("homeward"),new BrewEffects.Homeward());
+        var teleport=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("wild_teleport"),new BrewEffects.WildTeleport());
+        var doubleOre=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("ore_double"),new BrewEffects.OreDouble());
+        var hot=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("hot_pick"),new BrewEffects.HotPick());
         ChaosContent.standType=()->type;ChaosContent.menuType=()->menu;ChaosContent.wartItem=()->wart;
         ChaosContent.fortuneEffect=()->fortune;ChaosContent.lootingEffect=()->looting;ChaosContent.homewardEffect=()->home;
+        ChaosContent.wildTeleportEffect=()->teleport;ChaosContent.oreDoubleEffect=()->doubleOre;ChaosContent.hotPickEffect=()->hot;
         for(var spec:BrewSpec.ALL) {
             var brew=Registry.register(BuiltInRegistries.ITEM,VersionApi.id(spec.id()),new BrewItem(spec));
             ChaosContent.brewItems.put(spec.id(),()->brew);

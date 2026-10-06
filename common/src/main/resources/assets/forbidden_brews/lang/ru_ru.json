@@ -5,6 +5,11 @@
   "effect.forbidden_brews.looting": "Добыча",
   "effect.forbidden_brews.homeward": "Возвращение домой",
   "message.forbidden_brews.home_unsafe": "Рядом с точкой возрождения нет безопасного места",
+  "effect.forbidden_brews.wild_teleport": "Случайная телепортация",
+  "effect.forbidden_brews.ore_double": "Двойная руда",
+  "effect.forbidden_brews.hot_pick": "Горячая кирка",
+  "message.forbidden_brews.teleport_search": "Ищем безопасную точку телепортации...",
+  "message.forbidden_brews.teleport_unsafe": "Не удалось найти безопасную точку. Телепортация отменена",
   "gui.forbidden_brews.wart": "Нарост",
   "gui.forbidden_brews.components": "Компоненты",
   "gui.forbidden_brews.base": "Основа",
@@ -28,5 +33,11 @@
   "item.forbidden_brews.looting_3_drink": "Зелье Добыча III",
   "item.forbidden_brews.looting_3_splash": "Взрывное зелье Добыча III",
   "item.forbidden_brews.homeward_1_drink": "Зелье Домой",
-  "item.forbidden_brews.homeward_1_splash": "Взрывное зелье Домой"
+  "item.forbidden_brews.homeward_1_splash": "Взрывное зелье Домой",
+  "item.forbidden_brews.wild_teleport_1_drink": "Зелье Случайная телепортация",
+  "item.forbidden_brews.wild_teleport_1_splash": "Взрывное зелье Случайная телепортация",
+  "item.forbidden_brews.ore_double_1_drink": "Зелье Двойная руда",
+  "item.forbidden_brews.ore_double_1_splash": "Взрывное зелье Двойная руда",
+  "item.forbidden_brews.hot_pick_1_drink": "Зелье Горячая кирка",
+  "item.forbidden_brews.hot_pick_1_splash": "Взрывное зелье Горячая кирка"
 }

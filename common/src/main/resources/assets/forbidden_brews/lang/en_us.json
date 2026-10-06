@@ -5,6 +5,11 @@
   "effect.forbidden_brews.looting": "Looting",
   "effect.forbidden_brews.homeward": "Homeward",
   "message.forbidden_brews.home_unsafe": "No safe landing near your spawn",
+  "effect.forbidden_brews.wild_teleport": "Random Teleport",
+  "effect.forbidden_brews.ore_double": "Double Ore",
+  "effect.forbidden_brews.hot_pick": "Hot Pick",
+  "message.forbidden_brews.teleport_search": "Searching for a safe teleport destination...",
+  "message.forbidden_brews.teleport_unsafe": "No safe destination found. Teleport cancelled",
   "gui.forbidden_brews.wart": "Wart",
   "gui.forbidden_brews.components": "Ingredients",
   "gui.forbidden_brews.base": "Base",
@@ -28,5 +33,11 @@
   "item.forbidden_brews.looting_3_drink": "Potion of Looting III",
   "item.forbidden_brews.looting_3_splash": "Splash Potion of Looting III",
   "item.forbidden_brews.homeward_1_drink": "Potion of Homeward",
-  "item.forbidden_brews.homeward_1_splash": "Splash Potion of Homeward"
+  "item.forbidden_brews.homeward_1_splash": "Splash Potion of Homeward",
+  "item.forbidden_brews.wild_teleport_1_drink": "Potion of Random Teleport",
+  "item.forbidden_brews.wild_teleport_1_splash": "Splash Potion of Random Teleport",
+  "item.forbidden_brews.ore_double_1_drink": "Potion of Double Ore",
+  "item.forbidden_brews.ore_double_1_splash": "Splash Potion of Double Ore",
+  "item.forbidden_brews.hot_pick_1_drink": "Potion of Hot Pick",
+  "item.forbidden_brews.hot_pick_1_splash": "Splash Potion of Hot Pick"
 }

@@ -27,10 +27,14 @@ public final class ForbiddenBrews {
     public static final DeferredHolder<MobEffect, MobEffect> FORTUNE=EFFECTS.register("fortune",BrewEffects.Fortune::new);
     public static final DeferredHolder<MobEffect, MobEffect> LOOTING=EFFECTS.register("looting",BrewEffects.Looting::new);
     public static final DeferredHolder<MobEffect, MobEffect> HOMEWARD=EFFECTS.register("homeward",BrewEffects.Homeward::new);
+    public static final DeferredHolder<MobEffect, MobEffect> WILD_TELEPORT=EFFECTS.register("wild_teleport",BrewEffects.WildTeleport::new);
+    public static final DeferredHolder<MobEffect, MobEffect> ORE_DOUBLE=EFFECTS.register("ore_double",BrewEffects.OreDouble::new);
+    public static final DeferredHolder<MobEffect, MobEffect> HOT_PICK=EFFECTS.register("hot_pick",BrewEffects.HotPick::new);
     public ForbiddenBrews(IEventBus bus) {
 
         ChaosContent.standType=STAND_TYPE;ChaosContent.menuType=MENU;ChaosContent.wartItem=WART_ITEM;
         ChaosContent.fortuneEffect=FORTUNE;ChaosContent.lootingEffect=LOOTING;ChaosContent.homewardEffect=HOMEWARD;
+        ChaosContent.wildTeleportEffect=WILD_TELEPORT;ChaosContent.oreDoubleEffect=ORE_DOUBLE;ChaosContent.hotPickEffect=HOT_PICK;
         for(var spec:BrewSpec.ALL)ChaosContent.brewItems.put(spec.id(),ITEMS.register(spec.id(),()->new BrewItem(spec)));
         BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);MENUS.register(bus);EFFECTS.register(bus);
         bus.addListener((BuildCreativeModeTabContentsEvent event)-> {

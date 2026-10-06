@@ -39,11 +39,12 @@ public final class VisualScenario {
         }
         if(ticks==120) {
             var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
-            be.setItem(0,ChaosRecipes.ALL.get(1).base());
+            be.setItem(0,ChaosContent.brew(new BrewSpec("hot_pick",1,false)));
         }
         if(ticks==160) {
             var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
-            var recipe=ChaosRecipes.ALL.get(1);be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get(),4));
+            var recipe=ChaosRecipes.ALL.stream().filter(r->r.result().equals(new BrewSpec("hot_pick",1,true))).findFirst().orElseThrow();
+            be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get(),4));
             for(int i=0;i<recipe.components().size();i++) {
                 var c=recipe.components().get(i);be.setItem(i+2,new ItemStack(c.item(),c.count()));
             }

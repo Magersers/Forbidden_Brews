@@ -8,20 +8,24 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.*;
 
 public final class HomeSafety {
-    private static boolean safe(ServerLevel level,ServerPlayer player,Vec3 p) {
+    static boolean safe(ServerLevel level,ServerPlayer player,Vec3 p) {
         // Vanilla forced respawns sit 0.1 blocks above the floor. Account for
         // this clearance while still requiring a supporting collision surface.
         BlockPos feet=BlockPos.containing(p),floor=BlockPos.containing(p.x,p.y-.2,p.z);
-        var ground=level.getBlockState(floor);
         if(!level.getWorldBorder().isWithinBounds(feet) || p.y<level.getMinBuildHeight() || p.y+2>=level.getMaxBuildHeight())return false;
-        if(ground.is(Blocks.MAGMA_BLOCK)||ground.is(Blocks.CACTUS)||ground.is(Blocks.CAMPFIRE)||ground.is(Blocks.SOUL_CAMPFIRE))return false;
+        var ground=level.getBlockState(floor);
+        if(hazard(ground))return false;
         var support=ground.getCollisionShape(level,floor);
         if(support.isEmpty() || floor.getY()+support.max(net.minecraft.core.Direction.Axis.Y)<p.y-.2)return false;
         for(BlockPos cell:new BlockPos[]{feet,feet.above()}) {
             var state=level.getBlockState(cell);
-            if(!state.getFluidState().isEmpty()||state.is(Blocks.FIRE)||state.is(Blocks.SOUL_FIRE)||state.is(Blocks.POWDER_SNOW))return false;
+            if(!state.getFluidState().isEmpty()||hazard(state))return false;
         }
         return level.noCollision(player,new AABB(p.x-.3,p.y,p.z-.3,p.x+.3,p.y+1.8,p.z+.3));
+    }
+    private static boolean hazard(net.minecraft.world.level.block.state.BlockState state) {
+        return state.is(Blocks.MAGMA_BLOCK)||state.is(Blocks.CACTUS)||state.is(Blocks.CAMPFIRE)||state.is(Blocks.SOUL_CAMPFIRE)||
+            state.is(Blocks.FIRE)||state.is(Blocks.SOUL_FIRE)||state.is(Blocks.POWDER_SNOW)||state.is(Blocks.SWEET_BERRY_BUSH)||state.is(Blocks.WITHER_ROSE);
     }
     public static void teleport(ServerPlayer player,ServerLevel desired,Vec3 location,float yaw) {
         if(desired==null || !safe(desired,player,location)) {

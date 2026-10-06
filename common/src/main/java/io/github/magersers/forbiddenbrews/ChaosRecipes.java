@@ -54,6 +54,9 @@ public final class ChaosRecipes {
         add(list,"looting",2,340,c(Items.GHAST_TEAR,2),c(Items.DIAMOND,2),c(Items.ENDER_PEARL,2));
         add(list,"looting",3,440,c(Items.NETHER_STAR,1),c(Items.DIAMOND_BLOCK,1),c(Items.NETHERITE_SCRAP,1));
         add(list,"homeward",1,240,c(Items.COMPASS,1),c(Items.ENDER_PEARL,2),c(Items.AMETHYST_SHARD,4));
+        add(list,"wild_teleport",1,320,c(Items.CHORUS_FRUIT,4),c(Items.ENDER_PEARL,2),c(Items.AMETHYST_SHARD,8),c(Items.ECHO_SHARD,1));
+        add(list,"ore_double",1,360,c(Items.DIAMOND,2),c(Items.RAW_GOLD,4),c(Items.AMETHYST_SHARD,8),c(Items.NETHERITE_SCRAP,1));
+        add(list,"hot_pick",1,280,c(Items.MAGMA_CREAM,2),c(Items.BLAST_FURNACE,1),c(Items.BLAZE_ROD,2),c(Items.RAW_IRON,8));
         for (BrewSpec spec:BrewSpec.ALL) if (!spec.splash()) {
             list.add(new Recipe(spec.id()+"_to_splash",spec,spec.asSplash(),160,List.of(c(Items.GUNPOWDER,2))));
         }

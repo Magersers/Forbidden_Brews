@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 public final class VersionApi {
     public static ResourceLocation id(String path) { return new ResourceLocation(ChaosContent.MOD_ID,path); }
     public static MobEffectInstance effect(BrewSpec s) {
-        MobEffect effect=s.family().equals("fortune")?ChaosContent.fortuneEffect.get():s.family().equals("looting")?ChaosContent.lootingEffect.get():ChaosContent.homewardEffect.get();
+        MobEffect effect=ChaosContent.effect(s.family());
         return new MobEffectInstance(effect,s.duration(),s.level()-1);
     }
     public static ItemStack populate(ItemStack stack,BrewSpec spec) {
@@ -35,6 +35,23 @@ public final class VersionApi {
         if(world!=null && block!=null)location=Player.findRespawnPositionAndUseSpawnBlock(world,block,player.getRespawnAngle(),player.isRespawnForced(),true).orElse(null);
         if(location==null) { world=player.getServer().overworld();location=Vec3.atBottomCenterOf(world.getSharedSpawnPos()); }
         HomeSafety.teleport(player,world,location,player.getRespawnAngle());
+    }
+    public static boolean hasEffect(LivingEntity entity,MobEffect effect) { return entity.hasEffect(effect); }
+    public static boolean silkTouch(ItemStack tool,ServerLevel level) {
+        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH,tool)>0;
+    }
+    public static ItemStack smelt(ItemStack drop,ServerLevel level) {
+        var input=new net.minecraft.world.SimpleContainer(drop.copy());
+        return level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.SMELTING,input,level)
+            .map(r->r.assemble(input,level.registryAccess())).orElse(ItemStack.EMPTY);
+    }
+    public static void prepareChunk(ServerLevel level,net.minecraft.core.BlockPos target,Runnable ready,Runnable failed) {
+        // Calling getChunkFuture on the server thread invokes managedBlock.
+        // Its off-thread branch schedules the request safely without that wait.
+        java.util.concurrent.CompletableFuture.supplyAsync(()->level.getChunkSource().getChunkFuture(target.getX()>>4,target.getZ()>>4,net.minecraft.world.level.chunk.ChunkStatus.FULL,true))
+            .thenCompose(future->future).whenCompleteAsync((result,error)-> {
+                if(error==null && level.getChunkSource().getChunkNow(target.getX()>>4,target.getZ()>>4)!=null)ready.run();else failed.run();
+            },level.getServer());
     }
     private VersionApi() {}
 }

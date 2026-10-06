@@ -19,7 +19,8 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         if(choosing) {
             if(button==0) {
                 var options=ChaosRecipes.available(menu.getSlot(0).getItem());
-                for(int i=0;i<options.size();i++)if(isHovering(22,64+i*27,212,25,mouseX,mouseY)) {
+                int columns=options.size()>3?2:1,height=columns==2?40:25,width=columns==2?104:212;
+                for(int i=0;i<options.size();i++)if(isHovering(22+(i%columns)*108,64+(i/columns)*(height+2),width,height,mouseX,mouseY)) {
                     selected=ChaosRecipes.ALL.indexOf(options.get(i));
                     minecraft.gameMode.handleInventoryButtonClick(menu.containerId,selected);
                     choosing=false;return true;
@@ -65,21 +66,27 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         g.pose().pushPose();g.pose().translate(0,0,300);
         int x=leftPos,y=topPos;
         var options=ChaosRecipes.available(menu.getSlot(0).getItem());
-        g.fill(x+8,y+30,x+248,y+155,0xC00B1320);
-        int bottom=options.isEmpty()?y+103:y+66+options.size()*27;
+        int columns=options.size()>3?2:1,height=columns==2?40:25,width=columns==2?104:212;
+        int rows=(options.size()+columns-1)/columns;
+        int bottom=options.isEmpty()?y+103:y+66+rows*(height+2);
+        g.fill(x+8,y+30,x+248,Math.max(y+155,bottom+8),0xC00B1320);
         g.fill(x+16,y+44,x+240,bottom,0xFF0B1523);
         g.renderOutline(x+16,y+44,224,bottom-y-44,0xFFD7B373);
         g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.picker"),x+128,y+51,0xFFE9CF90);
         if(options.isEmpty())g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.no_recipes"),x+128,y+77,0xFFB6C8D4);
         ItemStack hovered=ItemStack.EMPTY;
         for(int i=0;i<options.size();i++) {
-            var option=options.get(i);int yy=y+64+i*27;
-            boolean hover=isHovering(22,64+i*27,212,25,mouseX,mouseY);
-            g.fill(x+22,yy,x+234,yy+25,hover?0xFF344A57:0xFF172739);
-            g.renderOutline(x+22,yy,212,25,hover?0xFF83E4CE:0xFF405369);
-            var stack=option.output();g.renderItem(stack,x+28,yy+4);
-            String name=stack.getHoverName().getString();
-            g.drawString(font,font.plainSubstrByWidth(name,177),x+50,yy+8,hover?0xFFEBD294:0xFFD4E2E8,false);
+            var option=options.get(i);int xx=x+22+(i%columns)*108,yy=y+64+(i/columns)*(height+2);
+            boolean hover=isHovering(xx-x,yy-y,width,height,mouseX,mouseY);
+            g.fill(xx,yy,xx+width,yy+height,hover?0xFF344A57:0xFF172739);
+            g.renderOutline(xx,yy,width,height,hover?0xFF83E4CE:menu.selectedRecipe()==ChaosRecipes.ALL.indexOf(option)?0xFFE9CF90:0xFF405369);
+            var stack=option.output();g.renderItem(stack,xx+6,yy+(height-16)/2);
+            String name=columns==2?Component.translatable("effect.forbidden_brews."+option.result().family()).getString():stack.getHoverName().getString();
+            int color=hover?0xFFEBD294:0xFFD4E2E8;
+            String first=font.plainSubstrByWidth(name,width-30);
+            if(columns==2 && first.length()<name.length() && first.lastIndexOf(' ')>0)first=first.substring(0,first.lastIndexOf(' '));
+            g.drawString(font,first,xx+28,yy+(columns==2?10:8),color,false);
+            if(columns==2 && first.length()<name.length())g.drawString(font,font.plainSubstrByWidth(name.substring(first.length()).stripLeading(),width-30),xx+28,yy+21,color,false);
             if(hover)hovered=stack;
         }
         if(!hovered.isEmpty())g.renderTooltip(font,hovered,mouseX,mouseY);
@@ -140,7 +147,7 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         if(recipe!=null) {
             String text=Component.translatable(recipe.result().translation()).getString();
             g.drawString(font,font.plainSubstrByWidth(text,78),17,130,0x8DDAD0,false);
-            if(!recipe.result().family().equals("homeward")) {
+            if(!recipe.result().instant()) {
                 int minutes=recipe.result().duration()/1200;
                 g.drawString(font,minutes+":00",27,143,0x7C91A5,false);
             }

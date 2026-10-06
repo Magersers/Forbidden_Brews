@@ -52,14 +52,14 @@ public final class ChaosStandTests {
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void allRecipesConsumeWartAndExactIngredients(GameTestHelper h) {
-        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==14,"Fourteen recipes");
+        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==20,"Twenty recipes");
         for(var r:ChaosRecipes.ALL) {
             fill(be,r);tick(h,be,r.ticks());
             h.assertTrue(be.getItem(7).is(r.output().getItem()),"Output "+r.id());
             for(int i=0;i<7;i++)h.assertTrue(be.getItem(i).isEmpty(),"Consumption "+r.id()+" slot "+i);
             h.assertTrue(be.fuel==19,"One charge used");
             h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getAmplifier()==r.result().level()-1,"Correct effect level");
-            int duration=r.result().family().equals("homeward")?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
+            int duration=r.result().instant()?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
             h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getDuration()==duration,"Duration 2/5/8 minutes for "+r.id());
         }h.succeed();
     }
@@ -139,7 +139,7 @@ public final class ChaosStandTests {
     @GameTest(template="empty",timeoutTicks=40)
     public static void recipePickerFiltersBaseAndServerValidatesSelection(GameTestHelper h) {
         var initial=ChaosRecipes.available(ItemStack.EMPTY);
-        h.assertTrue(initial.size()==3 && initial.stream().allMatch(r->r.source()==null),"Only three base potions initially");
+        h.assertTrue(initial.size()==6 && initial.stream().allMatch(r->r.source()==null),"All six base potions initially");
         var options=ChaosRecipes.available(ChaosContent.brew(new BrewSpec("fortune",1,false)));
         h.assertTrue(options.size()==2 && options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",2,false))) &&
             options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",1,true))),"Fortune I unlocks II and its splash");
@@ -216,4 +216,99 @@ public final class ChaosStandTests {
         h.assertTrue(target.hasEffect(ForbiddenBrews.LOOTING.get()) && target.getEffect(ForbiddenBrews.LOOTING.get()).getAmplifier()==2,"Impact applies Looting III");
         h.succeed();
     }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void orePotionsTransformRealLootAndCombineWithFortune(GameTestHelper h) {
+        var player=h.makeMockPlayer();var pos=h.absolutePos(POS);var pick=new ItemStack(Items.DIAMOND_PICKAXE);
+        ChaosContent.brew(new BrewSpec("ore_double",1,false)).finishUsingItem(h.getLevel(),player);
+        h.assertTrue(player.getEffect(ForbiddenBrews.ORE_DOUBLE.get()).getDuration()==2400,"Double ore lasts two minutes");
+        var diamond=Block.getDrops(Blocks.DIAMOND_ORE.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+        h.assertTrue(diamond.size()==1 && diamond.get(0).is(Items.DIAMOND) && diamond.get(0).getCount()==2,"Exactly double plain diamond ore");
+        var whole=Block.getDrops(Blocks.ANCIENT_DEBRIS.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+        h.assertTrue(whole.size()==1 && whole.get(0).is(Items.ANCIENT_DEBRIS) && whole.get(0).getCount()==1,"Whole ore blocks cannot be duplicated by replacing them");
+        ChaosContent.brew(new BrewSpec("hot_pick",1,false)).finishUsingItem(h.getLevel(),player);
+        var iron=Block.getDrops(Blocks.DEEPSLATE_IRON_ORE.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+        h.assertTrue(iron.size()==1 && iron.get(0).is(Items.IRON_INGOT) && iron.get(0).getCount()==2,"Double and smelt deepslate iron");
+        var debris=Block.getDrops(Blocks.ANCIENT_DEBRIS.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+        h.assertTrue(debris.size()==1 && debris.get(0).is(Items.NETHERITE_SCRAP) && debris.get(0).getCount()==2,"Ancient debris smelts and doubles");
+        var stone=Block.getDrops(Blocks.STONE.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+        h.assertTrue(stone.size()==1 && stone.get(0).is(Items.COBBLESTONE) && stone.get(0).getCount()==1,"Non-ore neither doubles nor smelts");
+        pick.enchant(Enchantments.BLOCK_FORTUNE,3);
+        ChaosContent.brew(new BrewSpec("fortune",3,false)).finishUsingItem(h.getLevel(),player);
+        boolean boosted=false;
+        for(int i=0;i<128;i++) {
+            var drops=Block.getDrops(Blocks.IRON_ORE.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+            h.assertTrue(drops.stream().allMatch(d->d.is(Items.IRON_INGOT)),"Only smelted ingots");
+            int count=drops.stream().mapToInt(ItemStack::getCount).sum();
+            h.assertTrue(count%2==0,"Fortune result is doubled");if(count>8)boosted=true;
+        }
+        h.assertTrue(boosted,"Tool Fortune III + potion III then x2 exceeds eight");
+        h.assertTrue(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE,pick)==3,"Tool unchanged");
+        var silk=new ItemStack(Items.DIAMOND_PICKAXE);silk.enchant(Enchantments.SILK_TOUCH,1);
+        var intact=Block.getDrops(Blocks.IRON_ORE.defaultBlockState(),h.getLevel(),pos,null,player,silk);
+        h.assertTrue(intact.size()==1 && intact.get(0).is(Items.IRON_ORE) && intact.get(0).getCount()==1,"Silk Touch preserves ore without duplication");
+        var raw=new ItemStack(Items.RAW_IRON,64);
+        var split=OreDrops.transform(java.util.List.of(raw),Blocks.IRON_ORE.defaultBlockState(),h.getLevel(),player,pick);
+        h.assertTrue(split.size()==2 && split.stream().allMatch(d->d.is(Items.IRON_INGOT)&&d.getCount()==64) && raw.getCount()==64,"Split full stacks without changing input");
+        player.removeEffect(ForbiddenBrews.ORE_DOUBLE.get());player.removeEffect(ForbiddenBrews.HOT_PICK.get());player.removeEffect(ForbiddenBrews.FORTUNE.get());
+        var unenchanted=new ItemStack(Items.DIAMOND_PICKAXE);
+        var normal=Block.getDrops(Blocks.IRON_ORE.defaultBlockState(),h.getLevel(),pos,null,player,unenchanted);
+        h.assertTrue(normal.size()==1 && normal.get(0).is(Items.RAW_IRON) && normal.get(0).getCount()==1,"Effects stop when removed");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void teleportRejectsHazardsAndSolidColumns(GameTestHelper h) {
+        var player=new net.minecraft.server.level.ServerPlayer(h.getLevel().getServer(),h.getLevel(),new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(),"landing-test"));
+        var floor=h.absolutePos(new BlockPos(1,0,1)).offset(0,0,200);var level=h.getLevel();
+        // Keep the search column independent from structure markers, roofs and
+        // the superflat floor left in the reusable GameTest world.
+        for(int y=level.getMinBuildHeight();y<level.getMaxBuildHeight();y++)level.setBlockAndUpdate(new BlockPos(floor.getX(),y,floor.getZ()),Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(floor,Blocks.STONE.defaultBlockState());
+        var safe=RandomTeleport.findLanding(level,player,floor.getX(),floor.getZ());
+        h.assertTrue(safe!=null && safe.y==floor.getY()+1,"Solid floor and headroom");
+        for(var block:new Block[]{Blocks.MAGMA_BLOCK,Blocks.CACTUS,Blocks.CAMPFIRE,Blocks.SOUL_CAMPFIRE}) {
+            level.setBlockAndUpdate(floor,block.defaultBlockState());
+            h.assertTrue(RandomTeleport.findLanding(level,player,floor.getX(),floor.getZ())==null,"Unsafe floor "+block);
+        }
+        level.setBlockAndUpdate(floor,Blocks.STONE.defaultBlockState());level.setBlockAndUpdate(floor.above(),Blocks.LAVA.defaultBlockState());
+        h.assertTrue(RandomTeleport.findLanding(level,player,floor.getX(),floor.getZ())==null,"No landing in lava");
+        level.setBlockAndUpdate(floor.above(),Blocks.POWDER_SNOW.defaultBlockState());
+        h.assertTrue(RandomTeleport.findLanding(level,player,floor.getX(),floor.getZ())==null,"No powder snow");
+        level.setBlockAndUpdate(floor.above(),Blocks.AIR.defaultBlockState());level.setBlockAndUpdate(floor.above(2),Blocks.STONE.defaultBlockState());
+        h.assertFalse(HomeSafety.safe(level,player,new net.minecraft.world.phys.Vec3(floor.getX()+.5,floor.getY()+1,floor.getZ()+.5)),"Need two blocks of headroom");
+        h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=200)
+    public static void randomTeleportDrinkLoadsChunkAndLandsSafely(GameTestHelper h) {
+        var level=h.getLevel();var player=new net.minecraft.server.level.ServerPlayer(level.getServer(),level,new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(),"teleport-test"));
+        var channel=new io.netty.channel.embedded.EmbeddedChannel();
+        var connection=new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND) {
+            @Override public io.netty.channel.Channel channel() { return channel; }
+            @Override public void send(net.minecraft.network.protocol.Packet<?> packet) {}
+            @Override public void send(net.minecraft.network.protocol.Packet<?> packet,net.minecraft.network.PacketSendListener listener) {}
+        };
+        player.connection=new net.minecraft.server.network.ServerGamePacketListenerImpl(player.getServer(),connection,player);
+        player.setPos(h.absolutePos(POS).getX()+.5,80,h.absolutePos(POS).getZ()+.5);player.setDeltaMovement(1,-2,1);player.fallDistance=30;
+        player.getRandom().setSeed(58171);var target=RandomTeleport.chooseTarget(player);
+        var floor=new BlockPos(target.getX(),64,target.getZ());level.setBlockAndUpdate(floor,Blocks.STONE.defaultBlockState());
+        player.getRandom().setSeed(58171);
+        ChaosContent.brew(new BrewSpec("wild_teleport",1,false)).finishUsingItem(level,player);
+        h.succeedWhen(()-> {
+            h.assertTrue(player.distanceToSqr(target.getX()+.5,65,target.getZ()+.5)<.01,"Drink teleports to the prepared random destination");
+            h.assertTrue(player.fallDistance==0 && player.getDeltaMovement().lengthSqr()==0,"Reset velocity and fall damage");
+            channel.finishAndReleaseAll();
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void newMiningSplashPotionsApplyOnImpact(GameTestHelper h) {
+        var pos=h.absolutePos(POS);var target=h.spawn(net.minecraft.world.entity.EntityType.PIG,POS);
+        for(String family:new String[]{"ore_double","hot_pick"}) {
+            var impact=new net.minecraft.world.entity.projectile.ThrownPotion(h.getLevel(),pos.getX(),pos.getY(),pos.getZ()) {
+                public void hit(net.minecraft.world.entity.Entity entity) { super.onHit(new net.minecraft.world.phys.EntityHitResult(entity)); }
+            };
+            impact.setItem(ChaosContent.brew(new BrewSpec(family,1,true)));impact.hit(target);
+            h.assertTrue(target.hasEffect(ChaosContent.effect(family)),"Splash applies "+family);
+            h.assertTrue(target.getEffect(ChaosContent.effect(family)).getDuration()==2400,"Direct hit preserves two minutes");
+        }
+        h.succeed();
+    }
+
 }

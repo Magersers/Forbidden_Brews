@@ -13,8 +13,7 @@ import net.minecraft.world.level.portal.DimensionTransition;
 public final class VersionApi {
     public static ResourceLocation id(String path) { return ResourceLocation.fromNamespaceAndPath(ChaosContent.MOD_ID,path); }
     public static MobEffectInstance effect(BrewSpec s) {
-        var holder=BuiltInRegistries.MOB_EFFECT.wrapAsHolder(s.family().equals("fortune")?ChaosContent.fortuneEffect.get():
-            s.family().equals("looting")?ChaosContent.lootingEffect.get():ChaosContent.homewardEffect.get());
+        var holder=BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ChaosContent.effect(s.family()));
         return new MobEffectInstance(holder,s.duration(),s.level()-1);
     }
     public static ItemStack populate(ItemStack stack,BrewSpec spec) {
@@ -36,6 +35,25 @@ public final class VersionApi {
         // true preserves respawn-anchor charges; this is travel, not a respawn.
         var target=player.findRespawnPositionAndUseSpawnBlock(true,DimensionTransition.DO_NOTHING);
         HomeSafety.teleport(player,target.newLevel(),target.pos(),target.yRot());
+    }
+    public static boolean hasEffect(LivingEntity entity,MobEffect effect) { return entity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect)); }
+    public static boolean silkTouch(ItemStack tool,ServerLevel level) {
+        var silk=level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+            .getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH);
+        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(silk,tool)>0;
+    }
+    public static ItemStack smelt(ItemStack drop,ServerLevel level) {
+        var input=new net.minecraft.world.item.crafting.SingleRecipeInput(drop.copy());
+        return level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.SMELTING,input,level)
+            .map(r->r.value().assemble(input,level.registryAccess())).orElse(ItemStack.EMPTY);
+    }
+    public static void prepareChunk(ServerLevel level,net.minecraft.core.BlockPos target,Runnable ready,Runnable failed) {
+        // Calling getChunkFuture on the server thread invokes managedBlock.
+        // Its off-thread branch schedules the request safely without that wait.
+        java.util.concurrent.CompletableFuture.supplyAsync(()->level.getChunkSource().getChunkFuture(target.getX()>>4,target.getZ()>>4,net.minecraft.world.level.chunk.status.ChunkStatus.FULL,true))
+            .thenCompose(future->future).whenCompleteAsync((result,error)-> {
+                if(error==null && level.getChunkSource().getChunkNow(target.getX()>>4,target.getZ()>>4)!=null)ready.run();else failed.run();
+            },level.getServer());
     }
     private VersionApi() {}
 }
