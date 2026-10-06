@@ -8,7 +8,10 @@
     "LootingMixin",
     "FortuneMixin",
     "OreDropsMixin",
-    "CreeperPotionMixin"
+    "CreeperPotionMixin",
+    "TruceMobMixin",
+    "TruceLivingMixin",
+    "TruceDragonMixin"
   ],
   "client": [
     "client.InversionMixin"

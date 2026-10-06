@@ -19,7 +19,7 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         if(choosing) {
             if(button==0) {
                 var options=ChaosRecipes.available(menu.getSlot(0).getItem());
-                int columns=options.size()>3?2:1,height=columns==2?40:25,width=columns==2?104:212;
+                int columns=options.size()>3?2:1,height=pickerHeight(options.size()),width=columns==2?104:212;
                 for(int i=0;i<options.size();i++)if(isHovering(22+(i%columns)*108,64+(i/columns)*(height+2),width,height,mouseX,mouseY)) {
                     selected=ChaosRecipes.ALL.indexOf(options.get(i));
                     minecraft.gameMode.handleInventoryButtonClick(menu.containerId,selected);
@@ -62,11 +62,12 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         if(selected<0 || !available.contains(ChaosRecipes.ALL.get(selected)))selected=available.isEmpty()?-1:ChaosRecipes.ALL.indexOf(available.get(0));
         return selected<0?null:ChaosRecipes.ALL.get(selected);
     }
+    private static int pickerHeight(int count) {return count>8?32:count>3?40:25;}
     private void renderPicker(GuiGraphics g,int mouseX,int mouseY) {
         g.pose().pushPose();g.pose().translate(0,0,300);
         int x=leftPos,y=topPos;
         var options=ChaosRecipes.available(menu.getSlot(0).getItem());
-        int columns=options.size()>3?2:1,height=columns==2?40:25,width=columns==2?104:212;
+        int columns=options.size()>3?2:1,height=pickerHeight(options.size()),width=columns==2?104:212;
         int rows=(options.size()+columns-1)/columns;
         int bottom=options.isEmpty()?y+103:y+66+rows*(height+2);
         g.fill(x+8,y+30,x+248,Math.max(y+155,bottom+8),0xC00B1320);
@@ -85,8 +86,8 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
             int color=hover?0xFFEBD294:0xFFD4E2E8;
             String first=font.plainSubstrByWidth(name,width-30);
             if(columns==2 && first.length()<name.length() && first.lastIndexOf(' ')>0)first=first.substring(0,first.lastIndexOf(' '));
-            g.drawString(font,first,xx+28,yy+(columns==2?10:8),color,false);
-            if(columns==2 && first.length()<name.length())g.drawString(font,font.plainSubstrByWidth(name.substring(first.length()).stripLeading(),width-30),xx+28,yy+21,color,false);
+            g.drawString(font,first,xx+28,yy+(columns==2?(height==32?7:10):8),color,false);
+            if(columns==2 && first.length()<name.length())g.drawString(font,font.plainSubstrByWidth(name.substring(first.length()).stripLeading(),width-30),xx+28,yy+(height==32?18:21),color,false);
             if(hover)hovered=stack;
         }
         if(!hovered.isEmpty())g.renderTooltip(font,hovered,mouseX,mouseY);

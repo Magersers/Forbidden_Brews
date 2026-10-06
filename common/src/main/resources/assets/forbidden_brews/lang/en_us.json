@@ -8,6 +8,8 @@
   "effect.forbidden_brews.wild_teleport": "Random Teleport",
   "effect.forbidden_brews.ore_double": "Double Ore",
   "effect.forbidden_brews.inversion": "Inversion",
+  "effect.forbidden_brews.truce": "Truce",
+  "effect.forbidden_brews.swarm": "Swarm",
   "effect.forbidden_brews.creeper": "Creeper Heart",
   "effect.forbidden_brews.hot_pick": "Hot Pick",
   "message.forbidden_brews.teleport_search": "Searching for a safe teleport destination...",
@@ -49,5 +51,9 @@
   "item.forbidden_brews.inversion_3_drink": "Potion of Inversion III",
   "item.forbidden_brews.inversion_3_splash": "Splash Potion of Inversion III",
   "item.forbidden_brews.creeper_1_drink": "Potion of Creeper Heart",
-  "item.forbidden_brews.creeper_1_splash": "Splash Potion of Creeper Heart"
+  "item.forbidden_brews.creeper_1_splash": "Splash Potion of Creeper Heart",
+  "item.forbidden_brews.truce_1_drink": "Potion of Truce",
+  "item.forbidden_brews.truce_1_splash": "Splash Potion of Truce",
+  "item.forbidden_brews.swarm_1_drink": "Potion of Swarm",
+  "item.forbidden_brews.swarm_1_splash": "Splash Potion of Swarm"
 }

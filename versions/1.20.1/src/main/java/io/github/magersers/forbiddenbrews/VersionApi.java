@@ -53,5 +53,13 @@ public final class VersionApi {
                 if(error==null && level.getChunkSource().getChunkNow(target.getX()>>4,target.getZ()>>4)!=null)ready.run();else failed.run();
             },level.getServer());
     }
+    public static MobEffectInstance effectInstance(LivingEntity entity,String family) {return entity.getEffect(ChaosContent.effect(family));}
+    public static void prepareSwarmMob(net.minecraft.world.entity.Mob mob,ServerLevel level) {
+        net.minecraft.world.entity.SpawnGroupData group=mob instanceof net.minecraft.world.entity.monster.Zombie?
+            new net.minecraft.world.entity.monster.Zombie.ZombieGroupData(false,false):null;
+        mob.finalizeSpawn(level,level.getCurrentDifficultyAt(mob.blockPosition()),net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED,group,null);
+        // Keep each potion wave to exactly one mob, including potential jockeys.
+        mob.getPassengers().forEach(net.minecraft.world.entity.Entity::discard);mob.ejectPassengers();mob.stopRiding();
+    }
     private VersionApi() {}
 }

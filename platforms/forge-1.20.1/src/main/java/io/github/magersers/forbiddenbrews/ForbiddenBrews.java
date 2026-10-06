@@ -32,12 +32,15 @@ public final class ForbiddenBrews {
     public static final RegistryObject<MobEffect> HOT_PICK=EFFECTS.register("hot_pick",BrewEffects.HotPick::new);
     public static final RegistryObject<MobEffect> INVERSION=EFFECTS.register("inversion",BrewEffects.Inversion::new);
     public static final RegistryObject<MobEffect> CREEPER=EFFECTS.register("creeper",BrewEffects.Creeper::new);
+    public static final RegistryObject<MobEffect> TRUCE=EFFECTS.register("truce",BrewEffects.Truce::new);
+    public static final RegistryObject<MobEffect> SWARM=EFFECTS.register("swarm",BrewEffects.Swarm::new);
     public ForbiddenBrews(FMLJavaModLoadingContext context) {
         var bus=context.getModEventBus();
         ChaosContent.standType=STAND_TYPE;ChaosContent.menuType=MENU;ChaosContent.wartItem=WART_ITEM;
         ChaosContent.fortuneEffect=FORTUNE;ChaosContent.lootingEffect=LOOTING;ChaosContent.homewardEffect=HOMEWARD;
         ChaosContent.wildTeleportEffect=WILD_TELEPORT;ChaosContent.oreDoubleEffect=ORE_DOUBLE;ChaosContent.hotPickEffect=HOT_PICK;
         ChaosContent.inversionEffect=INVERSION;ChaosContent.creeperEffect=CREEPER;
+        ChaosContent.truceEffect=TRUCE;ChaosContent.swarmEffect=SWARM;
         for(var spec:BrewSpec.ALL)ChaosContent.brewItems.put(spec.id(),ITEMS.register(spec.id(),()->new BrewItem(spec)));
         BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);MENUS.register(bus);EFFECTS.register(bus);
         bus.addListener((BuildCreativeModeTabContentsEvent event)-> {

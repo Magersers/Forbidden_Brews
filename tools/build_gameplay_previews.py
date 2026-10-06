@@ -23,10 +23,10 @@ shutil.copyfile(source/'chaos-world.png',output/'chaos_stand_in_game.png')
 print(f'Captured {len(frames)} game frames; wrote GUI GIF, PNG and world screenshot')
 fx=sorted(source.glob('chaos-fx-*.png'))
 if fx:
-    assert len(fx)>=90, 'Incomplete potion effect demo'
+    assert len(fx)>=240, 'Incomplete potion effect demo'
     effect_frames=[]
     for path in fx:
         with Image.open(path) as shot:effect_frames.append(shot.convert('RGB').resize((640,360),Image.Resampling.NEAREST))
-    effect_frames[0].save(output/'inversion_0.4.1_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=False)
-    effect_frames[25].save(output/'inversion_in_game.png')
-    print(f'Wrote {len(effect_frames)} frames of real Inversion III and milk restoration')
+    effect_frames[0].save(output/'potions_0.5.0_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=True)
+    effect_frames[60].save(output/'social_potions_in_game.png')
+    print(f'Wrote {len(effect_frames)} frames of real Truce, Swarm and milk clearing')

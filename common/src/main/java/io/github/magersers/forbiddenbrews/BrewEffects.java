@@ -34,6 +34,12 @@ public final class BrewEffects {
     public static final class Inversion extends MobEffect {
         public Inversion() { super(MobEffectCategory.HARMFUL,0xDD70E8); }
     }
+    public static final class Truce extends MobEffect {
+        public Truce() {super(MobEffectCategory.BENEFICIAL,0x86EAB3);}
+    }
+    public static final class Swarm extends TickingBrewEffect {
+        public Swarm() {super(MobEffectCategory.HARMFUL,0xEC4263);}
+    }
     public static final class Creeper extends MobEffect {
         public Creeper() { super(MobEffectCategory.HARMFUL,0x75ED58); }
         @Override public boolean isInstantenous() { return true; }

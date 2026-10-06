@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.4.2'
+VERSION='0.5.0'
 out=ROOT/'releases'/VERSION;out.mkdir(parents=True,exist_ok=True)
 manifest=[]
 for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
@@ -14,13 +14,18 @@ for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
     source=ROOT/'platforms'/target/'build/libs'/name
     with zipfile.ZipFile(source) as archive:
         paths=archive.namelist()
-        assert not any('ChaosStandTests' in p or 'VisualScenario' in p or 'VisualClientMixin' in p or 'MouseCoordinates' in p or '/structures/empty.nbt' in p or 'visual.mixins.json' in p for p in paths), 'Test artifacts in production JAR'
+        assert not any('ChaosStandTests' in p or 'SocialBrewTests' in p or 'VisualScenario' in p or 'VisualClientMixin' in p or 'MouseCoordinates' in p or '/structures/empty.nbt' in p or 'visual.mixins.json' in p for p in paths), 'Test artifacts in production JAR'
         assert 'assets/forbidden_brews/textures/mob_effect/fortune.png' in paths
         assert 'FortuneMixin' in archive.read('forbidden_brews.mixins.json').decode()
         assert 'CreeperPotionMixin' in archive.read('forbidden_brews.mixins.json').decode()
         assert 'client.InversionMixin' in archive.read('forbidden_brews.mixins.json').decode()
+        assert 'TruceMobMixin' in archive.read('forbidden_brews.mixins.json').decode()
+        assert 'TruceLivingMixin' in archive.read('forbidden_brews.mixins.json').decode()
+        assert 'TruceDragonMixin' in archive.read('forbidden_brews.mixins.json').decode()
+        for runtime in ['Truce.class','Swarm.class','TickingBrewEffect.class']:
+            assert any(p.endswith('/'+runtime) for p in paths)
         assert 'OreDropsMixin' in archive.read('forbidden_brews.mixins.json').decode()
-        for family in ['wild_teleport','ore_double','hot_pick','inversion','creeper']:
+        for family in ['wild_teleport','ore_double','hot_pick','inversion','creeper','truce','swarm']:
             for variant in ['drink','splash']:
                 assert f'assets/forbidden_brews/models/item/{family}_1_{variant}.json' in paths
                 assert f'assets/forbidden_brews/textures/item/{family}_{variant}.png.mcmeta' in paths
