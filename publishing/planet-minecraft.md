@@ -6,6 +6,22 @@ Sixteen magical potion families, forty-four drinkable and splash items, distinct
 
 Craft Netherite Wart from Nether Wart and Netherite Scrap. Grow it on Soul Sand and use one Wart in every recipe. Craft the Chaos Brewing Stand with a Netherite Ingot, a Brewing Stand, two Amethyst Shards, two Obsidian and a Blaze Rod. Its animated interface lets you select a recipe directly; insert a drinkable potion to reveal upgrades and splash conversion. One Blaze Powder fuels twenty brews.
 
+### Craft the Chaos Brewing Stand
+
+Use a crafting table: **2 Amethyst Shards, 1 Brewing Stand, 1 Netherite Ingot, 2 Obsidian and 1 Blaze Rod**. The recipe produces one Chaos Brewing Stand.
+
+**Top row:** Amethyst Shard · Brewing Stand · Amethyst Shard  
+**Middle row:** empty · Netherite Ingot · empty  
+**Bottom row:** Obsidian · Blaze Rod · Obsidian
+
+![Chaos Brewing Stand recipe in the actual Minecraft crafting interface](https://raw.githubusercontent.com/Magersers/Forbidden_Brews/main/previews/chaos_stand_recipe.png)
+
+### The stand in Minecraft
+
+![Chaos Brewing Stand recorded in Minecraft](https://raw.githubusercontent.com/Magersers/Forbidden_Brews/main/previews/chaos_stand_in_game.gif)
+
+### Animated brewing interface
+
 ![English brewing interface](https://raw.githubusercontent.com/Magersers/Forbidden_Brews/main/previews/chaos_stand_ui.gif)
 
 ## Sixteen potion families
@@ -44,6 +60,8 @@ Install only the file matching your loader and Minecraft version, on both client
 English, Russian, German, Spanish, French, Brazilian Portuguese, Simplified Chinese, Japanese, Korean and Ukrainian translations are included (English has US/UK packs).
 
 [Every recipe and detailed controls](https://github.com/Magersers/Forbidden_Brews/blob/main/docs/brewing.md) · [Source code and downloads](https://github.com/Magersers/Forbidden_Brews) · [Report bugs](https://github.com/Magersers/Forbidden_Brews/issues)
+
+[CurseForge project](https://www.curseforge.com/minecraft/mc-mods/forbidden-brews) — submitted for moderation; downloads become available after approval.
 
 ## Credits and AI disclosure
 

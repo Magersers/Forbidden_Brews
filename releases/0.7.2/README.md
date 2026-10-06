@@ -15,3 +15,21 @@ Languages: en_us, en_gb, ru_ru, de_de, es_es, fr_fr, pt_br, zh_cn, ja_jp, ko_kr,
 Verification: three production builds and server startup checks; actual Forge client/server English recording with interface selection, brewing, ten simultaneous ore blocks, 4×4 mining and sixteen drops, 40 HP/restoration, bat flight, a random form and gravity toggling. The underlying gameplay passed 31 Forge GameTests in 0.7.1. No Fabric/NeoForge client recording or GameTest run is claimed.
 
 Substantial AI-assisted implementation and asset generation; see repository credits. Test scenarios are excluded from these production files.
+
+### Craft the Chaos Brewing Stand
+
+Use a crafting table: **2 Amethyst Shards, 1 Brewing Stand, 1 Netherite Ingot, 2 Obsidian and 1 Blaze Rod**. The recipe produces one Chaos Brewing Stand.
+
+**Top row:** Amethyst Shard · Brewing Stand · Amethyst Shard  
+**Middle row:** empty · Netherite Ingot · empty  
+**Bottom row:** Obsidian · Blaze Rod · Obsidian
+
+![Chaos Brewing Stand recipe in the actual Minecraft crafting interface](../../previews/chaos_stand_recipe.png)
+
+### The stand in Minecraft
+
+![Chaos Brewing Stand recorded in Minecraft](../../previews/chaos_stand_in_game.gif)
+
+### Animated brewing interface
+
+![English brewing interface](../../previews/chaos_stand_ui.gif)

@@ -66,6 +66,27 @@ public final class VisualScenario {
     @SubscribeEvent public static void tick(TickEvent.ServerTickEvent event) {
         if(event.phase!=TickEvent.Phase.END || player==null)return;
         ticks++;
+        if(java.nio.file.Files.exists(java.nio.file.Path.of("stand-capture.flag"))) {
+            if(ticks==20) {
+                var pos=new BlockPos(0,65,1);player.serverLevel().setBlockAndUpdate(pos,Blocks.CRAFTING_TABLE.defaultBlockState());
+                player.openMenu(new net.minecraft.world.SimpleMenuProvider((id,inventory,p)->new net.minecraft.world.inventory.CraftingMenu(id,inventory,
+                    net.minecraft.world.inventory.ContainerLevelAccess.create(player.serverLevel(),pos)),net.minecraft.network.chat.Component.translatable("container.crafting")));
+                var menu=player.containerMenu;
+                Item[] grid={Items.AMETHYST_SHARD,Items.BREWING_STAND,Items.AMETHYST_SHARD,Items.AIR,Items.NETHERITE_INGOT,Items.AIR,Items.OBSIDIAN,Items.BLAZE_ROD,Items.OBSIDIAN};
+                for(int i=0;i<9;i++)menu.getSlot(i+1).set(new ItemStack(grid[i]));
+                menu.slotsChanged(menu.getSlot(1).container);menu.broadcastChanges();
+                if(!menu.getSlot(0).getItem().is(ForbiddenBrews.STAND_ITEM.get()))throw new IllegalStateException("Native crafting recipe did not produce the Chaos Stand");
+                System.out.println("NATIVE_CHAOS_STAND_CRAFTING_OK");
+            }
+            if(ticks==100) {player.closeContainer();player.serverLevel().setBlockAndUpdate(new BlockPos(0,65,1),Blocks.AIR.defaultBlockState());}
+            if(ticks>=110 && ticks<=230) {
+                double angle=(ticks-110)*0.006;
+                player.teleportTo(player.serverLevel(),1.5+Math.sin(angle)*2.8,65,1.5-Math.cos(angle)*2.8,0,0);
+                player.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES,new net.minecraft.world.phys.Vec3(1.5,65.65,1.5));
+            }
+            if(ticks==280)player.getServer().halt(false);
+            return;
+        }
         if(ticks==80) {
             var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
             be.clearContent();be.progress=0;be.recipeIndex=-1;be.selectedRecipe=-1;be.fuel=0;player.openMenu(be);

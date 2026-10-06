@@ -12,6 +12,10 @@ Craft the Chaos Brewing Stand with this grid:
 | Empty | Netherite Ingot | Empty |
 | Obsidian | Blaze Rod | Obsidian |
 
+![Actual Minecraft crafting interface](../previews/chaos_stand_recipe.png)
+
+![Chaos Brewing Stand in Minecraft](../previews/chaos_stand_in_game.gif)
+
 Collect it with a Diamond or Netherite Pickaxe. **One Nether Wart + one Netherite Scrap → one Netherite Wart** is a shapeless recipe. Plant it on Soul Sand, not Soul Soil. It grows through four stages by random ticks, without water or light requirements. Bone Meal does not accelerate it. Immature plants return one Wart; mature plants yield 2–4, increased by Fortune.
 
 ## Interface

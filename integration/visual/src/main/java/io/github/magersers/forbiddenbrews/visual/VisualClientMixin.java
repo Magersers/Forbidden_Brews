@@ -21,6 +21,8 @@ public abstract class VisualClientMixin {
     @Unique private int brews$frame,brews$screenTicks,brews$fxFrame,brews$diagnostic,brews$batTicks,brews$bruteTicks,brews$randomTicks,brews$gravityTicks;
     @Unique private long brews$last=-1;
     @Unique private boolean brews$ore,brews$gold,brews$bat,brews$flight,brews$brute,brews$smash,brews$random,brews$up,brews$down,brews$landed,brews$cleared,brews$mining;
+    @Unique private int brews$standFrames;
+    @Unique private boolean brews$craftingShot;
     @Inject(method="tick",at=@At("TAIL"))
     private void brews$connectAndControl(CallbackInfo ci) {
         Minecraft mc=(Minecraft)(Object)this;
@@ -66,6 +68,19 @@ public abstract class VisualClientMixin {
         Minecraft mc=(Minecraft)(Object)this;if(!render)return;
         if(mc.player==null || mc.level==null) {
             if(++brews$diagnostic%120==0) {System.out.println("VISUAL_SCREEN "+mc.screen);brews$shot(mc,"visual-loading.png");}return;
+        }
+        if(java.nio.file.Files.exists(Path.of(mc.gameDirectory.getAbsolutePath(),"stand-capture.flag"))) {
+            mc.getToasts().clear();((MouseCoordinates)mc.mouseHandler).brews$setX(5);((MouseCoordinates)mc.mouseHandler).brews$setY(5);
+            if(mc.screen instanceof net.minecraft.client.gui.screens.inventory.CraftingScreen && mc.player.tickCount>40 && !brews$craftingShot) {
+                brews$shot(mc,"chaos-crafting-native.png");brews$craftingShot=true;
+                System.out.println("NATIVE_CHAOS_STAND_CRAFTING_CAPTURED");
+            }
+            if(mc.screen==null && mc.player.tickCount>=120 && mc.player.tickCount<=225 && mc.level.getGameTime()>=brews$last+2) {
+                brews$last=mc.level.getGameTime();mc.options.hideGui=true;
+                brews$shot(mc,String.format("chaos-stand-native-%03d.png",brews$standFrames++));
+            }
+            if(mc.player.tickCount>=240) {mc.options.hideGui=false;mc.options.save();mc.stop();}
+            return;
         }
         String name=null;
         if(!brews$world && mc.screen==null && mc.player.tickCount>30) {name="chaos-world.png";brews$world=true;}

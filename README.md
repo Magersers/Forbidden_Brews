@@ -16,6 +16,22 @@ Install **one** matching JAR on both client and server. These targets have the b
 
 ## Chaos brewing
 
+### Craft the Chaos Brewing Stand
+
+Use a crafting table: **2 Amethyst Shards, 1 Brewing Stand, 1 Netherite Ingot, 2 Obsidian and 1 Blaze Rod**. The recipe produces one Chaos Brewing Stand.
+
+**Top row:** Amethyst Shard · Brewing Stand · Amethyst Shard  
+**Middle row:** empty · Netherite Ingot · empty  
+**Bottom row:** Obsidian · Blaze Rod · Obsidian
+
+![Chaos Brewing Stand recipe in the actual Minecraft crafting interface](previews/chaos_stand_recipe.png)
+
+### The stand in Minecraft
+
+![Chaos Brewing Stand recorded in Minecraft](previews/chaos_stand_in_game.gif)
+
+### Animated brewing interface
+
 ![Actual English-language brewing interface](previews/chaos_stand_ui.gif)
 
 Click the empty result slot to choose a potion directly. Insert a drinkable potion in the centre to reveal its upgrade and splash recipes. The interface provides a base bottle, Netherite Wart, four ingredient slots, Blaze Powder fuel and animated progress. Inventory, progress and hopper automation persist across saves.
