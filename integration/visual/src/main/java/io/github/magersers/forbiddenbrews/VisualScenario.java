@@ -35,6 +35,15 @@ public final class VisualScenario {
         }
         for(int x=-6;x<=8;x++)for(int y=65;y<=72;y++)level.setBlockAndUpdate(new BlockPos(x,y,-5),Blocks.DEEPSLATE_BRICKS.defaultBlockState());
         level.setBlockAndUpdate(NEAR,Blocks.DIAMOND_ORE.defaultBlockState());level.setBlockAndUpdate(FAR,Blocks.DEEPSLATE_GOLD_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-4,67,-3),Blocks.IRON_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-2,69,-3),Blocks.COPPER_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(2,69,-3),Blocks.EMERALD_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(6,68,-3),Blocks.REDSTONE_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(0,71,-3),Blocks.LAPIS_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-5,70,-3),Blocks.GOLD_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(7,71,-3),Blocks.NETHER_QUARTZ_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(1,65,14),Blocks.ANCIENT_DEBRIS.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(1,65,17),Blocks.DIAMOND_ORE.defaultBlockState());
         level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DOMOBSPAWNING).set(false,level.getServer());
         level.setDayTime(6000);level.setWeatherParameters(6000,0,false,false);
     }
@@ -72,7 +81,7 @@ public final class VisualScenario {
             be.setItem(6,new ItemStack(Items.BLAZE_POWDER,4));
         }
         if(ticks==520) {player.closeContainer();player.teleportTo(player.serverLevel(),1.5,65,-16.5,0,4);}
-        if(ticks==560)drink("ore_sight");
+        if(ticks==560) {drink("ore_sight");drink("hunter");}
         if(ticks==660)player.serverLevel().setBlockAndUpdate(NEAR,Blocks.AIR.defaultBlockState());
         if(ticks==700)clear();
         if(ticks==720)drink("bat");

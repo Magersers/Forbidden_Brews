@@ -5,10 +5,26 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.*;
 import net.minecraft.world.effect.*;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.server.level.*;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.player.Player;
 public final class VersionApi {
+    private static final UUID BRUTE_HEALTH=UUID.fromString("f6c270d0-c1e3-4451-a6fb-4076b825f110"),BRUTE_DAMAGE=UUID.fromString("c31af74b-246d-42b1-a220-25c11bbcd303");
+    public static void bruteAttributes(LivingEntity entity,boolean active) {
+        float oldMax=entity.getMaxHealth(),health=entity.getHealth();
+        bruteModifier(entity.getAttribute(Attributes.MAX_HEALTH),new AttributeModifier(BRUTE_HEALTH,"Forbidden Brews brute health",1,AttributeModifier.Operation.MULTIPLY_TOTAL),active);
+        bruteModifier(entity.getAttribute(Attributes.ATTACK_DAMAGE),new AttributeModifier(BRUTE_DAMAGE,"Forbidden Brews brute damage",3,AttributeModifier.Operation.ADDITION),active);
+        float newMax=entity.getMaxHealth();
+        if(oldMax!=newMax && oldMax>0)entity.setHealth(Math.min(newMax,health*newMax/oldMax));
+    }
+    private static void bruteModifier(AttributeInstance attribute,AttributeModifier modifier,boolean active) {
+        if(attribute==null)return;
+        boolean present=attribute.getModifier(modifier.getId())!=null;
+        // Persist alongside native attributes so health survives save/load without a second boost.
+        if(active && !present)attribute.addPermanentModifier(modifier);
+        else if(!active && present)attribute.removeModifier(modifier.getId());
+    }
     public static ResourceLocation id(String path) { return new ResourceLocation(ChaosContent.MOD_ID,path); }
     public static MobEffectInstance effect(BrewSpec s) {
         MobEffect effect=ChaosContent.effect(s.family());

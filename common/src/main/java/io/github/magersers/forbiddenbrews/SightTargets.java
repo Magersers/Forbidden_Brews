@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** Shared classification, without loading any client classes on a server. */
 public final class SightTargets {
-    public static final int ORE_RADIUS=16, TRAP_RADIUS=24, MOB_RADIUS=32;
+    public static final int ORE_RADIUS=32, TRAP_RADIUS=24, MOB_RADIUS=32;
     public static boolean ore(BlockState state) {return state.is(OreDrops.ORES);}
     public static boolean trap(BlockState state) {
         return state.is(BlockTags.BUTTONS) || state.is(BlockTags.PRESSURE_PLATES)

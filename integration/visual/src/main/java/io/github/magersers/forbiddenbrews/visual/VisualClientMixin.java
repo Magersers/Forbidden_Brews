@@ -77,13 +77,22 @@ public abstract class VisualClientMixin {
         }
         if(brews$frame>=200 && mc.screen==null && mc.level.getGameTime()>=brews$last+2) {
             brews$last=mc.level.getGameTime();name=String.format("chaos-fx-%03d.png",brews$fxFrame++);
-            var ore=SightCache.nearestOre();
-            if(new BlockPos(0,66,-3).equals(ore) && !brews$ore) {brews$ore=true;brews$shot(mc,"xray-diamond.png");System.out.println("REMAINING_CLIENT_DIAMOND_XRAY_OK");}
-            if(new BlockPos(4,66,-3).equals(ore) && brews$ore && !brews$gold) {brews$gold=true;brews$shot(mc,"xray-gold.png");System.out.println("REMAINING_CLIENT_GOLD_XRAY_OK");}
+            var ores=SightCache.ores();
+            var expected=java.util.List.of(new BlockPos(0,66,-3),new BlockPos(4,66,-3),new BlockPos(-4,67,-3),new BlockPos(-2,69,-3),new BlockPos(2,69,-3),new BlockPos(6,68,-3),new BlockPos(0,71,-3),new BlockPos(-5,70,-3),new BlockPos(7,71,-3),new BlockPos(1,65,14));
+            if(ores.containsAll(expected) && !brews$ore) {
+                if(ores.contains(new BlockPos(1,65,17)))throw new IllegalStateException("Ore outside 32 blocks is highlighted");
+                brews$ore=true;brews$shot(mc,"xray-diamond.png");System.out.println("REMAINING_CLIENT_ALL_ORES_32_OK "+ores.size());
+            }
+            if(brews$ore && ores.contains(new BlockPos(4,66,-3)) && !ores.contains(new BlockPos(0,66,-3)) && !brews$gold) {
+                brews$gold=true;brews$shot(mc,"xray-gold.png");System.out.println("REMAINING_CLIENT_MINED_ORE_REMOVED_OTHERS_REMAIN_OK");
+            }
             int form=Morphs.form(mc.player);
             if(form==Morphs.BAT && brews$batTicks>=25 && !brews$bat) {brews$bat=true;brews$shot(mc,"morph-bat.png");System.out.println("REMAINING_CLIENT_BAT_MODEL_OK");}
             if(form==Morphs.BAT && mc.player.getAbilities().flying && mc.player.getY()>66 && !brews$flight) {brews$flight=true;System.out.println("REMAINING_CLIENT_BAT_TAKEOFF_OK");}
-            if(form==Morphs.BRUTE && brews$bruteTicks>=10 && !brews$brute) {brews$brute=true;brews$shot(mc,"morph-brute.png");System.out.println("REMAINING_CLIENT_BRUTE_MODEL_OK");}
+            if(form==Morphs.BRUTE && brews$bruteTicks>=10 && !brews$brute) {
+                if(mc.player.getMaxHealth()!=40 || mc.player.getHealth()!=40)throw new IllegalStateException("Brute health bonus was not synchronized");
+                brews$brute=true;brews$shot(mc,"morph-brute.png");System.out.println("REMAINING_CLIENT_BRUTE_MODEL_AND_DOUBLE_HEALTH_OK");
+            }
             if(brews$mining && !brews$smash && Destruction.plane(new BlockPos(1,66,-20),new net.minecraft.world.phys.Vec3(0,0,-1)).stream().allMatch(p->mc.level.getBlockState(p).isAir())) {
                 brews$smash=true;brews$shot(mc,"morph-smash.png");System.out.println("REMAINING_CLIENT_SMASH_OK");
             }
@@ -93,6 +102,7 @@ public abstract class VisualClientMixin {
             if(brews$up && brews$gravityTicks>=120 && !up && !brews$down) {brews$down=true;brews$shot(mc,"gravity-down.png");System.out.println("REMAINING_CLIENT_GRAVITY_SECOND_JUMP_OK");}
             if(brews$down && mc.player.onGround() && brews$gravityTicks>150 && !brews$landed) {brews$landed=true;System.out.println("REMAINING_CLIENT_GRAVITY_LANDING_OK");}
             if(brews$landed && VersionApi.effectInstance(mc.player,"gravity")==null && form==0 && !mc.player.getAbilities().mayfly && !mc.player.isNoGravity() && !brews$cleared) {
+                if(mc.player.getMaxHealth()!=20)throw new IllegalStateException("Brute health bonus survived milk");
                 brews$cleared=true;brews$shot(mc,"remaining-milk.png");System.out.println("REMAINING_CLIENT_MILK_AND_MOVEMENT_RESET_OK");
             }
         }

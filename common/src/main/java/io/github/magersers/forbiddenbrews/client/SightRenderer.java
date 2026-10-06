@@ -13,18 +13,19 @@ public final class SightRenderer {
     public static void render(PoseStack pose,Vec3 camera) {
         var mc=Minecraft.getInstance();
         if(mc.level==null || mc.player==null)return;
-        var ore=SightCache.nearestOre();var traps=SightCache.traps();
-        if(ore==null && traps.isEmpty())return;
+        var ores=SightCache.ores();var traps=SightCache.traps();
+        if(ores.isEmpty() && traps.isEmpty())return;
         var buffers=mc.renderBuffers().bufferSource();
-        if(ore!=null && mc.level.hasChunkAt(ore) && SightTargets.ore(mc.level.getBlockState(ore))) {
+        for(var ore:ores)if(mc.level.hasChunkAt(ore) && SightTargets.ore(mc.level.getBlockState(ore))) {
             pose.pushPose();pose.translate(ore.getX()-camera.x,ore.getY()-camera.y,ore.getZ()-camera.z);
             mc.getBlockRenderer().renderSingleBlock(mc.level.getBlockState(ore),pose,
                 type->buffers.getBuffer(SightRenderType.ORE),LightTexture.FULL_BRIGHT,OverlayTexture.NO_OVERLAY);
-            pose.popPose();buffers.endBatch(SightRenderType.ORE);
+            pose.popPose();
         }
+        buffers.endBatch(SightRenderType.ORE);
         var lines=buffers.getBuffer(SightRenderType.LINES);
         pose.pushPose();pose.translate(-camera.x,-camera.y,-camera.z);
-        if(ore!=null && mc.level.hasChunkAt(ore) && SightTargets.ore(mc.level.getBlockState(ore)))
+        for(var ore:ores)if(mc.level.hasChunkAt(ore) && SightTargets.ore(mc.level.getBlockState(ore)))
             LevelRenderer.renderLineBox(pose,lines,new AABB(ore).inflate(.015),.32F,.8F,1F,1F);
         for(var pos:traps) {
             if(pos.getCenter().distanceToSqr(mc.player.position())>SightTargets.TRAP_RADIUS*SightTargets.TRAP_RADIUS

@@ -111,7 +111,7 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.7.0"
+version="0.7.1"
 displayName="Forbidden Brews"
 authors="Magersers"
 description='''Chaos brewing, sixteen potion families and renewable Netherite Wart.'''
@@ -132,7 +132,7 @@ side="BOTH"
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.0','name':'Forbidden Brews',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.7.1','name':'Forbidden Brews',
     'description':'Chaos brewing, sixteen potion families and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',

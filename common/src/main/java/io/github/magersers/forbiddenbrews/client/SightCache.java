@@ -12,10 +12,11 @@ import net.minecraft.world.phys.Vec3;
 public final class SightCache {
     private static final int SCAN_BUDGET=8192;
     private static ClientLevel level;
-    private static BlockPos origin, nearest;
+    private static BlockPos origin;
     private static boolean oreOn,hunterOn;
     private static int radius,side,cursor;
     private static List<BlockPos> ores=List.of(),traps=List.of();
+    private static List<BlockPos> visibleOres=List.of();
     private static final List<BlockPos> nextOres=new ArrayList<>(),nextTraps=new ArrayList<>();
     public static boolean active(String family) {
         var player=Minecraft.getInstance().player;
@@ -27,7 +28,7 @@ public final class SightCache {
             && entity.distanceToSqr(player)<=SightTargets.MOB_RADIUS*SightTargets.MOB_RADIUS;
     }
     private static void clear() {
-        origin=null;nearest=null;cursor=0;ores=List.of();traps=List.of();nextOres.clear();nextTraps.clear();
+        origin=null;cursor=0;ores=List.of();visibleOres=List.of();traps=List.of();nextOres.clear();nextTraps.clear();
     }
     public static void tick() {
         var mc=Minecraft.getInstance();
@@ -39,7 +40,7 @@ public final class SightCache {
         BlockPos center=mc.player.blockPosition();
         if(origin!=null && origin.distSqr(center)>64)clear(); // Teleport / rapid movement.
         if(origin==null || cursor==side*side*side) {
-            origin=center;radius=(hunter?SightTargets.TRAP_RADIUS:SightTargets.ORE_RADIUS)+1;
+            origin=center;radius=Math.max(ore?SightTargets.ORE_RADIUS:0,hunter?SightTargets.TRAP_RADIUS:0)+1;
             side=radius*2+1;cursor=0;nextOres.clear();nextTraps.clear();
         }
         Vec3 viewer=mc.player.position();
@@ -56,16 +57,13 @@ public final class SightCache {
             if(hunter && distance<=SightTargets.TRAP_RADIUS*SightTargets.TRAP_RADIUS && SightTargets.trap(state))nextTraps.add(pos.immutable());
         }
         if(cursor==side*side*side) {ores=List.copyOf(nextOres);traps=List.copyOf(nextTraps);}
-        // Re-evaluate the closest cached ore each tick; mining it reveals the next one.
-        nearest=null;double best=SightTargets.ORE_RADIUS*SightTargets.ORE_RADIUS;
-        if(ore)for(var candidate:ores) {
-            double distance=candidate.getCenter().distanceToSqr(viewer);
-            if(distance<=best && level.hasChunkAt(candidate) && SightTargets.ore(level.getBlockState(candidate))) {
-                best=distance;nearest=candidate;
-            }
-        }
+        // No nearest-only selection or count limit. Remove mined/out-of-range blocks promptly.
+        // Draw farther ores first, so overlapping nearer blocks keep their own texture.
+        visibleOres=ore?ores.stream().filter(candidate->candidate.getCenter().distanceToSqr(viewer)<=SightTargets.ORE_RADIUS*SightTargets.ORE_RADIUS
+            && level.hasChunkAt(candidate) && SightTargets.ore(level.getBlockState(candidate)))
+            .sorted(Comparator.comparingDouble((BlockPos candidate)->candidate.getCenter().distanceToSqr(viewer)).reversed()).toList():List.of();
     }
-    public static BlockPos nearestOre() {return active("ore_sight")?nearest:null;}
+    public static List<BlockPos> ores() {return active("ore_sight")?visibleOres:List.of();}
     public static List<BlockPos> traps() {return active("hunter")?traps:List.of();}
     private SightCache() {}
 }

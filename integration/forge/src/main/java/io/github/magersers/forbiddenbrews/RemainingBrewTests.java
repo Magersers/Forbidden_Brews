@@ -80,6 +80,28 @@ public final class RemainingBrewTests {
         });
     }
     @GameTest(template="empty",timeoutTicks=40)
+    public static void bruteHealthDamageSaveAndMilkRespectOtherModifiers(GameTestHelper h) {
+        var p=player(h);
+        var health=p.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH);
+        var damage=p.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        var healthId=UUID.fromString("344437b5-4a62-481e-a129-fb0791a2b992");var damageId=UUID.fromString("f50691dc-254c-4dbe-8be8-c97ab1a9f5fb");
+        health.addPermanentModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(healthId,"test health",4,net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+        damage.addPermanentModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(damageId,"test damage",2,net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+        p.setHealth(18);double baseDamage=damage.getValue();drink(h,p,"juggernaut");
+        h.assertTrue(p.getMaxHealth()==48 && p.getHealth()==36,"Double existing max/current health, including another modifier");
+        h.assertTrue(damage.getValue()==baseDamage+3,"Three additional attack damage");
+        for(int i=0;i<5;i++)Morphs.tick(p);
+        h.assertTrue(p.getHealth()==36 && p.getMaxHealth()==48 && damage.getValue()==baseDamage+3,"Ticks do not stack bonuses or heal");
+        p.setHealth(30);var tag=p.saveWithoutId(new net.minecraft.nbt.CompoundTag());var loaded=player(h);loaded.load(tag);Morphs.tick(loaded);
+        h.assertTrue(loaded.getMaxHealth()==48 && loaded.getHealth()==30,"Reload preserves boosted health without multiplying again");
+        new ItemStack(Items.MILK_BUCKET).finishUsingItem(h.getLevel(),loaded);Morphs.tick(loaded);
+        h.assertTrue(loaded.getMaxHealth()==24 && loaded.getHealth()==15,"Milk restores max health and preserves damage as a percentage");
+        h.assertTrue(loaded.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE).getValue()==baseDamage,"Milk removes only potion damage modifier");
+        h.assertTrue(loaded.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).getModifier(healthId)!=null,"Other health modifier survives");
+        drink(h,loaded,"juggernaut");loaded.removeEffect(ForbiddenBrews.JUGGERNAUT.get());Morphs.tick(loaded);
+        h.assertTrue(loaded.getMaxHealth()==24 && loaded.getHealth()==15,"Expiry/removal restores health without a free heal");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
     public static void bruteSmashUsesSixteenBlocksNativeLootAndProtection(GameTestHelper h) {
         var level=h.getLevel();var p=new ServerPlayer(level.getServer(),level,new com.mojang.authlib.GameProfile(UUID.randomUUID(),"smash-test"));
         var channel=new io.netty.channel.embedded.EmbeddedChannel();
@@ -97,6 +119,8 @@ public final class RemainingBrewTests {
         var plane=Destruction.plane(center,new Vec3(0,0,1));h.assertTrue(plane.size()==16 && new HashSet<>(plane).size()==16,"Exactly four by four");
         for(var pos:plane)level.setBlockAndUpdate(pos,Blocks.STONE.defaultBlockState());
         var protectedPos=center.offset(2,2,0);level.setBlockAndUpdate(protectedPos,Blocks.BEDROCK.defaultBlockState());
+        var harder=center.offset(2,1,0);level.setBlockAndUpdate(harder,Blocks.REINFORCED_DEEPSLATE.defaultBlockState());
+        var obsidian=center.offset(1,2,0);level.setBlockAndUpdate(obsidian,Blocks.OBSIDIAN.defaultBlockState());
         var outside=center.offset(3,0,0);level.setBlockAndUpdate(outside,Blocks.STONE.defaultBlockState());
         var denied=center.offset(-1,2,0);
         java.util.function.Consumer<net.minecraftforge.event.level.BlockEvent.BreakEvent> listener=e->{if(e.getPos().equals(denied))e.setCanceled(true);};
@@ -104,9 +128,12 @@ public final class RemainingBrewTests {
         try {
             h.assertTrue(p.gameMode.destroyBlock(center),"Actual successful mining triggers smash");
             long broken=plane.stream().filter(pos->level.getBlockState(pos).isAir()).count();
-            h.assertTrue(broken==14 && level.getBlockState(denied).is(Blocks.STONE),"Native protection event leaves its block: "+broken);
+            h.assertTrue(broken==13 && level.getBlockState(denied).is(Blocks.STONE),"Protection, bedrock and stronger-than-obsidian block survive: "+broken);
+            h.assertTrue(level.getBlockState(harder).is(Blocks.REINFORCED_DEEPSLATE) && level.getBlockState(obsidian).isAir(),"Hardness threshold includes obsidian, excludes reinforced deepslate");
             h.assertTrue(level.getBlockState(protectedPos).is(Blocks.BEDROCK) && level.getBlockState(outside).is(Blocks.STONE),"Unbreakable and outside blocks survive");
-            h.assertTrue(p.getMainHandItem().getDamageValue()==14,"Native durability for every broken block");
+            h.assertTrue(p.getMainHandItem().getDamageValue()==13,"Native durability for every broken block");
+            h.assertFalse(p.gameMode.destroyBlock(harder) || p.gameMode.destroyBlock(protectedPos),"Direct mining also cannot bypass hardness or bedrock restriction");
+            h.assertTrue(p.getMainHandItem().getDamageValue()==13,"Rejected direct mining costs no durability");
         } finally {net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(listener);channel.finishAndReleaseAll();}
         h.succeed();
     }

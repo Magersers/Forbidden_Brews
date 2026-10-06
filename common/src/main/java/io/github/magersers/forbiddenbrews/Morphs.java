@@ -61,6 +61,7 @@ public final class Morphs {
                         desired==BRUTE?net.minecraft.network.chat.Component.translatable("entity.forbidden_brews.brute"):type(desired).getDescription()),true);
             }
             if(entity instanceof Player player)flight(player,data,bat(desired));
+            VersionApi.bruteAttributes(entity,desired==BRUTE);
         }
         int form=form(entity);
         if(data.lastForm!=form) {data.lastForm=form;entity.refreshDimensions();}

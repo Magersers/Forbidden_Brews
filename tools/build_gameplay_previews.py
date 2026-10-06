@@ -27,8 +27,8 @@ if fx:
     effect_frames=[]
     for path in fx:
         with Image.open(path) as shot:effect_frames.append(shot.convert('RGB').resize((640,360),Image.Resampling.NEAREST))
-    effect_frames[0].save(output/'remaining_potions_0.7.0_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=True)
-    effect_frames[0].save(output/'ore_xray_0.7.0_in_game.gif',save_all=True,append_images=effect_frames[1:90],duration=100,loop=0,optimize=True)
+    effect_frames[0].save(output/'remaining_potions_0.7.1_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=True)
+    effect_frames[0].save(output/'ore_xray_0.7.1_in_game.gif',save_all=True,append_images=effect_frames[1:90],duration=100,loop=0,optimize=True)
     print(f'Wrote {len(effect_frames)} frames of actual textured ore X-ray, bat flight, brute mining, random morph and gravity')
 
 for shot,kind in [('xray-diamond','xray_diamond'),('xray-gold','xray_gold'),('morph-bat','bat'),('morph-brute','brute'),('morph-smash','brute_smash'),('morph-random','shapeshifter'),('gravity-up','gravity_up'),('gravity-down','gravity_down'),('remaining-milk','remaining_milk')]:
