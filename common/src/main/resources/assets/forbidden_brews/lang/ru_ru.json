@@ -7,6 +7,8 @@
   "message.forbidden_brews.home_unsafe": "Рядом с точкой возрождения нет безопасного места",
   "effect.forbidden_brews.wild_teleport": "Случайная телепортация",
   "effect.forbidden_brews.ore_double": "Двойная руда",
+  "effect.forbidden_brews.inversion": "Переворот",
+  "effect.forbidden_brews.creeper": "Сердце крипера",
   "effect.forbidden_brews.hot_pick": "Горячая кирка",
   "message.forbidden_brews.teleport_search": "Ищем безопасную точку телепортации...",
   "message.forbidden_brews.teleport_unsafe": "Не удалось найти безопасную точку. Телепортация отменена",
@@ -39,5 +41,9 @@
   "item.forbidden_brews.ore_double_1_drink": "Зелье Двойная руда",
   "item.forbidden_brews.ore_double_1_splash": "Взрывное зелье Двойная руда",
   "item.forbidden_brews.hot_pick_1_drink": "Зелье Горячая кирка",
-  "item.forbidden_brews.hot_pick_1_splash": "Взрывное зелье Горячая кирка"
+  "item.forbidden_brews.hot_pick_1_splash": "Взрывное зелье Горячая кирка",
+  "item.forbidden_brews.inversion_1_drink": "Зелье Переворот",
+  "item.forbidden_brews.inversion_1_splash": "Взрывное зелье Переворот",
+  "item.forbidden_brews.creeper_1_drink": "Зелье Сердце крипера",
+  "item.forbidden_brews.creeper_1_splash": "Взрывное зелье Сердце крипера"
 }

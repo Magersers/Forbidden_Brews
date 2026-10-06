@@ -52,7 +52,7 @@ public final class ChaosStandTests {
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void allRecipesConsumeWartAndExactIngredients(GameTestHelper h) {
-        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==20,"Twenty recipes");
+        var be=stand(h);h.assertTrue(ChaosRecipes.ALL.size()==24,"Twenty-four recipes");
         for(var r:ChaosRecipes.ALL) {
             fill(be,r);tick(h,be,r.ticks());
             h.assertTrue(be.getItem(7).is(r.output().getItem()),"Output "+r.id());
@@ -139,7 +139,7 @@ public final class ChaosStandTests {
     @GameTest(template="empty",timeoutTicks=40)
     public static void recipePickerFiltersBaseAndServerValidatesSelection(GameTestHelper h) {
         var initial=ChaosRecipes.available(ItemStack.EMPTY);
-        h.assertTrue(initial.size()==6 && initial.stream().allMatch(r->r.source()==null),"All six base potions initially");
+        h.assertTrue(initial.size()==8 && initial.stream().allMatch(r->r.source()==null),"All eight base potions initially");
         var options=ChaosRecipes.available(ChaosContent.brew(new BrewSpec("fortune",1,false)));
         h.assertTrue(options.size()==2 && options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",2,false))) &&
             options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",1,true))),"Fortune I unlocks II and its splash");
@@ -308,6 +308,102 @@ public final class ChaosStandTests {
             h.assertTrue(target.hasEffect(ChaosContent.effect(family)),"Splash applies "+family);
             h.assertTrue(target.getEffect(ChaosContent.effect(family)).getDuration()==2400,"Direct hit preserves two minutes");
         }
+        h.succeed();
+    }
+
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void inversionDrinkSplashAndMilk(GameTestHelper h) {
+        var player=h.makeMockPlayer();var bottle=ChaosContent.brew(new BrewSpec("inversion",1,false));
+        var returned=bottle.finishUsingItem(h.getLevel(),player);
+        h.assertTrue(player.hasEffect(ForbiddenBrews.INVERSION.get()) && player.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==2400,"Drink applies two-minute inversion");
+        h.assertTrue(returned.is(Items.GLASS_BOTTLE),"Drink returns glass bottle");
+        var pos=h.absolutePos(POS);var target=h.spawn(net.minecraft.world.entity.EntityType.PIG,POS);
+        var splash=new net.minecraft.world.entity.projectile.ThrownPotion(h.getLevel(),pos.getX(),pos.getY(),pos.getZ()) {
+            public void hit(net.minecraft.world.entity.Entity entity) { super.onHit(new net.minecraft.world.phys.EntityHitResult(entity)); }
+        };
+        splash.setItem(ChaosContent.brew(new BrewSpec("inversion",1,true)));splash.hit(target);
+        h.assertTrue(target.hasEffect(ForbiddenBrews.INVERSION.get()) && target.getEffect(ForbiddenBrews.INVERSION.get()).getDuration()==2400,"Direct splash applies inversion");
+        new ItemStack(Items.MILK_BUCKET).finishUsingItem(h.getLevel(),player);
+        h.assertFalse(player.hasEffect(ForbiddenBrews.INVERSION.get()),"Milk removes inversion");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void creeperDrinkHasSmallSelfDamageAndOneBlast(GameTestHelper h) {
+        var player=h.makeMockPlayer();var center=new BlockPos(h.absolutePos(POS).getX()+200,200,h.absolutePos(POS).getZ());
+        h.getLevel().getChunkAt(center);
+        var chunk=new net.minecraft.world.level.ChunkPos(center);
+        h.getLevel().getChunkSource().addRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,2,chunk);
+        player.setPos(center.getX()+.5,center.getY(),center.getZ()+.5);player.setHealth(20);
+        var neighbor=net.minecraft.world.entity.EntityType.COW.create(h.getLevel());
+        neighbor.setNoGravity(true);neighbor.setNoAi(true);
+        neighbor.setPos(center.getX()+1.5,center.getY(),center.getZ()+.5);h.getLevel().addFreshEntity(neighbor);
+        var glass=center.above();h.getLevel().setBlockAndUpdate(glass,Blocks.GLASS.defaultBlockState());
+        int[] blasts={0};java.util.function.Consumer<net.minecraftforge.event.level.ExplosionEvent.Start> listener=event-> {
+            if(event.getExplosion().getDirectSourceEntity()==player)blasts[0]++;
+        };
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(listener);
+        h.runAfterDelay(10,()-> {
+        try {
+            var result=ChaosContent.brew(new BrewSpec("creeper",1,false)).finishUsingItem(h.getLevel(),player);
+            h.assertTrue(blasts[0]==1,"Exactly one drinking explosion");
+            float damage=switch(h.getLevel().getDifficulty()) {case PEACEFUL->0;case EASY->3;case NORMAL->4;case HARD->6;};
+            h.assertTrue(player.isAlive() && Math.abs(player.getHealth()-(20-damage))<.01,"Small self damage scales with difficulty: "+player.getHealth());
+            h.assertTrue(result.is(Items.GLASS_BOTTLE),"Returns bottle");
+            h.assertTrue(neighbor.getHealth()<neighbor.getMaxHealth(),"Nearby mob damage: health="+neighbor.getHealth()+", entities="+h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,new AABB(center).inflate(6)).size()+", position="+center);
+            h.assertTrue(h.getLevel().getBlockState(glass).isAir(),"Blast breaks fragile blocks");
+        } finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(listener);h.getLevel().getChunkSource().removeRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,2,chunk); }
+        h.succeed();
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void creeperSplashEntityImpactExplodesOnceForMultipleTargets(GameTestHelper h) {
+        var level=h.getLevel();var center=new BlockPos(h.absolutePos(POS).getX()+300,200,h.absolutePos(POS).getZ());
+        level.getChunkAt(center);
+        var chunk=new net.minecraft.world.level.ChunkPos(center);level.getChunkSource().addRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,2,chunk);
+        var a=net.minecraft.world.entity.EntityType.COW.create(level);var b=net.minecraft.world.entity.EntityType.COW.create(level);
+        a.setNoGravity(true);b.setNoGravity(true);a.setNoAi(true);b.setNoAi(true);
+        a.setPos(center.getX()+1,center.getY(),center.getZ());b.setPos(center.getX()-1,center.getY(),center.getZ());level.addFreshEntity(a);level.addFreshEntity(b);
+        var owner=h.makeMockPlayer();owner.setPos(center.getX()+20,center.getY(),center.getZ());
+        var projectile=new net.minecraft.world.entity.projectile.ThrownPotion(level,center.getX(),center.getY(),center.getZ()) {
+            public void hit(net.minecraft.world.entity.Entity entity) { super.onHit(new net.minecraft.world.phys.EntityHitResult(entity)); }
+        };
+        projectile.setOwner(owner);projectile.setItem(ChaosContent.brew(new BrewSpec("creeper",1,true)));
+        int[] blasts={0};java.util.function.Consumer<net.minecraftforge.event.level.ExplosionEvent.Start> listener=event-> {
+            if(event.getExplosion().getDirectSourceEntity()==projectile) {
+                blasts[0]++;h.assertTrue(event.getExplosion().getIndirectSourceEntity()==owner,"Thrower owns blast damage");
+            }
+        };
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(listener);
+        h.runAfterDelay(10,()-> {
+        try {
+            projectile.hit(a);projectile.hit(b);
+            h.assertTrue(blasts[0]==1 && projectile.isRemoved(),"One explosion even with multiple targets and repeated impact");
+            h.assertTrue(a.getHealth()<a.getMaxHealth() && b.getHealth()<b.getMaxHealth(),"Both targets damaged: "+a.getHealth()+", "+b.getHealth()+", entities="+level.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,new AABB(center).inflate(8)).size());
+        } finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(listener);level.getChunkSource().removeRegionTicket(net.minecraft.server.level.TicketType.FORCED,chunk,2,chunk); }
+        h.succeed();
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void creeperSplashBlockImpactUsesTntPower(GameTestHelper h) {
+        var level=h.getLevel();var center=h.absolutePos(POS).offset(400,30,0);
+        level.setBlockAndUpdate(center,Blocks.GLASS.defaultBlockState());
+        var projectile=new net.minecraft.world.entity.projectile.ThrownPotion(level,center.getX()+.5,center.getY()+.5,center.getZ()+.5) {
+            public void hit() { super.onHit(new net.minecraft.world.phys.BlockHitResult(position(),Direction.UP,center,false)); }
+        };
+        projectile.setItem(ChaosContent.brew(new BrewSpec("creeper",1,true)));
+        java.util.List<net.minecraft.world.level.Explosion> observed=new java.util.ArrayList<>();
+        java.util.function.Consumer<net.minecraftforge.event.level.ExplosionEvent.Start> listener=event-> {
+            if(event.getExplosion().getDirectSourceEntity()==projectile)observed.add(event.getExplosion());
+        };
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(listener);
+        try {
+            projectile.hit();h.assertTrue(observed.size()==1 && projectile.isRemoved(),"Block impact detonates and discards bottle");
+            h.assertTrue(level.getBlockState(center).isAir(),"Impact destroys glass");
+            try {
+                var radius=net.minecraft.world.level.Explosion.class.getDeclaredField("radius");radius.setAccessible(true);
+                h.assertTrue(radius.getFloat(observed.get(0))==4,"Splash uses vanilla TNT power four");
+            } catch(ReflectiveOperationException error) {throw new RuntimeException(error);}
+
+        } finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(listener); }
         h.succeed();
     }
 

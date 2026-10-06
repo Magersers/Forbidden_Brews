@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "forbidden_brews",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "name": "Forbidden Brews",
-  "description": "Chaos brewing, six potion families and renewable Netherite Wart.",
+  "description": "Chaos brewing, eight potion families and renewable Netherite Wart.",
   "authors": [
     "Magersers"
   ],

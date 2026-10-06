@@ -7,6 +7,8 @@
   "message.forbidden_brews.home_unsafe": "No safe landing near your spawn",
   "effect.forbidden_brews.wild_teleport": "Random Teleport",
   "effect.forbidden_brews.ore_double": "Double Ore",
+  "effect.forbidden_brews.inversion": "Inversion",
+  "effect.forbidden_brews.creeper": "Creeper Heart",
   "effect.forbidden_brews.hot_pick": "Hot Pick",
   "message.forbidden_brews.teleport_search": "Searching for a safe teleport destination...",
   "message.forbidden_brews.teleport_unsafe": "No safe destination found. Teleport cancelled",
@@ -39,5 +41,9 @@
   "item.forbidden_brews.ore_double_1_drink": "Potion of Double Ore",
   "item.forbidden_brews.ore_double_1_splash": "Splash Potion of Double Ore",
   "item.forbidden_brews.hot_pick_1_drink": "Potion of Hot Pick",
-  "item.forbidden_brews.hot_pick_1_splash": "Splash Potion of Hot Pick"
+  "item.forbidden_brews.hot_pick_1_splash": "Splash Potion of Hot Pick",
+  "item.forbidden_brews.inversion_1_drink": "Potion of Inversion",
+  "item.forbidden_brews.inversion_1_splash": "Splash Potion of Inversion",
+  "item.forbidden_brews.creeper_1_drink": "Potion of Creeper Heart",
+  "item.forbidden_brews.creeper_1_splash": "Splash Potion of Creeper Heart"
 }

@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.3.0'
+VERSION='0.4.0'
 out=ROOT/'releases'/VERSION;out.mkdir(parents=True,exist_ok=True)
 manifest=[]
 for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
@@ -17,8 +17,10 @@ for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
         assert not any('ChaosStandTests' in p or 'VisualScenario' in p or 'VisualClientMixin' in p or 'MouseCoordinates' in p or '/structures/empty.nbt' in p or 'visual.mixins.json' in p for p in paths), 'Test artifacts in production JAR'
         assert 'assets/forbidden_brews/textures/mob_effect/fortune.png' in paths
         assert 'FortuneMixin' in archive.read('forbidden_brews.mixins.json').decode()
+        assert 'CreeperPotionMixin' in archive.read('forbidden_brews.mixins.json').decode()
+        assert 'client.InversionMixin' in archive.read('forbidden_brews.mixins.json').decode()
         assert 'OreDropsMixin' in archive.read('forbidden_brews.mixins.json').decode()
-        for family in ['wild_teleport','ore_double','hot_pick']:
+        for family in ['wild_teleport','ore_double','hot_pick','inversion','creeper']:
             for variant in ['drink','splash']:
                 assert f'assets/forbidden_brews/models/item/{family}_1_{variant}.json' in paths
                 assert f'assets/forbidden_brews/textures/item/{family}_{variant}.png.mcmeta' in paths

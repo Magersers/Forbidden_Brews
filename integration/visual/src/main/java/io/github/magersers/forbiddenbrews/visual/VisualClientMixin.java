@@ -22,6 +22,8 @@ public abstract class VisualClientMixin {
     @Unique private long brews$last=-1;
     @Unique private int brews$diagnostic;
     @Unique private int brews$screenTicks;
+    @Unique private int brews$fxFrame;
+    @Unique private boolean brews$inverted,brews$restored;
     @Inject(method="tick",at=@At("TAIL"))
     private void brews$connect(CallbackInfo ci) {
         Minecraft mc=(Minecraft)(Object)this;
@@ -33,10 +35,10 @@ public abstract class VisualClientMixin {
             brews$screenTicks++;
             int x=(screen.width-256)/2,y=(screen.height-256)/2;
             if(brews$screenTicks==5 || brews$screenTicks==50)screen.mouseClicked(x+128,y+136,0);
-            if(brews$screenTicks==25)screen.mouseClicked(x+182,y+168,0);
+            if(brews$screenTicks==25)screen.mouseClicked(x+182,y+210,0);
             if(brews$screenTicks==65)screen.mouseClicked(x+128,y+76,0);
-            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("hot_pick",1,false)))throw new IllegalStateException("Hot Pick picker choice was not synchronized");
-            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("hot_pick",1,true)))throw new IllegalStateException("Splash picker choice was not synchronized");
+            if(brews$screenTicks==35 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("creeper",1,false)))throw new IllegalStateException("Creeper picker choice was not synchronized");
+            if(brews$screenTicks==95 && !ChaosRecipes.ALL.get(screen.getMenu().selectedRecipe()).result().equals(new BrewSpec("creeper",1,true)))throw new IllegalStateException("Splash picker choice was not synchronized");
         }
     }
     @Inject(method="runTick",at=@At("TAIL"))
@@ -66,10 +68,26 @@ public abstract class VisualClientMixin {
                 if(base)brews$baseShot=true;else brews$upgradeShot=true;
             }
         }
+        if(brews$frame>=200 && mc.screen==null && mc.level.getGameTime()>=brews$last+2) {
+            brews$last=mc.level.getGameTime();name=String.format("chaos-fx-%03d.png",brews$fxFrame++);
+            boolean inverted=VersionApi.hasEffect(mc.player,ChaosContent.inversionEffect.get());
+            if(mc.player.hurtTime==0 && ((inverted && !brews$inverted) || (!inverted && brews$inverted && !brews$restored))) {
+                var pose=new com.mojang.blaze3d.vertex.PoseStack();
+                var method=net.minecraft.client.renderer.GameRenderer.class.getDeclaredMethod("bobHurt",com.mojang.blaze3d.vertex.PoseStack.class,float.class);
+                method.setAccessible(true);method.invoke(mc.gameRenderer,pose,0F);
+                float expected=inverted?-1:1;
+                if(Math.abs(pose.last().pose().m00()-expected)>.001 || Math.abs(pose.last().pose().m11()-expected)>.001)throw new IllegalStateException("Inversion matrix or milk restoration failed");
+                if(inverted)brews$inverted=true;else brews$restored=true;
+                System.out.println("INVERSION_MATRIX_OK "+inverted);
+            }
+        }
         if(name!=null) {
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) { screenshot.writeToFile(Path.of(mc.gameDirectory.getAbsolutePath(),name)); }
             System.out.println("FORBIDDEN_BREWS_CAPTURE "+name);
         }
-        if(brews$frame>=220)mc.stop();
+        if(brews$fxFrame>=150) {
+            if(!brews$inverted || !brews$restored)throw new IllegalStateException("Inversion and restoration were not verified");
+            mc.stop();
+        }
     }
 }

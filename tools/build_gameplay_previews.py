@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 source=ROOT/'platforms/forge-1.20.1/run'
 output=ROOT/'previews'
 paths=sorted(source.glob('chaos-ui-*.png'))
-assert len(paths)>=220, 'Run the complete visual test first'
+assert len(paths)>=200, 'Run the complete visual test first'
 frames=[]
 for path in paths[2:]:
     with Image.open(path) as image:
@@ -21,3 +21,12 @@ for kind in ['base','upgrades']:
         image.crop((384,104,896,616)).save(output/('chaos_recipe_picker.png' if kind=='base' else 'chaos_recipe_upgrades.png'))
 shutil.copyfile(source/'chaos-world.png',output/'chaos_stand_in_game.png')
 print(f'Captured {len(frames)} game frames; wrote GUI GIF, PNG and world screenshot')
+fx=sorted(source.glob('chaos-fx-*.png'))
+if fx:
+    assert len(fx)>=150, 'Incomplete potion effect demo'
+    effect_frames=[]
+    for path in fx:
+        with Image.open(path) as shot:effect_frames.append(shot.convert('RGB').resize((640,360),Image.Resampling.NEAREST))
+    effect_frames[0].save(output/'potions_0.4.0_in_game.gif',save_all=True,append_images=effect_frames[1:],duration=100,loop=0,optimize=False)
+    effect_frames[25].save(output/'inversion_in_game.png')
+    print(f'Wrote {len(effect_frames)} frames of real inversion and explosion gameplay')

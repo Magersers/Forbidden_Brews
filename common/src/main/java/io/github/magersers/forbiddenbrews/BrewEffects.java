@@ -31,6 +31,16 @@ public final class BrewEffects {
     public static final class HotPick extends MobEffect {
         public HotPick() { super(MobEffectCategory.BENEFICIAL,0xFF8A38); }
     }
+    public static final class Inversion extends MobEffect {
+        public Inversion() { super(MobEffectCategory.HARMFUL,0xDD70E8); }
+    }
+    public static final class Creeper extends MobEffect {
+        public Creeper() { super(MobEffectCategory.HARMFUL,0x75ED58); }
+        @Override public boolean isInstantenous() { return true; }
+        @Override public void applyInstantenousEffect(Entity source, Entity owner, LivingEntity victim, int amplifier, double strength) {
+            CreeperBlast.drink(victim);
+        }
+    }
     public static int lootingBonus(LivingEntity killer) {
         if (killer == null) return 0;
         var effect = VersionApi.looting(killer);
