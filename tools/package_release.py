@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.2.0'
+VERSION='0.2.1'
 out=ROOT/'releases'/VERSION;out.mkdir(parents=True,exist_ok=True)
 manifest=[]
 for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
@@ -14,7 +14,9 @@ for target in ['forge-1.20.1','neoforge-1.21.1','fabric-1.21.1']:
     source=ROOT/'platforms'/target/'build/libs'/name
     with zipfile.ZipFile(source) as archive:
         paths=archive.namelist()
-        assert not any('ChaosStandTests' in p or 'VisualScenario' in p or 'VisualClientMixin' in p or '/structures/empty.nbt' in p or 'visual.mixins.json' in p for p in paths), 'Test artifacts in production JAR'
+        assert not any('ChaosStandTests' in p or 'VisualScenario' in p or 'VisualClientMixin' in p or 'MouseCoordinates' in p or '/structures/empty.nbt' in p or 'visual.mixins.json' in p for p in paths), 'Test artifacts in production JAR'
+        assert 'assets/forbidden_brews/textures/mob_effect/fortune.png' in paths
+        assert 'FortuneMixin' in archive.read('forbidden_brews.mixins.json').decode()
         assert 'assets/forbidden_brews/models/block/chaos_brewing_stand.json' in paths
         assert 'assets/forbidden_brews/textures/entity/steve_brute.png' in paths
         recipe_path='data/forbidden_brews/'+('recipes' if target=='forge-1.20.1' else 'recipe')+'/chaos_brewing_stand.json'

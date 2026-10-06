@@ -5,6 +5,9 @@ import net.minecraft.world.entity.*;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class BrewEffects {
+    public static final class Fortune extends MobEffect {
+        public Fortune() { super(MobEffectCategory.BENEFICIAL,0xEEC85A); }
+    }
     public static final class Looting extends MobEffect {
         public Looting() { super(MobEffectCategory.BENEFICIAL,0xED4BA6); }
     }
@@ -19,6 +22,10 @@ public final class BrewEffects {
         if (killer == null) return 0;
         var effect = VersionApi.looting(killer);
         return effect == null ? 0 : effect.getAmplifier()+1;
+    }
+    public static int fortuneBonus(LivingEntity miner) {
+        var effect=VersionApi.fortune(miner);
+        return effect==null?0:effect.getAmplifier()+1;
     }
     private BrewEffects() {}
 }

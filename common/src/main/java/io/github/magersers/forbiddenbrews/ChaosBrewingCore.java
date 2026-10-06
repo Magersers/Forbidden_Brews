@@ -17,14 +17,14 @@ import net.minecraft.sounds.*;
 public abstract class ChaosBrewingCore extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int SIZE=8;
     protected NonNullList<ItemStack> items=NonNullList.withSize(SIZE,ItemStack.EMPTY);
-    protected int progress, fuel, recipeIndex=-1;
+    protected int progress, fuel, recipeIndex=-1, selectedRecipe=-1;
     private static final int[] TOP={1,2,3,4,5}, SIDE={0,6}, BOTTOM={7};
     protected final ContainerData data=new ContainerData() {
         public int get(int i) { return switch(i) {
             case 0 -> progress; case 1 -> recipeIndex<0?0:ChaosRecipes.ALL.get(recipeIndex).ticks();
-            case 2 -> fuel; case 3 -> recipeIndex+1; default -> 0; }; }
-        public void set(int i,int value) { switch(i) { case 0 -> progress=value; case 2 -> fuel=value; case 3 -> recipeIndex=value-1; } }
-        public int getCount() { return 4; }
+            case 2 -> fuel; case 3 -> recipeIndex+1; case 4 -> selectedRecipe+1; default -> 0; }; }
+        public void set(int i,int value) { switch(i) { case 0 -> progress=value; case 2 -> fuel=value; case 3 -> recipeIndex=value-1; case 4 -> selectedRecipe=value-1; } }
+        public int getCount() { return 5; }
     };
     protected ChaosBrewingCore(BlockPos pos,BlockState state) { super(ChaosContent.standType.get(),pos,state); }
     protected NonNullList<ItemStack> getItems() { return items; }
@@ -49,8 +49,19 @@ public abstract class ChaosBrewingCore extends BaseContainerBlockEntity implemen
     @Override public int[] getSlotsForFace(Direction direction) { return direction==Direction.DOWN?BOTTOM:direction==Direction.UP?TOP:SIDE; }
     @Override public boolean canPlaceItemThroughFace(int i,ItemStack stack,Direction face) { return canPlaceItem(i,stack); }
     @Override public boolean canTakeItemThroughFace(int i,ItemStack stack,Direction face) { return i==7; }
+    public boolean selectRecipe(int index) {
+        if(index<0 || index>=ChaosRecipes.ALL.size() || !getItem(7).isEmpty())return false;
+        if(!ChaosRecipes.available(getItem(0)).contains(ChaosRecipes.ALL.get(index)))return false;
+        selectedRecipe=index;
+        if(recipeIndex!=index) { progress=0;recipeIndex=-1; }
+        setChanged();return true;
+    }
     public static void serverTick(Level level,BlockPos pos,BlockState state,ChaosBrewingCore be) {
-        var recipe=ChaosRecipes.find(be);
+        if(be.selectedRecipe>=0 && !ChaosRecipes.available(be.getItem(0)).contains(ChaosRecipes.ALL.get(be.selectedRecipe))) {
+            be.selectedRecipe=-1;be.setChanged();
+        }
+        var recipe=be.selectedRecipe<0?ChaosRecipes.find(be):ChaosRecipes.ALL.get(be.selectedRecipe);
+        if(recipe!=null && !recipe.matches(be))recipe=null;
         if(recipe==null || !be.getItem(7).isEmpty()) {
             if(be.progress!=0 || be.recipeIndex!=-1) { be.progress=0;be.recipeIndex=-1;be.setChanged(); }
             return;
@@ -61,7 +72,7 @@ public abstract class ChaosBrewingCore extends BaseContainerBlockEntity implemen
         if(be.fuel==0)return;
         be.progress++;
         if(be.progress>=recipe.ticks()) {
-            recipe.consume(be);be.items.set(7,recipe.output());be.fuel--;be.progress=0;be.recipeIndex=-1;
+            recipe.consume(be);be.items.set(7,recipe.output());be.fuel--;be.progress=0;be.recipeIndex=-1;be.selectedRecipe=-1;
             level.playSound(null,pos,SoundEvents.BREWING_STAND_BREW,SoundSource.BLOCKS,.8F,1.05F);
         }
         be.setChanged();
@@ -70,6 +81,9 @@ public abstract class ChaosBrewingCore extends BaseContainerBlockEntity implemen
         fuel=Math.max(0,Math.min(20,tag.getInt("Fuel")));
         progress=Math.max(0,tag.getInt("ChaosProgress"));
         recipeIndex=-1;
+        selectedRecipe=-1;
+        String selection=tag.getString("ChaosSelectedRecipe");
+        for(int i=0;i<ChaosRecipes.ALL.size();i++)if(ChaosRecipes.ALL.get(i).id().equals(selection))selectedRecipe=i;
         String id=tag.getString("ChaosRecipe");
         for(int i=0;i<ChaosRecipes.ALL.size();i++) if(ChaosRecipes.ALL.get(i).id().equals(id))recipeIndex=i;
         if(recipeIndex<0 || progress>=ChaosRecipes.ALL.get(recipeIndex).ticks())progress=0;
@@ -77,12 +91,13 @@ public abstract class ChaosBrewingCore extends BaseContainerBlockEntity implemen
     protected void writeState(CompoundTag tag) {
         tag.putInt("ChaosInventoryVersion",2);tag.putInt("Fuel",fuel);tag.putInt("ChaosProgress",progress);
         if(recipeIndex>=0)tag.putString("ChaosRecipe",ChaosRecipes.ALL.get(recipeIndex).id());
+        if(selectedRecipe>=0)tag.putString("ChaosSelectedRecipe",ChaosRecipes.ALL.get(selectedRecipe).id());
     }
     /** Preserve every item when upgrading the previous five-slot vanilla stand. */
     protected void migrateOldInventory(NonNullList<ItemStack> old) {
         items=NonNullList.withSize(SIZE,ItemStack.EMPTY);
         items.set(0,old.get(0));items.set(6,old.get(4));items.set(7,old.get(1));
         items.set(2,old.get(2));items.set(3,old.get(3));
-        progress=0;recipeIndex=-1;
+        progress=0;recipeIndex=-1;selectedRecipe=-1;
     }
 }

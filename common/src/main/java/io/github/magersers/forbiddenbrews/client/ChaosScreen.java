@@ -2,7 +2,6 @@ package io.github.magersers.forbiddenbrews.client;
 
 import io.github.magersers.forbiddenbrews.*;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,29 +9,84 @@ import net.minecraft.world.item.*;
 
 /** Pixel copper/obsidian UI. Recipe hints are client-only; server validates inputs. */
 public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
-    private int selected;
+    private int selected=-1;
+    private boolean choosing;
     public ChaosScreen(ChaosMenu menu,Inventory inv,Component title) {
         super(menu,inv,title);imageWidth=256;imageHeight=256;
     }
-    @Override protected void init() {
-        super.init();
-        addRenderableWidget(Button.builder(Component.literal("<"),b->selected=Math.floorMod(selected-1,ChaosRecipes.ALL.size())).bounds(leftPos+204,topPos+8,18,16).build());
-        addRenderableWidget(Button.builder(Component.literal(">"),b->selected=(selected+1)%ChaosRecipes.ALL.size()).bounds(leftPos+226,topPos+8,18,16).build());
+    /** Click the empty result cell, or the empty base cell, to open the picker. */
+    @Override public boolean mouseClicked(double mouseX,double mouseY,int button) {
+        if(choosing) {
+            if(button==0) {
+                var options=ChaosRecipes.available(menu.getSlot(0).getItem());
+                for(int i=0;i<options.size();i++)if(isHovering(22,64+i*27,212,25,mouseX,mouseY)) {
+                    selected=ChaosRecipes.ALL.indexOf(options.get(i));
+                    minecraft.gameMode.handleInventoryButtonClick(menu.containerId,selected);
+                    choosing=false;return true;
+                }
+            }
+            choosing=false;return true;
+        }
+        if(button==0 && menu.progress()==0 && menu.getCarried().isEmpty() &&
+            ((menu.getSlot(7).getItem().isEmpty() && isHovering(120,128,16,16,mouseX,mouseY)) ||
+             (menu.getSlot(0).getItem().isEmpty() && isHovering(120,70,16,16,mouseX,mouseY)))) {
+            choosing=true;return true;
+        }
+        return super.mouseClicked(mouseX,mouseY,button);
+    }
+    @Override public boolean keyPressed(int key,int scan,int modifiers) {
+        if(choosing && key==256) { choosing=false;return true; }
+        return super.keyPressed(key,scan,modifiers);
     }
     @Override public void render(GuiGraphics g,int mouseX,int mouseY,float partial) {
         ScreenCompat.background(this,g,mouseX,mouseY,partial);
-        super.render(g,mouseX,mouseY,partial);renderTooltip(g,mouseX,mouseY);
+        super.render(g,mouseX,mouseY,partial);
+        if(menu.progress()>0)choosing=false;
+        if(choosing) { renderPicker(g,mouseX,mouseY);return; }
+        renderTooltip(g,mouseX,mouseY);
         var recipe=recipe();
+        if(recipe==null)return;
         for(int i=0;i<8;i++)if(menu.getSlot(i).getItem().isEmpty() && isHovering(ChaosMenu.POS[i][0],ChaosMenu.POS[i][1],16,16,mouseX,mouseY)) {
             ItemStack ghost=ghost(recipe,i);
             if(!ghost.isEmpty())g.renderTooltip(font,ghost,mouseX,mouseY);
         }
     }
     private ChaosRecipes.Recipe recipe() {
-        if(menu.activeRecipe()>=0)selected=menu.activeRecipe();
-        return ChaosRecipes.ALL.get(selected);
+        var output=menu.getSlot(7).getItem();
+        if(output.getItem() instanceof BrewItem brew)
+            return ChaosRecipes.ALL.stream().filter(r->r.result().equals(brew.spec)).findFirst().orElse(null);
+        if(menu.activeRecipe()>=0)return ChaosRecipes.ALL.get(menu.activeRecipe());
+        var available=ChaosRecipes.available(menu.getSlot(0).getItem());
+        if(menu.selectedRecipe()>=0 && available.contains(ChaosRecipes.ALL.get(menu.selectedRecipe())))selected=menu.selectedRecipe();
+        if(selected<0 || !available.contains(ChaosRecipes.ALL.get(selected)))selected=available.isEmpty()?-1:ChaosRecipes.ALL.indexOf(available.get(0));
+        return selected<0?null:ChaosRecipes.ALL.get(selected);
+    }
+    private void renderPicker(GuiGraphics g,int mouseX,int mouseY) {
+        g.pose().pushPose();g.pose().translate(0,0,300);
+        int x=leftPos,y=topPos;
+        var options=ChaosRecipes.available(menu.getSlot(0).getItem());
+        g.fill(x+8,y+30,x+248,y+155,0xC00B1320);
+        int bottom=options.isEmpty()?y+103:y+66+options.size()*27;
+        g.fill(x+16,y+44,x+240,bottom,0xFF0B1523);
+        g.renderOutline(x+16,y+44,224,bottom-y-44,0xFFD7B373);
+        g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.picker"),x+128,y+51,0xFFE9CF90);
+        if(options.isEmpty())g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.no_recipes"),x+128,y+77,0xFFB6C8D4);
+        ItemStack hovered=ItemStack.EMPTY;
+        for(int i=0;i<options.size();i++) {
+            var option=options.get(i);int yy=y+64+i*27;
+            boolean hover=isHovering(22,64+i*27,212,25,mouseX,mouseY);
+            g.fill(x+22,yy,x+234,yy+25,hover?0xFF344A57:0xFF172739);
+            g.renderOutline(x+22,yy,212,25,hover?0xFF83E4CE:0xFF405369);
+            var stack=option.output();g.renderItem(stack,x+28,yy+4);
+            String name=stack.getHoverName().getString();
+            g.drawString(font,font.plainSubstrByWidth(name,177),x+50,yy+8,hover?0xFFEBD294:0xFFD4E2E8,false);
+            if(hover)hovered=stack;
+        }
+        if(!hovered.isEmpty())g.renderTooltip(font,hovered,mouseX,mouseY);
+        g.pose().popPose();
     }
     private ItemStack ghost(ChaosRecipes.Recipe recipe,int slot) {
+        if(recipe==null)return ItemStack.EMPTY;
         if(slot==0)return recipe.base();
         if(slot==1)return new ItemStack(ChaosContent.wartItem.get());
         if(slot==6)return new ItemStack(Items.BLAZE_POWDER);
@@ -77,13 +131,19 @@ public final class ChaosScreen extends AbstractContainerScreen<ChaosMenu> {
         g.drawString(font,Component.translatable("gui.forbidden_brews.components"),15,39,0xA9C0D1,false);
         g.drawString(font,Component.translatable("gui.forbidden_brews.components"),185,39,0xA9C0D1,false);
         g.drawCenteredString(font,Component.translatable(menu.progress()>0?"gui.forbidden_brews.brewing":"gui.forbidden_brews.base"),128,95,0x83DBCE);
-        g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.result"),128,147,0xBCD6E5);
+        g.drawCenteredString(font,Component.translatable(!menu.getSlot(7).getItem().isEmpty()?"gui.forbidden_brews.ready":menu.progress()>0?"gui.forbidden_brews.result":"gui.forbidden_brews.choose"),128,147,0xBCD6E5);
         g.drawCenteredString(font,Component.translatable("gui.forbidden_brews.fuel"),214,118,0xEFBA68);
         g.drawString(font,playerInventoryTitle,48,158,0xA2B7C7,false);
         // Compact recipe name sits over the lower-left ornament; full name is
         // available by hovering the output ghost.
-        String text=Component.translatable(recipe().result().translation()).getString();
-        g.drawString(font,font.plainSubstrByWidth(text,78),17,130,0x8DDAD0,false);
-        g.drawString(font,(ChaosRecipes.ALL.indexOf(recipe())+1)+"/"+ChaosRecipes.ALL.size(),27,143,0x7C91A5,false);
+        var recipe=recipe();
+        if(recipe!=null) {
+            String text=Component.translatable(recipe.result().translation()).getString();
+            g.drawString(font,font.plainSubstrByWidth(text,78),17,130,0x8DDAD0,false);
+            if(!recipe.result().family().equals("homeward")) {
+                int minutes=recipe.result().duration()/1200;
+                g.drawString(font,minutes+":00",27,143,0x7C91A5,false);
+            }
+        }
     }
 }

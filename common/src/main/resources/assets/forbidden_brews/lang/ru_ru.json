@@ -1,6 +1,7 @@
 {
   "block.forbidden_brews.chaos_brewing_stand": "Стойка хаоса",
   "block.forbidden_brews.netherite_wart": "Незеритовый нарост",
+  "effect.forbidden_brews.fortune": "Удача",
   "effect.forbidden_brews.looting": "Добыча",
   "effect.forbidden_brews.homeward": "Возвращение домой",
   "message.forbidden_brews.home_unsafe": "Рядом с точкой возрождения нет безопасного места",
@@ -10,6 +11,10 @@
   "gui.forbidden_brews.brewing": "Варка...",
   "gui.forbidden_brews.result": "Результат",
   "gui.forbidden_brews.fuel": "Топливо",
+  "gui.forbidden_brews.choose": "Выбрать",
+  "gui.forbidden_brews.picker": "Выберите зелье",
+  "gui.forbidden_brews.no_recipes": "Нужна вода или питьевое зелье",
+  "gui.forbidden_brews.ready": "Готово",
   "item.forbidden_brews.fortune_1_drink": "Зелье Удача I",
   "item.forbidden_brews.fortune_1_splash": "Взрывное зелье Удача I",
   "item.forbidden_brews.fortune_2_drink": "Зелье Удача II",

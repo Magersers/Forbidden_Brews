@@ -77,9 +77,13 @@ for family in ['fortune','looting','homeward']:
         for variant in ['drink','splash']:
             save_json(ASSETS/f'models/item/{family}_{level}_{variant}.json',{'parent':'minecraft:item/generated',
                 'textures':{'layer0':f'forbidden_brews:item/{family}_{variant}'}})
-for name,color in [('looting','#ee55ab'),('homeward','#f3b653')]:
+for name,color in [('fortune','#efcc61'),('looting','#ee55ab'),('homeward','#f3b653')]:
     icon=Image.new('RGBA',(18,18));p=ImageDraw.Draw(icon)
-    if name=='looting':
+    if name=='fortune':
+        p.line([(4,14),(12,6)],fill='#b28243',width=2)
+        p.line([(5,4),(11,4),(14,7),(14,9)],fill=color,width=3)
+        p.point((3,9),fill='#fff1b4');p.point((10,14),fill='#fff1b4')
+    elif name=='looting':
         p.line([(4,13),(13,4)],fill=color,width=3);p.line([(3,10),(7,14)],fill='#f1e7d1',width=2)
     else:
         p.line([(3,8),(9,3),(15,8)],fill=color,width=2);p.rectangle((5,8,13,14),outline=color,width=2)

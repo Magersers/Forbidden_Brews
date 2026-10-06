@@ -34,13 +34,21 @@ public final class VisualScenario {
         ticks++;
         if(ticks==80) {
             var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
-            be.clearContent();be.progress=0;be.recipeIndex=-1;be.fuel=0;
-            var recipe=ChaosRecipes.ALL.get(1);be.setItem(0,recipe.base());be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get(),4));
+            be.clearContent();be.progress=0;be.recipeIndex=-1;be.selectedRecipe=-1;be.fuel=0;
+            player.openMenu(be);
+        }
+        if(ticks==120) {
+            var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
+            be.setItem(0,ChaosRecipes.ALL.get(1).base());
+        }
+        if(ticks==160) {
+            var be=(ChaosBrewingBlockEntity)player.serverLevel().getBlockEntity(STAND);
+            var recipe=ChaosRecipes.ALL.get(1);be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get(),4));
             for(int i=0;i<recipe.components().size();i++) {
                 var c=recipe.components().get(i);be.setItem(i+2,new ItemStack(c.item(),c.count()));
             }
-            be.setItem(6,new ItemStack(Items.BLAZE_POWDER,4));player.openMenu(be);
+            be.setItem(6,new ItemStack(Items.BLAZE_POWDER,4));
         }
-        if(ticks==420)player.getServer().halt(false);
+        if(ticks==600)player.getServer().halt(false);
     }
 }

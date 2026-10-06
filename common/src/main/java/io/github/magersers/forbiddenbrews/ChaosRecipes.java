@@ -10,9 +10,12 @@ public final class ChaosRecipes {
     public record Recipe(String id, BrewSpec source, BrewSpec result, int ticks, List<Component> components) {
         public ItemStack base() { return source == null ? VersionApi.water() : ChaosContent.brew(source); }
         public ItemStack output() { return ChaosContent.brew(result); }
+        public boolean acceptsBase(ItemStack bottle) {
+            return source==null ? VersionApi.isWater(bottle) : bottle.is(ChaosContent.brewItems.get(source.id()).get());
+        }
         public boolean matches(Container inv) {
             ItemStack bottle = inv.getItem(0);
-            if (source == null ? !VersionApi.isWater(bottle) : !bottle.is(ChaosContent.brewItems.get(source.id()).get())) return false;
+            if (!acceptsBase(bottle)) return false;
             if (!inv.getItem(1).is(ChaosContent.wartItem.get())) return false;
             return allocation(inv) != null;
         }
@@ -63,5 +66,8 @@ public final class ChaosRecipes {
         list.add(new Recipe(result.id(),source,result,ticks,List.of(parts)));
     }
     public static Recipe find(Container inv) { return ALL.stream().filter(r->r.matches(inv)).findFirst().orElse(null); }
+    public static List<Recipe> available(ItemStack base) {
+        return ALL.stream().filter(r->base.isEmpty()?r.source()==null:r.acceptsBase(base)).toList();
+    }
     private ChaosRecipes() {}
 }

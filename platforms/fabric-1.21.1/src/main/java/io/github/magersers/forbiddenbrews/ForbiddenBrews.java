@@ -17,10 +17,11 @@ public final class ForbiddenBrews implements ModInitializer {
         var wart=Registry.register(BuiltInRegistries.ITEM,VersionApi.id("netherite_wart"),new BlockItem(WART,new Item.Properties().fireResistant()));
         var type=Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,VersionApi.id("chaos_brewing_stand"),BlockEntityType.Builder.of(ChaosBrewingBlockEntity::new,STAND).build(null));
         var menu=Registry.register(BuiltInRegistries.MENU,VersionApi.id("chaos_stand"),new MenuType<>(ChaosMenu::new,FeatureFlags.VANILLA_SET));
+        var fortune=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("fortune"),new BrewEffects.Fortune());
         var looting=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("looting"),new BrewEffects.Looting());
         var home=Registry.register(BuiltInRegistries.MOB_EFFECT,VersionApi.id("homeward"),new BrewEffects.Homeward());
         ChaosContent.standType=()->type;ChaosContent.menuType=()->menu;ChaosContent.wartItem=()->wart;
-        ChaosContent.lootingEffect=()->looting;ChaosContent.homewardEffect=()->home;
+        ChaosContent.fortuneEffect=()->fortune;ChaosContent.lootingEffect=()->looting;ChaosContent.homewardEffect=()->home;
         for(var spec:BrewSpec.ALL) {
             var brew=Registry.register(BuiltInRegistries.ITEM,VersionApi.id(spec.id()),new BrewItem(spec));
             ChaosContent.brewItems.put(spec.id(),()->brew);

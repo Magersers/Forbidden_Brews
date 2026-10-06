@@ -25,7 +25,7 @@ public final class ChaosStandTests {
         h.setBlock(POS,ForbiddenBrews.STAND.get());return (ChaosBrewingBlockEntity)h.getBlockEntity(POS);
     }
     private static void fill(ChaosBrewingBlockEntity be,ChaosRecipes.Recipe r) {
-        be.clearContent();be.progress=0;be.recipeIndex=-1;be.fuel=0;
+        be.clearContent();be.progress=0;be.recipeIndex=-1;be.selectedRecipe=-1;be.fuel=0;
         be.setItem(0,r.base());be.setItem(1,new ItemStack(ForbiddenBrews.WART_ITEM.get()));
         for(int i=0;i<r.components().size();i++) {
             var c=r.components().get(i);be.setItem(i+2,new ItemStack(c.item(),c.count()));
@@ -59,6 +59,8 @@ public final class ChaosStandTests {
             for(int i=0;i<7;i++)h.assertTrue(be.getItem(i).isEmpty(),"Consumption "+r.id()+" slot "+i);
             h.assertTrue(be.fuel==19,"One charge used");
             h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getAmplifier()==r.result().level()-1,"Correct effect level");
+            int duration=r.result().family().equals("homeward")?1:switch(r.result().level()) { case 1 -> 2400; case 2 -> 6000; default -> 9600; };
+            h.assertTrue(PotionUtils.getMobEffects(be.getItem(7)).get(0).getDuration()==duration,"Duration 2/5/8 minutes for "+r.id());
         }h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=40)
@@ -93,13 +95,71 @@ public final class ChaosStandTests {
         var menu=be.createMenu(0,player.getInventory(),player);h.assertTrue(menu instanceof ChaosMenu && menu.stillValid(player),"Custom menu opens");h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=40)
-    public static void luckAndLootingApplyAndStackWithEnchantments(GameTestHelper h) {
+    public static void fortuneAndLootingApplyAndStackWithEnchantments(GameTestHelper h) {
         var player=h.makeMockPlayer();ChaosContent.brew(new BrewSpec("fortune",3,false)).finishUsingItem(h.getLevel(),player);
-        h.assertTrue(player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.LUCK)==3,"Luck III attribute");
+        h.assertTrue(player.getEffect(ForbiddenBrews.FORTUNE.get()).getAmplifier()==2,"Fortune III effect");
+        h.assertTrue(player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.LUCK)==0,"Vanilla Luck must remain unchanged");
         var sword=new ItemStack(Items.DIAMOND_SWORD);sword.enchant(Enchantments.MOB_LOOTING,2);player.setItemSlot(EquipmentSlot.MAINHAND,sword);
         ChaosContent.brew(new BrewSpec("looting",2,false)).finishUsingItem(h.getLevel(),player);
         h.assertTrue(EnchantmentHelper.getMobLooting(player)==4,"Potion and sword stack");
         player.removeEffect(ForbiddenBrews.LOOTING.get());h.assertTrue(EnchantmentHelper.getMobLooting(player)==2,"Bonus disappears");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void fortuneUsesRealBlockLootAndPreservesTools(GameTestHelper h) {
+        var player=h.makeMockPlayer();var pos=h.absolutePos(POS);
+        var pick=new ItemStack(Items.DIAMOND_PICKAXE);pick.enchant(Enchantments.BLOCK_FORTUNE,3);
+        ChaosContent.brew(new BrewSpec("fortune",3,false)).finishUsingItem(h.getLevel(),player);
+        h.assertTrue(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE,VersionApi.fortuneTool(pick,player))==6,"Fortune III + III = VI");
+        boolean exceedsFour=false;
+        for(int i=0;i<128;i++) {
+            var drops=Block.getDrops(Blocks.DIAMOND_ORE.defaultBlockState(),h.getLevel(),pos,null,player,pick);
+            int count=drops.stream().filter(s->s.is(Items.DIAMOND)).mapToInt(ItemStack::getCount).sum();
+            if(count>4)exceedsFour=true;
+        }
+        h.assertTrue(exceedsFour,"Actual diamond loot must exceed the Fortune III limit");
+        h.assertTrue(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE,pick)==3,"Original pickaxe is unchanged");
+        var axe=new ItemStack(Items.DIAMOND_AXE);axe.enchant(Enchantments.BLOCK_FORTUNE,3);
+        boolean exceedsSeven=false;var crop=ForbiddenBrews.WART.get().defaultBlockState().setValue(NetherWartBlock.AGE,3);
+        for(int i=0;i<256;i++) {
+            int count=Block.getDrops(crop,h.getLevel(),pos,null,player,axe).stream().filter(s->s.is(ForbiddenBrews.WART_ITEM.get())).mapToInt(ItemStack::getCount).sum();
+            if(count>7)exceedsSeven=true;
+        }
+        h.assertTrue(exceedsSeven,"Axe Fortune and potion stack in crop loot too");
+        h.assertTrue(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE,axe)==3,"Original axe is unchanged");
+        var silk=new ItemStack(Items.DIAMOND_PICKAXE);silk.enchant(Enchantments.SILK_TOUCH,1);
+        var silkDrops=Block.getDrops(Blocks.DIAMOND_ORE.defaultBlockState(),h.getLevel(),pos,null,player,silk);
+        h.assertTrue(silkDrops.size()==1 && silkDrops.get(0).is(Items.DIAMOND_ORE),"Silk Touch keeps vanilla priority");
+        player.removeEffect(ForbiddenBrews.FORTUNE.get());
+        for(int i=0;i<64;i++) {
+            int count=Block.getDrops(Blocks.DIAMOND_ORE.defaultBlockState(),h.getLevel(),pos,null,player,pick).stream().mapToInt(ItemStack::getCount).sum();
+            h.assertTrue(count<=4,"After effect ends only tool Fortune remains");
+        }
+        h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void recipePickerFiltersBaseAndServerValidatesSelection(GameTestHelper h) {
+        var initial=ChaosRecipes.available(ItemStack.EMPTY);
+        h.assertTrue(initial.size()==3 && initial.stream().allMatch(r->r.source()==null),"Only three base potions initially");
+        var options=ChaosRecipes.available(ChaosContent.brew(new BrewSpec("fortune",1,false)));
+        h.assertTrue(options.size()==2 && options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",2,false))) &&
+            options.stream().anyMatch(r->r.result().equals(new BrewSpec("fortune",1,true))),"Fortune I unlocks II and its splash");
+        h.assertTrue(ChaosRecipes.available(ChaosContent.brew(new BrewSpec("looting",3,false))).size()==1,"Level III only converts to splash");
+        h.assertTrue(ChaosRecipes.available(ChaosContent.brew(new BrewSpec("fortune",1,true))).isEmpty(),"Splash is not an upgrade base");
+        var be=stand(h);fill(be,ChaosRecipes.ALL.get(0));var player=h.makeMockPlayer();
+        player.setPos(be.getBlockPos().getX()+.5,be.getBlockPos().getY()+.5,be.getBlockPos().getZ()+.5);
+        var menu=(ChaosMenu)be.createMenu(0,player.getInventory(),player);
+        h.assertFalse(menu.clickMenuButton(player,1),"Server rejects locked Fortune II for water");
+        h.assertFalse(menu.clickMenuButton(player,999),"Invalid selection rejected");
+        h.assertTrue(menu.clickMenuButton(player,3),"Looting I available for water");tick(h,be,200);
+        h.assertTrue(be.getItem(7).isEmpty() && be.getItem(6).getCount()==1,"Selected recipe prevents brewing a different recipe");
+        var saved=be.saveWithFullMetadata();var restored=(ChaosBrewingBlockEntity)BlockEntity.loadStatic(be.getBlockPos(),be.getBlockState(),saved);
+        h.assertTrue(restored.selectedRecipe==3,"Selection persists on reload");
+        h.assertTrue(menu.clickMenuButton(player,0),"Choose Fortune I");tick(h,be,200);
+        h.assertTrue(be.getItem(7).is(ChaosContent.brew(new BrewSpec("fortune",1,false)).getItem()),"Selected Fortune I brews");
+        be.setItem(0,ChaosContent.brew(new BrewSpec("fortune",1,false)));be.setItem(7,ItemStack.EMPTY);
+        h.assertTrue(menu.clickMenuButton(player,1),"Putting Fortune I in the middle unlocks Fortune II");
+        be.setItem(0,VersionApi.water());tick(h,be,1);h.assertTrue(be.selectedRecipe==-1,"Changing base clears incompatible selection");
+        h.succeed();
     }
     @GameTest(template="empty",timeoutTicks=40)
     public static void homewardReturnsToSafeSpawn(GameTestHelper h) {

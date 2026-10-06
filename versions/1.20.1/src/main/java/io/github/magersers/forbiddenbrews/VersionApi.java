@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 public final class VersionApi {
     public static ResourceLocation id(String path) { return new ResourceLocation(ChaosContent.MOD_ID,path); }
     public static MobEffectInstance effect(BrewSpec s) {
-        MobEffect effect=s.family().equals("fortune")?MobEffects.LUCK:s.family().equals("looting")?ChaosContent.lootingEffect.get():ChaosContent.homewardEffect.get();
+        MobEffect effect=s.family().equals("fortune")?ChaosContent.fortuneEffect.get():s.family().equals("looting")?ChaosContent.lootingEffect.get():ChaosContent.homewardEffect.get();
         return new MobEffectInstance(effect,s.duration(),s.level()-1);
     }
     public static ItemStack populate(ItemStack stack,BrewSpec spec) {
@@ -21,6 +21,14 @@ public final class VersionApi {
     public static ItemStack water() { return PotionUtils.setPotion(new ItemStack(Items.POTION),Potions.WATER); }
     public static boolean isWater(ItemStack stack) { return stack.is(Items.POTION) && PotionUtils.getPotion(stack)==Potions.WATER; }
     public static MobEffectInstance looting(LivingEntity entity) { return entity.getEffect(ChaosContent.lootingEffect.get()); }
+    public static MobEffectInstance fortune(LivingEntity entity) { return entity.getEffect(ChaosContent.fortuneEffect.get()); }
+    public static ItemStack fortuneTool(ItemStack tool,net.minecraft.world.entity.Entity actor) {
+        if(!(actor instanceof LivingEntity miner) || tool.isEmpty())return tool;
+        int bonus=BrewEffects.fortuneBonus(miner);if(bonus==0)return tool;
+        var copy=tool.copy();var levels=net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(copy);
+        levels.merge(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE,bonus,Integer::sum);
+        net.minecraft.world.item.enchantment.EnchantmentHelper.setEnchantments(levels,copy);return copy;
+    }
     public static void home(ServerPlayer player) {
         var world=player.getServer().getLevel(player.getRespawnDimension());
         var block=player.getRespawnPosition();Vec3 location=null;

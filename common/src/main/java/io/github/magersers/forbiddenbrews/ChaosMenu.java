@@ -9,9 +9,9 @@ public final class ChaosMenu extends AbstractContainerMenu {
     public static final int[][] POS={{120,70},{120,32},{34,52},{34,88},{206,52},{206,88},{206,128},{120,128}};
     private final Container inventory;
     private final ContainerData data;
-    public ChaosMenu(int id,Inventory player) { this(id,player,new SimpleContainer(8),new SimpleContainerData(4)); }
+    public ChaosMenu(int id,Inventory player) { this(id,player,new SimpleContainer(8),new SimpleContainerData(5)); }
     public ChaosMenu(int id,Inventory player,Container inv,ContainerData values) {
-        super(ChaosContent.menuType.get(),id);checkContainerSize(inv,8);checkContainerDataCount(values,4);
+        super(ChaosContent.menuType.get(),id);checkContainerSize(inv,8);checkContainerDataCount(values,5);
         inventory=inv;data=values;inv.startOpen(player.player);
         for(int i=0;i<8;i++) {
             final int index=i;
@@ -35,6 +35,10 @@ public final class ChaosMenu extends AbstractContainerMenu {
     public int total() { return data.get(1); }
     public int fuel() { return data.get(2); }
     public int activeRecipe() { return data.get(3)-1; }
+    public int selectedRecipe() { return data.get(4)-1; }
+    @Override public boolean clickMenuButton(Player player,int id) {
+        return stillValid(player) && inventory instanceof ChaosBrewingCore core && core.selectRecipe(id);
+    }
     @Override public boolean stillValid(Player player) { return inventory.stillValid(player); }
     @Override public void removed(Player player) { super.removed(player);inventory.stopOpen(player); }
     @Override public ItemStack quickMoveStack(Player player,int index) {

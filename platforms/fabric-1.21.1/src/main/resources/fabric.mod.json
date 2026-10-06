@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "forbidden_brews",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "name": "Forbidden Brews",
-  "description": "Chaos brewing, Luck, Looting, Homeward potions and renewable Netherite Wart.",
+  "description": "Chaos brewing, Fortune, Looting, Homeward potions and renewable Netherite Wart.",
   "authors": [
     "Magersers"
   ],
