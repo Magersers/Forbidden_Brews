@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_scrap": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:netherite_scrap"
+            ]
+          }
+        ]
+      }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "forbidden_brews:netherite_wart"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_scrap",
+      "has_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "forbidden_brews:netherite_wart"
+    ]
+  }
+}

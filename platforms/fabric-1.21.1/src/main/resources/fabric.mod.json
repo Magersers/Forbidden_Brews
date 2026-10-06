@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "forbidden_brews",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "Forbidden Brews",
-  "description": "Chaos Brewing Stand and original animated potion art. Transformation effects are in development.",
+  "description": "Chaos brewing, Luck, Looting, Homeward potions and renewable Netherite Wart.",
   "authors": [
     "Magersers"
   ],
@@ -13,8 +13,14 @@
   "entrypoints": {
     "main": [
       "io.github.magersers.forbiddenbrews.ForbiddenBrews"
+    ],
+    "client": [
+      "io.github.magersers.forbiddenbrews.client.ForbiddenBrewsClient"
     ]
   },
+  "mixins": [
+    "forbidden_brews.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.16.14",
     "fabric-api": ">=0.116.17",

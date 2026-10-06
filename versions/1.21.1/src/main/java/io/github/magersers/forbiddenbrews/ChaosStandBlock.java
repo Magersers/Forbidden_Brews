@@ -1,6 +1,9 @@
 package io.github.magersers.forbiddenbrews;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BrewingStandBlock;
@@ -30,6 +33,17 @@ public final class ChaosStandBlock extends BrewingStandBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide || type != ChaosContent.standType.get()) return null;
         return (world, pos, blockState, entity) ->
-            BrewingStandBlockEntity.serverTick(world, pos, blockState, (ChaosBrewingBlockEntity) entity);
+            ChaosBrewingCore.serverTick(world, pos, blockState, (ChaosBrewingBlockEntity) entity);
+    }
+    @Override protected net.minecraft.world.InteractionResult useWithoutItem(BlockState state,Level world,BlockPos pos,Player player,BlockHitResult hit) {
+        if(world.isClientSide)return InteractionResult.SUCCESS;
+        if(world.getBlockEntity(pos) instanceof ChaosBrewingCore core)player.openMenu(core);
+        return InteractionResult.CONSUME;
+    }
+    @Override protected void onRemove(BlockState state,Level world,BlockPos pos,BlockState next,boolean moving) {
+        if(state.getBlock()!=next.getBlock() && world.getBlockEntity(pos) instanceof ChaosBrewingCore core) {
+            Containers.dropContents(world,pos,core);world.updateNeighbourForOutputSignal(pos,this);
+        }
+        super.onRemove(state,world,pos,next,moving);
     }
 }

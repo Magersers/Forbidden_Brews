@@ -12,3 +12,8 @@ neoForge {
     mods { forbidden_brews { sourceSet(sourceSets.main) } }
 }
 apply from: '../../platform-common.gradle'
+processResources {
+    filesMatching('forbidden_brews.mixins.json') {
+        filter { line -> line.contains('"refmap"') ? '' : line }
+    }
+}

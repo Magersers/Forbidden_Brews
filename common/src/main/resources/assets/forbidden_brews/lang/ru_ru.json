@@ -1,3 +1,27 @@
 {
-  "block.forbidden_brews.chaos_brewing_stand": "Стойка хаоса"
+  "block.forbidden_brews.chaos_brewing_stand": "Стойка хаоса",
+  "block.forbidden_brews.netherite_wart": "Незеритовый нарост",
+  "effect.forbidden_brews.looting": "Добыча",
+  "effect.forbidden_brews.homeward": "Возвращение домой",
+  "message.forbidden_brews.home_unsafe": "Рядом с точкой возрождения нет безопасного места",
+  "gui.forbidden_brews.wart": "Нарост",
+  "gui.forbidden_brews.components": "Компоненты",
+  "gui.forbidden_brews.base": "Основа",
+  "gui.forbidden_brews.brewing": "Варка...",
+  "gui.forbidden_brews.result": "Результат",
+  "gui.forbidden_brews.fuel": "Топливо",
+  "item.forbidden_brews.fortune_1_drink": "Зелье Удача I",
+  "item.forbidden_brews.fortune_1_splash": "Взрывное зелье Удача I",
+  "item.forbidden_brews.fortune_2_drink": "Зелье Удача II",
+  "item.forbidden_brews.fortune_2_splash": "Взрывное зелье Удача II",
+  "item.forbidden_brews.fortune_3_drink": "Зелье Удача III",
+  "item.forbidden_brews.fortune_3_splash": "Взрывное зелье Удача III",
+  "item.forbidden_brews.looting_1_drink": "Зелье Добыча I",
+  "item.forbidden_brews.looting_1_splash": "Взрывное зелье Добыча I",
+  "item.forbidden_brews.looting_2_drink": "Зелье Добыча II",
+  "item.forbidden_brews.looting_2_splash": "Взрывное зелье Добыча II",
+  "item.forbidden_brews.looting_3_drink": "Зелье Добыча III",
+  "item.forbidden_brews.looting_3_splash": "Взрывное зелье Добыча III",
+  "item.forbidden_brews.homeward_1_drink": "Зелье Домой",
+  "item.forbidden_brews.homeward_1_splash": "Взрывное зелье Домой"
 }

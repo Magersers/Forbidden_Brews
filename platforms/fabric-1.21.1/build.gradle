@@ -7,6 +7,7 @@ dependencies {
 }
 java { toolchain.languageVersion = JavaLanguageVersion.of(21) }
 loom {
+    mixin { defaultRefmapName='forbidden_brews.refmap.json' }
     accessWidenerPath = file('src/main/resources/forbidden_brews.accesswidener')
     runs { server { programArg 'nogui' } }
 }

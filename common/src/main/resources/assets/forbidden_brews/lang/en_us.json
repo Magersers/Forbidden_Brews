@@ -1,3 +1,27 @@
 {
-  "block.forbidden_brews.chaos_brewing_stand": "Chaos Brewing Stand"
+  "block.forbidden_brews.chaos_brewing_stand": "Chaos Brewing Stand",
+  "block.forbidden_brews.netherite_wart": "Netherite Wart",
+  "effect.forbidden_brews.looting": "Looting",
+  "effect.forbidden_brews.homeward": "Homeward",
+  "message.forbidden_brews.home_unsafe": "No safe landing near your spawn",
+  "gui.forbidden_brews.wart": "Wart",
+  "gui.forbidden_brews.components": "Ingredients",
+  "gui.forbidden_brews.base": "Base",
+  "gui.forbidden_brews.brewing": "Brewing...",
+  "gui.forbidden_brews.result": "Result",
+  "gui.forbidden_brews.fuel": "Fuel",
+  "item.forbidden_brews.fortune_1_drink": "Potion of Luck I",
+  "item.forbidden_brews.fortune_1_splash": "Splash Potion of Luck I",
+  "item.forbidden_brews.fortune_2_drink": "Potion of Luck II",
+  "item.forbidden_brews.fortune_2_splash": "Splash Potion of Luck II",
+  "item.forbidden_brews.fortune_3_drink": "Potion of Luck III",
+  "item.forbidden_brews.fortune_3_splash": "Splash Potion of Luck III",
+  "item.forbidden_brews.looting_1_drink": "Potion of Looting I",
+  "item.forbidden_brews.looting_1_splash": "Splash Potion of Looting I",
+  "item.forbidden_brews.looting_2_drink": "Potion of Looting II",
+  "item.forbidden_brews.looting_2_splash": "Splash Potion of Looting II",
+  "item.forbidden_brews.looting_3_drink": "Potion of Looting III",
+  "item.forbidden_brews.looting_3_splash": "Splash Potion of Looting III",
+  "item.forbidden_brews.homeward_1_drink": "Potion of Homeward",
+  "item.forbidden_brews.homeward_1_splash": "Splash Potion of Homeward"
 }

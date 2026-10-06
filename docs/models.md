@@ -91,7 +91,7 @@ python tools/build_model_previews.py
 Текстуры и кубы сделаны специально для проекта. Старые 3D-флаконы не входят
 в публикуемые файлы.
 
-## Проверки
+## Проверки моделей и версии 0.1.0
 
 Все три варианта `build` прошли. На Forge в настоящем GameTest-сервере
 прошли три теста: рецепт и отказ при отсутствии/замене незерита; сохранение
@@ -114,3 +114,5 @@ GameTest для NeoForge/Fabric пока не запускали. Рендеры
 [группы предметов Fabric](https://wiki.fabricmc.net/tutorial:itemgroup),
 [GameTest Forge](https://docs.minecraftforge.net/en/1.20.x/misc/gametest/),
 [код формата Blockbench](https://github.com/JannisX11/blockbench/blob/master/js/formats/bbmodel.js).
+
+Зельеварение 0.2.0 заменяет ванильное меню собственным и добавляет новую культуру. Актуальная инструкция и проверки: [brewing.md](brewing.md).

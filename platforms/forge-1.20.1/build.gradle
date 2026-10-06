@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'net.minecraftforge.gradle' version '6.0.54'
+    id 'org.spongepowered.mixin' version '0.7.38'
 }
 java { toolchain.languageVersion = JavaLanguageVersion.of(17) }
 minecraft {
@@ -13,6 +14,7 @@ minecraft {
         }
         client {
             workingDirectory project.file('run')
+            args '--width', '1280', '--height', '720'
             mods { forbidden_brews { source sourceSets.main } }
         }
         gameTestServer {
@@ -22,8 +24,18 @@ minecraft {
         }
     }
 }
-dependencies { minecraft 'net.minecraftforge:forge:1.20.1-47.4.0' }
-jar { finalizedBy 'reobfJar' }
+if (providers.gradleProperty('visualTest').isPresent()) {
+    sourceSets.main.java.srcDir('../../integration/visual/src/main/java')
+    sourceSets.main.resources.srcDir('../../integration/visual/src/main/resources')
+    mixin { config 'forbidden_brews.visual.mixins.json' }
+}
+repositories { maven { url='https://repo.spongepowered.org/repository/maven-public/' } }
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+mixin { add sourceSets.main, 'forbidden_brews.refmap.json'; config 'forbidden_brews.mixins.json' }
+jar { manifest { attributes('MixinConfigs':'forbidden_brews.mixins.json') }; finalizedBy 'reobfJar' }
 apply from: '../../platform-common.gradle'
 if (providers.gradleProperty('gameTests').isPresent()) {
     sourceSets.main.java.srcDir('../../integration/forge/src/main/java')

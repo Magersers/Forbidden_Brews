@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.magersers.forbiddenbrews.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "forbidden_brews.refmap.json",
+  "mixins": [
+    "LootingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

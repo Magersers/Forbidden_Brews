@@ -17,10 +17,21 @@ for version,modern in [('1.20.1',False),('1.21.1',True)]:
                 'O':'obsidian','R':'blaze_rod'}.items()},
             'result':{('id' if modern else 'item'):'forbidden_brews:chaos_brewing_stand','count':1}}
     write(data/'forbidden_brews'/('recipe' if modern else 'recipes')/'chaos_brewing_stand.json',recipe)
+    write(data/'forbidden_brews'/('recipe' if modern else 'recipes')/'netherite_wart.json',{
+        'type':'minecraft:crafting_shapeless','category':'misc',
+        'ingredients':[{'item':'minecraft:nether_wart'},{'item':'minecraft:netherite_scrap'}],
+        'result':{('id' if modern else 'item'):'forbidden_brews:netherite_wart','count':1}})
     loot={'type':'minecraft:block','pools':[{'rolls':1,'entries':[{
         'type':'minecraft:item','name':'forbidden_brews:chaos_brewing_stand'}],
         'conditions':[{'condition':'minecraft:survives_explosion'}]}]}
     write(data/'forbidden_brews'/('loot_table' if modern else 'loot_tables')/'blocks/chaos_brewing_stand.json',loot)
+    mature={'condition':'minecraft:block_state_property','block':'forbidden_brews:netherite_wart','properties':{'age':'3'}}
+    write(data/'forbidden_brews'/('loot_table' if modern else 'loot_tables')/'blocks/netherite_wart.json',{
+        'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'forbidden_brews:netherite_wart',
+        'functions':[{'function':'minecraft:set_count','count':{'type':'minecraft:uniform','min':2,'max':4},'conditions':[mature]},
+        {'function':'minecraft:apply_bonus','enchantment':'minecraft:fortune','formula':'minecraft:uniform_bonus_count',
+         'parameters':{'bonusMultiplier':1},'conditions':[mature]}]}],
+        'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
     for tag in ['mineable/pickaxe','needs_diamond_tool']:
         write(data/'minecraft/tags'/('block' if modern else 'blocks')/(tag+'.json'),{
             'replace':False,'values':['forbidden_brews:chaos_brewing_stand']})
@@ -31,11 +42,37 @@ for version,modern in [('1.20.1',False),('1.21.1',True)]:
         'requirements':[['has_netherite','has_the_recipe']],
         'rewards':{'recipes':['forbidden_brews:chaos_brewing_stand']}}
     write(data/'forbidden_brews'/('advancement' if modern else 'advancements')/'recipes/chaos_brewing_stand.json',advancement)
+    write(data/'forbidden_brews'/('advancement' if modern else 'advancements')/'recipes/netherite_wart.json',{
+        'parent':'minecraft:recipes/root','criteria':{
+            'has_scrap':{'trigger':'minecraft:inventory_changed','conditions':{'items':[{'items':['minecraft:netherite_scrap']}]}},
+            'has_recipe':{'trigger':'minecraft:recipe_unlocked','conditions':{'recipe':'forbidden_brews:netherite_wart'}}},
+        'requirements':[['has_scrap','has_recipe']],
+        'rewards':{'recipes':['forbidden_brews:netherite_wart']}})
     write(res/'pack.mcmeta',{'pack':{'pack_format':34 if modern else 15,'description':'Forbidden Brews models and recipes'}})
+    write(res/'forbidden_brews.mixins.json',{'required':True,'minVersion':'0.8',
+        'package':'io.github.magersers.forbiddenbrews.mixin','compatibilityLevel':'JAVA_21' if modern else 'JAVA_17',
+        'refmap':'forbidden_brews.refmap.json','mixins':['LootingMixin'],'injectors':{'defaultRequire':1}})
 
 for locale,name in [('ru_ru','Стойка хаоса'),('en_us','Chaos Brewing Stand')]:
-    write(ROOT/'common/src/main/resources/assets/forbidden_brews/lang'/(locale+'.json'),{
-        'block.forbidden_brews.chaos_brewing_stand':name})
+    ru=locale=='ru_ru'
+    lang={'block.forbidden_brews.chaos_brewing_stand':name,
+        'block.forbidden_brews.netherite_wart':'Незеритовый нарост' if ru else 'Netherite Wart',
+        'effect.forbidden_brews.looting':'Добыча' if ru else 'Looting',
+        'effect.forbidden_brews.homeward':'Возвращение домой' if ru else 'Homeward',
+        'message.forbidden_brews.home_unsafe':'Рядом с точкой возрождения нет безопасного места' if ru else 'No safe landing near your spawn',
+        'gui.forbidden_brews.wart':'Нарост' if ru else 'Wart',
+        'gui.forbidden_brews.components':'Компоненты' if ru else 'Ingredients',
+        'gui.forbidden_brews.base':'Основа' if ru else 'Base',
+        'gui.forbidden_brews.brewing':'Варка...' if ru else 'Brewing...',
+        'gui.forbidden_brews.result':'Результат' if ru else 'Result',
+        'gui.forbidden_brews.fuel':'Топливо' if ru else 'Fuel'}
+    for family,base in [('fortune','Удача' if ru else 'Luck'),('looting','Добыча' if ru else 'Looting'),('homeward','Домой' if ru else 'Homeward')]:
+        for level in range(1,2 if family=='homeward' else 4):
+            for splash in [False,True]:
+                key=f'{family}_{level}_{"splash" if splash else "drink"}'
+                label=('Взрывное зелье ' if splash else 'Зелье ') if ru else ('Splash Potion of ' if splash else 'Potion of ')
+                lang['item.forbidden_brews.'+key]=label+base+(' '+['I','II','III'][level-1] if family!='homeward' else '')
+    write(ROOT/'common/src/main/resources/assets/forbidden_brews/lang'/(locale+'.json'),lang)
 
 for target,modloader,loadermin,loadername,mc,minimum in [
     ('forge-1.20.1','javafml','47','forge','1.20.1','47.4.0'),
@@ -45,10 +82,10 @@ loaderVersion="[{loadermin},)"
 license="All Rights Reserved"
 [[mods]]
 modId="forbidden_brews"
-version="0.1.0"
+version="0.2.0"
 displayName="Forbidden Brews"
 authors="Magersers"
-description='''Chaos Brewing Stand and original animated potion art. Transformation effects are in development.'''
+description='''Chaos brewing, Luck, Looting, Homeward potions and renewable Netherite Wart.'''
 [[dependencies.forbidden_brews]]
 modId="{loadername}"
 {'type="required"' if loadername=='neoforge' else 'mandatory=true'}
@@ -61,15 +98,17 @@ modId="minecraft"
 versionRange="[{mc}]"
 ordering="NONE"
 side="BOTH"
-"""
+"""+('[[mixins]]\nconfig="forbidden_brews.mixins.json"\n' if loadername=='neoforge' else '')
     p=ROOT/'platforms'/target/'src/main/resources/META-INF'/('neoforge.mods.toml' if loadername=='neoforge' else 'mods.toml')
     p.parent.mkdir(parents=True,exist_ok=True);p.write_text(toml,encoding='utf-8')
 
 write(ROOT/'platforms/fabric-1.21.1/src/main/resources/fabric.mod.json',{
-    'schemaVersion':1,'id':'forbidden_brews','version':'0.1.0','name':'Forbidden Brews',
-    'description':'Chaos Brewing Stand and original animated potion art. Transformation effects are in development.',
+    'schemaVersion':1,'id':'forbidden_brews','version':'0.2.0','name':'Forbidden Brews',
+    'description':'Chaos brewing, Luck, Looting, Homeward potions and renewable Netherite Wart.',
     'authors':['Magersers'],'license':'All Rights Reserved','environment':'*',
     'accessWidener':'forbidden_brews.accesswidener',
-    'entrypoints':{'main':['io.github.magersers.forbiddenbrews.ForbiddenBrews']},
+    'entrypoints':{'main':['io.github.magersers.forbiddenbrews.ForbiddenBrews'],
+        'client':['io.github.magersers.forbiddenbrews.client.ForbiddenBrewsClient']},
+    'mixins':['forbidden_brews.mixins.json'],
     'depends':{'fabricloader':'>=0.16.14','fabric-api':'>=0.116.17','minecraft':'1.21.1','java':'>=21'}})
 print('Resources staged for Forge 1.20.1, NeoForge/Fabric 1.21.1')
