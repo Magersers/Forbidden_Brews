@@ -1,0 +1,14 @@
+Forbidden Brews 0.7.4 — Random Teleport hotfix
+
+- Random Teleport now searches neighbouring terrain throughout the selected chunk instead of rejecting a location after checking a single column.
+- Safe leaf canopies are eligible destinations, and target selection respects small world borders.
+- Remote chunks are held loaded during the search. Failed chunk requests are retried, with a bounded search and timeout.
+- Drinkable Random Teleport is consumed only after a safe destination is ready. Failed or cancelled searches preserve the original potion without creating extra bottles.
+- Repeated use during a search cannot consume additional potions or start overlapping teleport requests. Creative mode retains its potion.
+- Splash Random Teleport uses the improved search; thrown splash bottles are still consumed when thrown.
+
+Includes all 0.7.3 improvements: Brute/Ore Seeker compatibility in cramped mines, charged area attacks with knockback, registered-mob Shapeshifter forms including bosses and form refresh, inverted-gravity player/camera rendering, and pale missing-ingredient hints.
+
+Replace the old Forbidden Brews JAR on both client and server. Install only the matching loader variant. Forge 1.20.1 requires Java 17; NeoForge 1.21.1 and Fabric 1.21.1 require Java 21. Fabric also requires Fabric API.
+
+Validation: all 43 required Forge GameTests passed, and all three production builds and packaging checks passed. NeoForge/Fabric were compiled and packaged; no runtime GameTest run on those loaders is claimed.

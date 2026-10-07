@@ -8,4 +8,15 @@ sourceSets.main.resources.srcDir('../../versions/' + minecraftVersion + '/src/ma
 // Textures and models are shared directly with the editable art source.
 sourceSets.main.resources.srcDir('../../art/minecraft')
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+// Loader metadata must use the same version as the output JAR, even when
+// editable generated resources still contain a previous release number.
+processResources {
+    inputs.property('modVersion', project.version.toString())
+    filesMatching(['META-INF/mods.toml', 'META-INF/neoforge.mods.toml', 'fabric.mod.json']) {
+        filter { line ->
+            line.replaceAll(/version="[^"]*"/) { 'version="' + project.version + '"' }
+                .replaceAll(/("version"\s*:\s*")[^"]*(")/) { whole, start, end -> start + project.version + end }
+        }
+    }
+}
 jar { from('../../LICENSE') }

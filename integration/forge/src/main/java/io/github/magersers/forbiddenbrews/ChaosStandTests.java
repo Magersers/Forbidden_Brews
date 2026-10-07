@@ -21,6 +21,19 @@ import net.minecraftforge.gametest.*;
 @PrefixGameTestTemplate(false)
 public final class ChaosStandTests {
     private static final BlockPos POS=new BlockPos(1,1,1);
+    private static final class TeleportPlayer extends net.minecraft.server.level.ServerPlayer {
+        TeleportPlayer(GameTestHelper h,String name) {super(h.getLevel().getServer(),h.getLevel(),new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(),name));}
+        void completeDrink(net.minecraft.world.InteractionHand hand) {startUsingItem(hand);completeUsingItem();}
+    }
+    private static TeleportPlayer teleportPlayer(GameTestHelper h,String name) {
+        var player=new TeleportPlayer(h,name);
+        var connection=new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND) {
+            @Override public void send(net.minecraft.network.protocol.Packet<?> packet) {}
+            @Override public void send(net.minecraft.network.protocol.Packet<?> packet,net.minecraft.network.PacketSendListener listener) {}
+        };
+        player.connection=new net.minecraft.server.network.ServerGamePacketListenerImpl(player.getServer(),connection,player);
+        return player;
+    }
     private static ChaosBrewingBlockEntity stand(GameTestHelper h) {
         h.setBlock(POS,ForbiddenBrews.STAND.get());return (ChaosBrewingBlockEntity)h.getBlockEntity(POS);
     }
@@ -290,11 +303,126 @@ public final class ChaosStandTests {
         player.getRandom().setSeed(58171);var target=RandomTeleport.chooseTarget(player);
         var floor=new BlockPos(target.getX(),64,target.getZ());level.setBlockAndUpdate(floor,Blocks.STONE.defaultBlockState());
         player.getRandom().setSeed(58171);
-        ChaosContent.brew(new BrewSpec("wild_teleport",1,false)).finishUsingItem(level,player);
+        var bottle=ChaosContent.brew(new BrewSpec("wild_teleport",1,false));
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,bottle);
+        h.assertTrue(bottle.finishUsingItem(level,player)==bottle && bottle.getCount()==1,"Do not spend the drink while searching");
         h.succeedWhen(()-> {
             h.assertTrue(player.distanceToSqr(target.getX()+.5,65,target.getZ()+.5)<.01,"Drink teleports to the prepared random destination");
             h.assertTrue(player.fallDistance==0 && player.getDeltaMovement().lengthSqr()==0,"Reset velocity and fall damage");
+            h.assertTrue(player.getMainHandItem().is(Items.GLASS_BOTTLE),"Exactly one empty bottle after successful teleport");
+            h.assertFalse(RandomTeleport.pending(player),"Successful search releases the pending drink");
             channel.finishAndReleaseAll();
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=400)
+    public static void randomTeleportLoadsUntouchedDistantChunk(GameTestHelper h) {
+        var level=h.getLevel();var target=new BlockPos(120000,0,120000);
+        h.assertTrue(level.getChunkSource().getChunkNow(target.getX()>>4,target.getZ()>>4)==null,"Target starts outside loaded chunks");
+        var player=new net.minecraft.server.level.ServerPlayer(level.getServer(),level,new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(),"new-chunk-test"));
+        boolean[] ready={false},failed={false};
+        VersionApi.prepareChunk(level,target,()-> {
+            h.assertTrue(RandomTeleport.findLanding(level,player,target.getX(),target.getZ())!=null,"Generated distant terrain has a safe landing");ready[0]=true;
+        },()->failed[0]=true);
+        h.succeedWhen(()-> {
+            h.assertFalse(failed[0],"A successfully generated FULL chunk must not be rejected because it is absent from the visible-holder cache");
+            h.assertTrue(ready[0],"Asynchronous distant chunk loading completes");
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void randomTeleportFindsDryNeighbourAndCanopy(GameTestHelper h) {
+        var level=h.getLevel();var player=new net.minecraft.server.level.ServerPlayer(level.getServer(),level,new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(),"shore-test"));
+        var p=new BlockPos(160008,64,160008);
+        for(int y=level.getMinBuildHeight();y<level.getMaxBuildHeight();y++)level.setBlock(p.atY(y),Blocks.AIR.defaultBlockState(),2);
+        level.setBlock(p,Blocks.STONE.defaultBlockState(),2);level.setBlock(p.above(),Blocks.WATER.defaultBlockState(),2);
+        var dry=p.east();level.setBlock(dry,Blocks.STONE.defaultBlockState(),2);
+        level.setBlock(dry.above(),Blocks.AIR.defaultBlockState(),2);level.setBlock(dry.above(2),Blocks.AIR.defaultBlockState(),2);
+        h.assertTrue(RandomTeleport.findLanding(level,player,p.getX(),p.getZ())==null,"Original random column is underwater");
+        var landing=RandomTeleport.findNearbyLanding(level,player,p.getX(),p.getZ());
+        h.assertTrue(landing!=null && HomeSafety.safe(level,player,landing),"Search neighbouring dry terrain instead of rejecting this chunk");
+        level.setBlock(dry.above(20),Blocks.OAK_LEAVES.defaultBlockState(),2);
+        var canopy=RandomTeleport.findLanding(level,player,dry.getX(),dry.getZ());
+        h.assertTrue(canopy!=null && canopy.y==85,"A solid leaf canopy is a valid landing surface");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=40)
+    public static void randomTeleportRespectsSmallWorldBorder(GameTestHelper h) {
+        var level=h.getLevel();var player=new net.minecraft.server.level.ServerPlayer(level.getServer(),level,new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(),"border-test"));
+        var border=new net.minecraft.world.level.border.WorldBorder();border.setCenter(500,500);border.setSize(100);player.setPos(549,80,500);
+        var destinations=new java.util.HashSet<BlockPos>();
+        for(int i=0;i<100;i++) {
+            var target=RandomTeleport.chooseTarget(player,border);
+            h.assertTrue(border.isWithinBounds(target),"Random target must stay within a small world border");destinations.add(target);
+        }
+        h.assertTrue(destinations.size()>50,"Border clipping must preserve random destinations");h.succeed();
+    }
+    @GameTest(template="empty",timeoutTicks=200)
+    public static void randomTeleportCancelledDrinkDoesNotConsumeOrDuplicate(GameTestHelper h) {
+        var level=h.getLevel();var player=teleportPlayer(h,"cancel-test");
+        var bottle=ChaosContent.brew(new BrewSpec("wild_teleport",1,false));
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,bottle);
+        player.setPos(180000,80,180000);var origin=player.position();
+        bottle.finishUsingItem(level,player);bottle.finishUsingItem(level,player);
+        h.assertTrue(RandomTeleport.pending(player) && bottle.getCount()==1,"Repeated use while searching spends nothing");
+        // A removed/dead player must not be teleported, charged, or receive a duplicate.
+        player.setHealth(0);
+        h.succeedWhen(()-> {
+            h.assertFalse(RandomTeleport.pending(player),"Cancelled search finishes");
+            h.assertTrue(player.position().equals(origin) && player.getMainHandItem()==bottle && bottle.getCount()==1,"Cancellation preserves exactly the original potion");
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=2000)
+    public static void randomTeleportNoSafeTerrainPreservesPotion(GameTestHelper h) {
+        var level=h.getLevel();var player=teleportPlayer(h,"unsafe-test");player.setPos(220000,80,220000);
+        player.getRandom().setSeed(175309);
+        // Load the terrain before reading its height: unloaded columns report
+        // minBuildHeight. Fill caves as well as the surface with unsafe magma.
+        for(int attempt=0;attempt<24;attempt++) {
+            var target=RandomTeleport.chooseTarget(player);int minX=(target.getX()>>4)<<4,minZ=(target.getZ()>>4)<<4;
+            level.getChunk(target.getX()>>4,target.getZ()>>4);
+            for(int x=minX;x<minX+16;x++)for(int z=minZ;z<minZ+16;z++) {
+                int top=level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING,x,z);
+                for(int y=level.getMinBuildHeight();y<top;y++)level.setBlock(new BlockPos(x,y,z),Blocks.MAGMA_BLOCK.defaultBlockState(),2);
+            }
+            h.assertTrue(RandomTeleport.findNearbyLanding(level,player,target.getX(),target.getZ())==null,"Fixture has no safe landing anywhere in this chunk");
+        }
+        player.getRandom().setSeed(175309);var origin=player.position();
+        var bottle=ChaosContent.brew(new BrewSpec("wild_teleport",1,false));player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,bottle);
+        player.getRandom().setSeed(175309);
+        bottle.finishUsingItem(level,player);bottle.finishUsingItem(level,player);
+        h.succeedWhen(()-> {
+            h.assertFalse(RandomTeleport.pending(player),"Exhausted unsafe search finishes");
+            h.assertTrue(player.position().equals(origin),"Failed search must not teleport: "+player.position());
+            h.assertTrue(player.getMainHandItem()==bottle && bottle.getCount()==1,"Failed search preserves the original potion: "+player.getMainHandItem());
+            h.assertTrue(player.getInventory().countItem(Items.GLASS_BOTTLE)==0,"Failure cannot produce free empty bottles");
+            h.assertTrue(player.getStats().getValue(net.minecraft.stats.Stats.ITEM_USED.get(bottle.getItem()))==0,"An unsuccessful drink is not counted as consumed");
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=400)
+    public static void randomTeleportOffhandAndCreative(GameTestHelper h) {
+        var players=new java.util.ArrayList<net.minecraft.server.level.ServerPlayer>();
+        var bottles=new java.util.ArrayList<ItemStack>();var origins=new java.util.ArrayList<net.minecraft.world.phys.Vec3>();
+        for(int i=0;i<2;i++) {
+            var player=teleportPlayer(h,"hand-test-"+i);player.setPos(260000+i*10000,80,260000);
+            player.getAbilities().instabuild=i==1;player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,new ItemStack(Items.DIAMOND));
+            var bottle=ChaosContent.brew(new BrewSpec("wild_teleport",1,false));player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND,bottle);
+            players.add(player);bottles.add(bottle);origins.add(player.position());player.completeDrink(net.minecraft.world.InteractionHand.OFF_HAND);
+        }
+        h.succeedWhen(()-> {
+            for(int i=0;i<players.size();i++) {
+                var p=players.get(i);h.assertTrue(p.position().distanceToSqr(origins.get(i))>10000 && !RandomTeleport.pending(p),"Teleport succeeds for offhand and creative");
+                h.assertTrue(p.getMainHandItem().is(Items.DIAMOND),"Unrelated main-hand item is preserved");
+                if(i==0)h.assertTrue(p.getOffhandItem().is(Items.GLASS_BOTTLE) && bottles.get(i).isEmpty(),"Survival consumes only the offhand potion");
+                else h.assertTrue(p.getOffhandItem()==bottles.get(i) && bottles.get(i).getCount()==1 && p.getInventory().countItem(Items.GLASS_BOTTLE)==0,"Creative retains its potion without receiving glass");
+            }
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=400)
+    public static void randomTeleportTransferredBottleCancelsWithoutFreeTrip(GameTestHelper h) {
+        var player=teleportPlayer(h,"transfer-test");player.setPos(280000,80,280000);var origin=player.position();
+        var bottle=ChaosContent.brew(new BrewSpec("wild_teleport",1,false));player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,bottle);
+        bottle.finishUsingItem(h.getLevel(),player);player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,ItemStack.EMPTY);
+        h.succeedWhen(()-> {
+            h.assertFalse(RandomTeleport.pending(player),"Transfer cancels the pending drink");
+            h.assertTrue(player.position().equals(origin) && bottle.getCount()==1 && player.getInventory().countItem(Items.GLASS_BOTTLE)==0,"No free teleport, extra potion or empty bottle after transfer");
         });
     }
     @GameTest(template="empty",timeoutTicks=40)

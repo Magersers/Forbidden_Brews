@@ -10,6 +10,7 @@ import net.minecraft.server.level.*;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.player.Player;
 public final class VersionApi {
+    private static final TicketType<UUID> TELEPORT_TICKET=TicketType.<UUID>create("forbidden_brews_teleport",Comparator.naturalOrder());
     private static final UUID BRUTE_HEALTH=UUID.fromString("f6c270d0-c1e3-4451-a6fb-4076b825f110"),BRUTE_DAMAGE=UUID.fromString("c31af74b-246d-42b1-a220-25c11bbcd303");
     public static void bruteAttributes(LivingEntity entity,boolean active) {
         float oldMax=entity.getMaxHealth(),health=entity.getHealth();
@@ -62,11 +63,14 @@ public final class VersionApi {
             .map(r->r.assemble(input,level.registryAccess())).orElse(ItemStack.EMPTY);
     }
     public static void prepareChunk(ServerLevel level,net.minecraft.core.BlockPos target,Runnable ready,Runnable failed) {
+        var pos=new net.minecraft.world.level.ChunkPos(target);var ticket=UUID.randomUUID();
+        level.getChunkSource().addRegionTicket(TELEPORT_TICKET,pos,0,ticket);
         // Calling getChunkFuture on the server thread invokes managedBlock.
         // Its off-thread branch schedules the request safely without that wait.
         java.util.concurrent.CompletableFuture.supplyAsync(()->level.getChunkSource().getChunkFuture(target.getX()>>4,target.getZ()>>4,net.minecraft.world.level.chunk.ChunkStatus.FULL,true))
-            .thenCompose(future->future).whenCompleteAsync((result,error)-> {
-                if(error==null && level.getChunkSource().getChunkNow(target.getX()>>4,target.getZ()>>4)!=null)ready.run();else failed.run();
+            .thenCompose(future->future).orTimeout(10,java.util.concurrent.TimeUnit.SECONDS).whenCompleteAsync((result,error)-> {
+                try {if(error==null && result!=null && result.left().isPresent())ready.run();else failed.run();}
+                finally {level.getChunkSource().removeRegionTicket(TELEPORT_TICKET,pos,0,ticket);}
             },level.getServer());
     }
     public static MobEffectInstance effectInstance(LivingEntity entity,String family) {return entity.getEffect(ChaosContent.effect(family));}

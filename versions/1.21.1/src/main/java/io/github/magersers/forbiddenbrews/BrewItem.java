@@ -15,6 +15,10 @@ public final class BrewItem extends PotionItem {
     @Override public ItemStack getDefaultInstance() { return VersionApi.populate(new ItemStack(this),spec); }
     @Override public Component getName(ItemStack stack) { return Component.translatable(spec.translation()); }
     @Override public ItemStack finishUsingItem(ItemStack stack,Level level,LivingEntity entity) {
+        if(spec.family().equals("wild_teleport") && !spec.splash()) {
+            if(entity instanceof net.minecraft.server.level.ServerPlayer player)RandomTeleport.drink(player,stack);
+            return stack;
+        }
         VersionApi.populate(stack,spec);return super.finishUsingItem(stack,level,entity);
     }
     @Override public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tips, TooltipFlag flag) {

@@ -1,5 +1,7 @@
 # Forbidden Brews 0.7.3 — Brute combat and expanded transformations
 
+**Withdrawn:** the Forge CurseForge upload is archived after a Random Teleport bug report. No GitHub release or tag was published for 0.7.3. This build is superseded by the [0.7.4 hotfix](../0.7.4/).
+
 - An active Juggernaut no longer resets in cramped mines while drinking Ore Seeker. Initial transformation still needs headroom; milk and effect expiry restore the original form.
 - Charged, successful Brute melee attacks hit nearby mobs within three blocks of the target for 60% of the primary damage, with strong knockback. Walls, allied mobs and owned tameable pets are excluded. Double maximum health, +3 attack damage, 4×4 harvesting and protected-block restrictions remain.
 - Shapeshifter discovers registered mobs, including compatible modded mobs and bosses such as the Ender Dragon. Large forms need open space. Equal/shorter effect reapplication changes form while preserving the longer native remaining duration. Registry-key saves preserve forms and migrate 0.7.2 saves.

@@ -4,7 +4,7 @@
 
 Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Netherite-powered Chaos Brewing Stand. Each bottle has its own pixel silhouette, decorations and animated liquid: portals, crystals, foam, molten rock and more.
 
-**[Download hotfix 0.7.3](releases/0.7.3/)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
+**[Download hotfix 0.7.4](releases/0.7.4/)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
 
 | Minecraft | Loader | Requirements |
 |---|---|---|
@@ -14,7 +14,7 @@ Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Nethe
 
 Install **one** matching JAR on both client and server. These targets have the broadest mod ecosystems among the versions compared; this measures available mods, not player population.
 
-Version **0.7.3** fixes Brute/Ore Seeker compatibility in cramped mines, adds charged area attacks with knockback, expands Shapeshifter to registered mobs including bosses, rotates the player and camera under reversed gravity, and fades missing recipe ingredients. [Release details](releases/0.7.3/).
+Version **0.7.4** improves Random Teleport's terrain search, keeps remote chunks loaded during the search, and consumes a drink only after finding a safe destination. It retains the Brute combat, expanded transformations, reversed-gravity rendering and ingredient hints from 0.7.3, superseding the archived Forge 0.7.3 upload. [Release details](releases/0.7.4/).
 
 ## Chaos brewing
 

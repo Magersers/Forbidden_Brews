@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.portal.DimensionTransition;
 public final class VersionApi {
+    private static final TicketType<UUID> TELEPORT_TICKET=TicketType.<UUID>create("forbidden_brews_teleport",Comparator.naturalOrder());
     private static final ResourceLocation BRUTE_HEALTH=id("brute_health"),BRUTE_DAMAGE=id("brute_damage");
     public static void bruteAttributes(LivingEntity entity,boolean active) {
         float oldMax=entity.getMaxHealth(),health=entity.getHealth();
@@ -64,11 +65,14 @@ public final class VersionApi {
             .map(r->r.value().assemble(input,level.registryAccess())).orElse(ItemStack.EMPTY);
     }
     public static void prepareChunk(ServerLevel level,net.minecraft.core.BlockPos target,Runnable ready,Runnable failed) {
+        var pos=new net.minecraft.world.level.ChunkPos(target);var ticket=UUID.randomUUID();
+        level.getChunkSource().addRegionTicket(TELEPORT_TICKET,pos,0,ticket);
         // Calling getChunkFuture on the server thread invokes managedBlock.
         // Its off-thread branch schedules the request safely without that wait.
         java.util.concurrent.CompletableFuture.supplyAsync(()->level.getChunkSource().getChunkFuture(target.getX()>>4,target.getZ()>>4,net.minecraft.world.level.chunk.status.ChunkStatus.FULL,true))
-            .thenCompose(future->future).whenCompleteAsync((result,error)-> {
-                if(error==null && level.getChunkSource().getChunkNow(target.getX()>>4,target.getZ()>>4)!=null)ready.run();else failed.run();
+            .thenCompose(future->future).orTimeout(10,java.util.concurrent.TimeUnit.SECONDS).whenCompleteAsync((result,error)-> {
+                try {if(error==null && result!=null && result.isSuccess())ready.run();else failed.run();}
+                finally {level.getChunkSource().removeRegionTicket(TELEPORT_TICKET,pos,0,ticket);}
             },level.getServer());
     }
     public static MobEffectInstance effectInstance(LivingEntity entity,String family) {return entity.getEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ChaosContent.effect(family)));}

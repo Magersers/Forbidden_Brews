@@ -1,8 +1,8 @@
 # Publication status
 
-Verified on 6 October 2026. Listing descriptions, current gameplay recordings and captions are English. The release contains eleven complete language packs, including US/UK English variants.
+Publication of 0.7.4 resumed on 7 October 2026. Listing descriptions, current gameplay recordings and captions are English. The release contains eleven complete language packs, including US/UK English variants.
 
-## GitHub: published
+## GitHub: 0.7.2 published; 0.7.4 publication in progress
 
 [Download release 0.7.2](https://github.com/Magersers/Forbidden_Brews/releases/tag/v0.7.2).
 
@@ -32,11 +32,11 @@ The saved draft is titled **Forbidden Brews | Forge 1.20.1 / NeoForge & Fabric 1
 
 The draft has **not** been published live. Planet Minecraft's [official AI-content announcement](https://www.planetminecraft.com/forums/pmc/news/ai-generated-content-shouldn-t-replace-your-work-or-images-706091/) and [submission rules](https://www.planetminecraft.com/rules/) prohibit AI output replacing the creator's own work. The current implementation and assets were substantially generated with AI assistance; this is a concrete publication restriction. No claim of a live Planet Minecraft release is made.
 
-## CurseForge: submitted for review
+## CurseForge: approved; 0.7.4 publication in progress
 
-[Owner preview](https://www.curseforge.com/minecraft/mc-mods/forbidden-brews/preview) · [Author dashboard](https://authors.curseforge.com/#/projects/1730111/files).
+[Project page](https://www.curseforge.com/minecraft/mc-mods/forbidden-brews) · [Author dashboard](https://authors.curseforge.com/#/projects/1730111/files).
 
-Project **1730111** was created under Magersers on 6 October 2026. All three release files were uploaded and their latest verified status is **Under Review**. Automatic publication after approval is selected for each file. The project is not yet publicly available; the preview is for the owner.
+Project **1730111** and all three 0.7.2 files were verified **Approved** on 6 October 2026. The Forge 0.7.3 upload, file **9083075**, was subsequently observed **Archived** after the owner stopped publication to report a Random Teleport bug. NeoForge/Fabric 0.7.3 were not submitted, and no GitHub release or tag was created for 0.7.3. The owner resumed publication of the 0.7.4 fix on 7 October 2026. All three JARs passed packaging checks and all 43 Forge GameTests passed; the English changelog includes the intervening 0.7.3 improvements.
 
 | File | Minecraft / loader | CurseForge file ID |
 |---|---|---|
@@ -50,4 +50,4 @@ The English [description](curseforge.md) and [release changelog](curseforge-chan
 
 On 6 October 2026 the recipe screenshot and both stand GIFs were verified as loaded in all three platform descriptions and the GitHub release. The recipe image is cropped from Minecraft's own Crafting screen; its result is checked by the actual server crafting menu. The full untouched capture is [retained in the repository](../previews/chaos_stand_crafting_full.png). No CAPTCHA appeared during these description updates.
 
-The generated branding logo is explicitly disclosed, together with AI-assisted implementation and translations. External binary download links are omitted in accordance with the [CurseForge moderation policies](https://support.curseforge.com/support/solutions/articles/9000197279-moderation-policies). No moderator approval or public availability is claimed until the platform confirms it.
+The generated branding logo is explicitly disclosed, together with AI-assisted implementation and translations. External binary download links are omitted in accordance with the [CurseForge moderation policies](https://support.curseforge.com/support/solutions/articles/9000197279-moderation-policies).
