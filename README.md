@@ -4,7 +4,7 @@
 
 Brew **16 potion families, 44 drinkable/splash items and 44 recipes** in a Netherite-powered Chaos Brewing Stand. Each bottle has its own pixel silhouette, decorations and animated liquid: portals, crystals, foam, molten rock and more.
 
-**[Download hotfix 0.7.4](releases/0.7.4/)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
+**[Download hotfix 0.7.4](https://github.com/Magersers/Forbidden_Brews/releases/tag/v0.7.4)** · **[Every recipe and controls](docs/brewing.md)** · **[Models](docs/models.md)** · **[Compatibility](docs/compatibility.md)** · **[Publication status](publishing/README.md)**
 
 | Minecraft | Loader | Requirements |
 |---|---|---|
@@ -95,7 +95,7 @@ python tools/package_release.py
 
 Use Java 17 for Forge and Java 21 for the other targets. `-PgameTests runGameTestServer` enables the Forge server integration suite; `-PvisualTest` enables the separate local Forge recording fixture. Test fixtures are excluded from release JARs.
 
-Version 0.7.3 passed **36 Forge GameTests**, including cramped-mine morph compatibility, area combat, registry mob forms, effect refresh and save migration. Native English Forge client/server checks cover ore/model coexistence, area knockback, the dragon renderer, gravity orientation and ingredient hints. All three production loader builds are checked. NeoForge/Fabric have earlier server startup checks; their client recordings and GameTests have not been run.
+Version 0.7.4 passed **43 Forge GameTests**, including deferred Random Teleport consumption, unsafe terrain, small world borders, offhand/creative use, cramped-mine morph compatibility, area combat, registry mob forms, effect refresh and save migration. Earlier native English Forge client/server captures cover ore/model coexistence, area knockback, the dragon renderer, gravity orientation and ingredient hints. All three production loader builds, loader metadata versions and packaging are checked. The separate 0.7.4 visual client attempt timed out at login. NeoForge/Fabric have earlier server startup checks; their client recordings and GameTests have not been run.
 
 ## Credits
 
