@@ -32,11 +32,11 @@ The saved draft is titled **Forbidden Brews | Forge 1.20.1 / NeoForge & Fabric 1
 
 The draft has **not** been published live. Planet Minecraft's [official AI-content announcement](https://www.planetminecraft.com/forums/pmc/news/ai-generated-content-shouldn-t-replace-your-work-or-images-706091/) and [submission rules](https://www.planetminecraft.com/rules/) prohibit AI output replacing the creator's own work. The current implementation and assets were substantially generated with AI assistance; this is a concrete publication restriction. No claim of a live Planet Minecraft release is made.
 
-## CurseForge: 0.7.4 uploaded; Fabric review pending
+## CurseForge: 0.7.4 published
 
 [Project page](https://www.curseforge.com/minecraft/mc-mods/forbidden-brews) · [Author dashboard](https://authors.curseforge.com/#/projects/1730111/files).
 
-Project **1730111** and the older 0.7.2 files are approved. The Forge 0.7.3 upload, file **9083075**, remains archived; no GitHub release/tag was created for 0.7.3. All three 0.7.4 files were submitted on 7 October 2026 as **Release**, for client and server, with automatic publication once approved. At the latest author-dashboard check, Forge and NeoForge were **Approved**, and Fabric was **Under Review**.
+Project **1730111** and the older 0.7.2 files are approved. The Forge 0.7.3 upload, file **9083075**, remains archived; no GitHub release/tag was created for 0.7.3. All three 0.7.4 files were submitted on 7 October 2026 as **Release**, for client and server, with automatic publication once approved. The author dashboard subsequently confirmed **Approved** for Forge, NeoForge and Fabric.
 
 | File | Minecraft / loader | CurseForge file ID |
 |---|---|---|
